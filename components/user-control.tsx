@@ -58,9 +58,9 @@ export default function UserControl() {
             disabled={true}
             type="button"
             className={cn(
-              'flex cursor-pointer items-center gap-1 rounded-full bg-neutral-400 px-2 py-1 font-medium text-white text-xs shadow-[inset_0_1px_0_rgba(255,255,255,0.2)] transition-colors hover:shadow-[inset_0_1px_0_rgba(0,0,0,0.2)] disabled:cursor-not-allowed',
+              'flex cursor-pointer items-center gap-1 rounded-full bg-neutral-400 px-2 py-1 font-medium text-white text-xs shadow-[inset_0_1px_0_rgba(255,255,255,0.2)] transition-colors hover:shadow-[inset_0_1px_0_rgba(0,0,0,0.2)] disabled:cursor-not-allowed dark:bg-neutral-600',
               {
-                'bg-green-600 hover:bg-green-600/80': isReasoningEnabled,
+                'bg-green-600 dark:bg-green-700': isReasoningEnabled,
               }
             )}
             onClick={() => {
@@ -73,9 +73,9 @@ export default function UserControl() {
           <button
             type="button"
             className={cn(
-              'flex cursor-pointer items-center gap-1 rounded-full bg-neutral-400 px-2 py-1 font-medium text-white text-xs shadow-[inset_0_1px_0_rgba(255,255,255,0.2)] transition-colors hover:shadow-[inset_0_1px_0_rgba(0,0,0,0.2)] disabled:cursor-not-allowed',
+              'flex cursor-pointer items-center gap-1 rounded-full bg-neutral-400 px-2 py-1 font-medium text-white text-xs shadow-[inset_0_1px_0_rgba(255,255,255,0.2)] transition-colors hover:shadow-[inset_0_1px_0_rgba(0,0,0,0.2)] disabled:cursor-not-allowed dark:bg-neutral-600',
               {
-                'bg-blue-600 hover:bg-blue-600/80': isSearchEnabled,
+                'bg-blue-600 dark:bg-blue-700': isSearchEnabled,
               }
             )}
             onClick={() => {
