@@ -60,7 +60,7 @@ export default function UserControl() {
             className={cn(
               'relative flex w-fit cursor-pointer flex-row items-center gap-2 rounded-full px-2 py-1 text-xs transition-colors disabled:cursor-not-allowed disabled:opacity-50',
               {
-                'text-green-700 ': isReasoningEnabled,
+                'text-green-700': isReasoningEnabled,
               }
             )}
             onClick={() => {
@@ -75,7 +75,7 @@ export default function UserControl() {
             className={cn(
               'relative flex w-fit cursor-pointer flex-row items-center gap-2 rounded-full px-2 py-1 text-xs transition-colors disabled:opacity-50',
               {
-                'text-blue-700 ': isSearchEnabled,
+                'text-blue-700 dark:text-blue-500': isSearchEnabled,
               }
             )}
             onClick={() => {
