@@ -1,4 +1,4 @@
-import { ModelList, type modelID, models } from '@/lib/models'
+import { DefaultModelID, ModelList, type modelID, models } from '@/lib/models'
 import { useChat } from '@ai-sdk/react'
 import { GlobeAltIcon, LightBulbIcon } from '@heroicons/react/24/solid'
 import { parseAsBoolean, parseAsStringLiteral, useQueryState } from 'nuqs'
@@ -19,7 +19,7 @@ const UserControl = memo(function UserControl() {
   const [input, setInput] = useState<string>('')
   const [selectedModelId, setSelectedModelId] = useQueryState<modelID>(
     SelectedModelId,
-    parseAsStringLiteral(ModelList).withDefault('medical-70B')
+    parseAsStringLiteral(ModelList).withDefault(DefaultModelID)
   )
   const [isReasoningEnabled, setIsReasoningEnabled] = useQueryState<boolean>(
     IsReasoningEnabled,

@@ -14,12 +14,6 @@ const deepseek = createDeepSeek({
   baseURL: process.env.DEEPSEEK_API_URL,
 })
 
-const openai = createOpenAI({
-  apiKey: process.env.OPENAI_API_KEY,
-  baseURL: process.env.OPENAI_API_URL,
-  compatibility: 'compatible',
-})
-
 const copilot = createOpenAI({
   apiKey: process.env.COPILOT_API_KEY,
   baseURL: process.env.COPILOT_API_URL,
@@ -45,13 +39,11 @@ export const myProvider = customProvider({
       }),
       model: deepseek('deepseek-ai/DeepSeek-R1-Distill-Qwen-7B'),
     }),
-    'medical-70B': wrapLanguageModel({
-      middleware: defaultSettingsMiddleware({
-        settings: {
-          temperature: 1,
-        },
+    'DeepSeek-R1-Distill-Qwen-32B': wrapLanguageModel({
+      middleware: extractReasoningMiddleware({
+        tagName: 'think',
       }),
-      model: openai('model_medical_20250122'),
+      model: deepseek('deepseek-ai/DeepSeek-R1-Distill-Qwen-32B'),
     }),
     'gpt-4o': wrapLanguageModel({
       middleware: defaultSettingsMiddleware({
@@ -74,16 +66,17 @@ export type modelID = Parameters<(typeof myProvider)['languageModel']>['0']
 export const ModelList = [
   'deepseek-r1',
   'deepseek-r1-7B',
-  'medical-70B',
+  'DeepSeek-R1-Distill-Qwen-32B',
   'gpt-4o',
   'llama-3.3-70b-specdec',
 ] as const
-export const DefaultModelID = 'medical-70B'
+
+export const DefaultModelID = 'llama-3.3-70b-specdec'
 
 export const models: Record<modelID, string> = {
   'deepseek-r1': 'DeepSeek-R1',
   'deepseek-r1-7B': 'DeepSeek-R1 Distill Qwen 7B',
-  'medical-70B': 'Medical-70B',
+  'DeepSeek-R1-Distill-Qwen-32B': 'DeepSeek-R1 Distill Qwen 32B',
   'gpt-4o': 'GPT-4o',
   'llama-3.3-70b-specdec': 'Llama-3.3-70B SpecDec',
 }

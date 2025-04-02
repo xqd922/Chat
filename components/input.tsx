@@ -1,6 +1,6 @@
 'use client'
 
-import { ModelList, type modelID } from '@/lib/models'
+import { DefaultModelID, ModelList, type modelID } from '@/lib/models'
 import {
   IsReasoningEnabled,
   IsSearchEnabled,
@@ -24,7 +24,7 @@ export const Input = memo(function Input({
 }: InputProps) {
   const [selectedModelId] = useQueryState<modelID>(
     SelectedModelId,
-    parseAsStringLiteral(ModelList).withDefault('medical-70B')
+    parseAsStringLiteral(ModelList).withDefault(DefaultModelID)
   )
   const [isReasoningEnabled] = useQueryState<boolean>(
     IsReasoningEnabled,
