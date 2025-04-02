@@ -1,7 +1,7 @@
 'use client'
 
+import { cn } from '@/lib/utils'
 import { useChat } from '@ai-sdk/react'
-import cn from 'classnames'
 import UserControl from './user-control'
 import UserMessages from './user-messages'
 

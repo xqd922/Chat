@@ -1,9 +1,9 @@
 'use client'
 
+import { cn } from '@/lib/utils'
 import type { UseChatHelpers } from '@ai-sdk/react'
 import { ArrowPathIcon, ClipboardIcon } from '@heroicons/react/24/outline'
 import type { UIMessage } from 'ai'
-import cn from 'classnames'
 import { AnimatePresence, motion } from 'framer-motion'
 import { useEffect, useMemo, useRef, useState } from 'react'
 import type React from 'react'

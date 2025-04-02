@@ -1,7 +1,6 @@
 import { ModelList, type modelID, models } from '@/lib/models'
 import { useChat } from '@ai-sdk/react'
-import { GlobeAltIcon, LightBulbIcon } from '@heroicons/react/24/outline'
-import cn from 'classnames'
+import { GlobeAltIcon, LightBulbIcon } from '@heroicons/react/24/solid'
 import { parseAsBoolean, parseAsStringLiteral, useQueryState } from 'nuqs'
 import { useState } from 'react'
 import { toast } from 'sonner'
@@ -12,6 +11,7 @@ import {
   IsSearchEnabled,
   SelectedModelId,
 } from '@/lib/nusq'
+import { cn } from '@/lib/utils'
 import { Footnote } from './footnote'
 import { ArrowUpIcon, ChevronDownIcon, StopIcon } from './icons'
 
@@ -46,47 +46,46 @@ export default function UserControl() {
 
   return (
     <div className="flex w-full flex-col gap-4">
-      <div className="relative flex w-full flex-col gap-1 rounded-2xl border-[1px] border-neutral-200/60 bg-neutral-100 p-3 shadow-lg shadow-neutral-100 dark:border-neutral-700 dark:bg-neutral-800 dark:shadow-none">
+      <div className="relative flex w-full flex-col gap-1 rounded-2xl border-[1px] border-neutral-200/60 bg-neutral-100 px-2 py-3 shadow-lg shadow-neutral-100 dark:border-neutral-700 dark:bg-neutral-800 dark:shadow-none">
         <Input
           input={input}
           setInput={setInput}
           isGeneratingResponse={isGeneratingResponse}
         />
 
-        <div className="absolute bottom-2.5 left-2.5 flex flex-col sm:flex-row sm:items-center">
+        <div className="absolute bottom-2.5 left-3 flex flex-col gap-1 sm:flex-row sm:items-center">
           <button
             disabled={true}
             type="button"
             className={cn(
-              'relative flex w-fit cursor-pointer flex-row items-center gap-2 rounded-full px-2 py-1 text-xs transition-colors disabled:cursor-not-allowed disabled:opacity-50',
+              'flex cursor-pointer items-center gap-1 rounded-full bg-neutral-400 px-2 py-1 font-medium text-white text-xs shadow-[inset_0_1px_0_rgba(255,255,255,0.2)] transition-colors hover:shadow-[inset_0_1px_0_rgba(0,0,0,0.2)] disabled:cursor-not-allowed',
               {
-                'text-green-700': isReasoningEnabled,
+                'bg-green-600 hover:bg-green-600/80': isReasoningEnabled,
               }
             )}
             onClick={() => {
               setIsReasoningEnabled(!isReasoningEnabled)
             }}
           >
-            <LightBulbIcon className={cn('size-4')} />
-            <div>Reasoning</div>
+            <LightBulbIcon className={cn('mb-[2px] size-[10px]')} />
+            <p className="[text-shadow:_0_1px_0_rgb(0_0_0_/_20%)]">Think</p>
           </button>
           <button
             type="button"
             className={cn(
-              'relative flex w-fit cursor-pointer flex-row items-center gap-2 rounded-full px-2 py-1 text-xs transition-colors disabled:opacity-50',
+              'flex cursor-pointer items-center gap-1 rounded-full bg-neutral-400 px-2 py-1 font-medium text-white text-xs shadow-[inset_0_1px_0_rgba(255,255,255,0.2)] transition-colors hover:shadow-[inset_0_1px_0_rgba(0,0,0,0.2)] disabled:cursor-not-allowed',
               {
-                'text-blue-700 dark:text-blue-500': isSearchEnabled,
+                'bg-blue-600 hover:bg-blue-600/80': isSearchEnabled,
               }
             )}
             onClick={() => {
               setIsSearchEnabled(!isSearchEnabled)
             }}
           >
-            <GlobeAltIcon className={cn('size-4')} />
-            <div>Web Search</div>
+            <GlobeAltIcon className={cn('mb-[2px] size-[10px]')} />
+            <p className="[text-shadow:_0_1px_0_rgb(0_0_0_/_20%)]">Search</p>
           </button>
         </div>
-
         <div className="absolute right-2.5 bottom-2.5 flex flex-row gap-2">
           <div className="relative flex w-fit cursor-pointer flex-row items-center gap-0.5 rounded-lg p-1.5 text-sm hover:bg-neutral-200 dark:hover:bg-neutral-700">
             <div className="flex items-center justify-center px-1 text-neutral-500 text-xs dark:text-neutral-500">

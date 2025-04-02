@@ -1,4 +1,4 @@
-import cn from 'classnames'
+import { cn } from '@/lib/utils'
 import { Avatar, AvatarFallback, AvatarImage } from './avatar'
 
 export interface AvatarData {
