@@ -4,18 +4,19 @@
     "": {
       "name": "ai-sdk-preview-reasoning",
       "dependencies": {
-        "@ai-sdk/deepseek": "^0.2.2",
-        "@ai-sdk/openai": "^1.3.4",
-        "@ai-sdk/react": "^1.2.3",
+        "@ai-sdk/deepseek": "^0.2.4",
+        "@ai-sdk/groq": "^1.2.3",
+        "@ai-sdk/openai": "^1.3.6",
+        "@ai-sdk/react": "^1.2.5",
         "@biomejs/biome": "^1.9.4",
         "@heroicons/react": "^2.2.0",
         "@openrouter/ai-sdk-provider": "^0.4.5",
         "@radix-ui/react-avatar": "^1.1.3",
-        "ai": "^4.2.8",
-        "babel-plugin-react-compiler": "^19.0.0-beta-aeaed83-20250323",
+        "ai": "^4.2.10",
+        "babel-plugin-react-compiler": "^19.0.0-beta-e993439-20250328",
         "classnames": "^2.5.1",
         "clsx": "^2.1.1",
-        "framer-motion": "^12.6.2",
+        "framer-motion": "^12.6.3",
         "geist": "^1.3.1",
         "install": "^0.13.0",
         "next": "^15.2.4",
@@ -23,11 +24,11 @@
         "react": "^19.1.0",
         "react-dom": "^19.1.0",
         "react-markdown": "^9.1.0",
-        "sonner": "^2.0.2",
+        "sonner": "^2.0.3",
         "tailwind-merge": "^3.1.0",
       },
       "devDependencies": {
-        "@types/node": "^20.17.28",
+        "@types/node": "^20.17.30",
         "@types/react": "^19.0.12",
         "@types/react-dom": "^19.0.4",
         "postcss": "^8.5.3",
@@ -38,6 +39,8 @@
   },
   "packages": {
     "@ai-sdk/deepseek": ["@ai-sdk/deepseek@0.2.4", "", { "dependencies": { "@ai-sdk/openai-compatible": "0.2.4", "@ai-sdk/provider": "1.1.0", "@ai-sdk/provider-utils": "2.2.3" }, "peerDependencies": { "zod": "^3.0.0" } }, "sha512-D98J+qgZbr3qYoQCIfkd1E6SzmGPi7SelskvxT2329eCC7sPBlbHNbRT/fayShQT3qkqd7u/y24beI2rmMAuMg=="],
+
+    "@ai-sdk/groq": ["@ai-sdk/groq@1.2.3", "", { "dependencies": { "@ai-sdk/provider": "1.1.0", "@ai-sdk/provider-utils": "2.2.3" }, "peerDependencies": { "zod": "^3.0.0" } }, "sha512-MGPo+ROdJfavrkI4SgJSUOtT6cFjEZEyu7sKKI1PWE3FBTp0oYxSfsmAFWebXGI1G+v70XPFiH9IObBYUiEMvQ=="],
 
     "@ai-sdk/openai": ["@ai-sdk/openai@1.3.6", "", { "dependencies": { "@ai-sdk/provider": "1.1.0", "@ai-sdk/provider-utils": "2.2.3" }, "peerDependencies": { "zod": "^3.0.0" } }, "sha512-Lyp6W6dg+ERMJru3DI8/pWAjXLB0GbMMlXh4jxA3mVny8CJHlCAjlEJRuAdLg1/CFz4J1UDN2/4qBnIWtLFIqw=="],
 

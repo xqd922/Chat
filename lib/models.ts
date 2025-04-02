@@ -6,6 +6,7 @@ import {
 } from 'ai'
 
 import { createDeepSeek } from '@ai-sdk/deepseek'
+import { createGroq } from '@ai-sdk/groq'
 import { createOpenAI } from '@ai-sdk/openai'
 
 const deepseek = createDeepSeek({
@@ -23,6 +24,10 @@ const copilot = createOpenAI({
   apiKey: process.env.COPILOT_API_KEY,
   baseURL: process.env.COPILOT_API_URL,
   compatibility: 'compatible',
+})
+
+const groq = createGroq({
+  apiKey: process.env.GROQ_API_KEY,
 })
 
 // custom provider with different model settings:
@@ -56,6 +61,12 @@ export const myProvider = customProvider({
       }),
       model: copilot('gpt-4o'),
     }),
+    'llama-3.3-70b-specdec': wrapLanguageModel({
+      middleware: defaultSettingsMiddleware({
+        settings: {},
+      }),
+      model: groq('llama-3.3-70b-specdec'),
+    }),
   },
 })
 
@@ -65,6 +76,7 @@ export const ModelList = [
   'deepseek-r1-7B',
   'medical-70B',
   'gpt-4o',
+  'llama-3.3-70b-specdec',
 ] as const
 export const DefaultModelID = 'medical-70B'
 
@@ -73,4 +85,5 @@ export const models: Record<modelID, string> = {
   'deepseek-r1-7B': 'DeepSeek-R1 Distill Qwen 7B',
   'medical-70B': 'Medical-70B',
   'gpt-4o': 'GPT-4o',
+  'llama-3.3-70b-specdec': 'Llama-3.3-70B SpecDec',
 }
