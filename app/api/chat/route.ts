@@ -105,15 +105,10 @@ Remember not to group citations at the end but list them in the corresponding pa
 Please respond in the same language as the user's question.`
         }
       }
-
       const result = streamText({
         system: systemPrompt,
         model: myProvider.languageModel(selectedModelId),
         messages,
-        experimental_transform: smoothStream({
-          delayInMs: null, // optional: defaults to 10ms
-          chunking: 'word', // optional: defaults to 'word'
-        }),
       })
       result.mergeIntoDataStream(dataStream, {
         sendReasoning: true,

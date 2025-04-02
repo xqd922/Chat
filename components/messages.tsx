@@ -8,9 +8,9 @@ import { AnimatePresence, motion } from 'framer-motion'
 import { useEffect, useMemo, useRef, useState } from 'react'
 import type React from 'react'
 import Markdown from 'react-markdown'
+import ReactMarkdown, { type Components } from 'react-markdown'
 import { type AvatarData, AvatarGroup } from './avatar-group'
 import { ChevronDownIcon, ChevronUpIcon } from './icons'
-import { MemoizedReactMarkdown } from './markdown'
 import { markdownComponents } from './markdown-components'
 import ShinyText from './shiny-text'
 
@@ -306,11 +306,7 @@ function AnnotationDisplay({
 }
 
 export function TextMessagePart({ text }: TextMessagePartProps) {
-  return (
-    <MemoizedReactMarkdown components={markdownComponents}>
-      {text}
-    </MemoizedReactMarkdown>
-  )
+  return <ReactMarkdown components={markdownComponents}>{text}</ReactMarkdown>
 }
 
 interface MessagesProps {
