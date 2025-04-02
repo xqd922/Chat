@@ -5,7 +5,7 @@ import type { UseChatHelpers } from '@ai-sdk/react'
 import { ArrowPathIcon, ClipboardIcon } from '@heroicons/react/24/outline'
 import type { UIMessage } from 'ai'
 import { AnimatePresence, motion } from 'framer-motion'
-import { useEffect, useMemo, useRef, useState } from 'react'
+import { memo, useEffect, useMemo, useRef, useState } from 'react'
 import type React from 'react'
 import Markdown from 'react-markdown'
 import ReactMarkdown, { type Components } from 'react-markdown'
@@ -317,6 +317,138 @@ interface MessagesProps {
   setMessages?: (messages: Array<UIMessage>) => void
 }
 
+interface MessageProps {
+  message: UIMessage
+  status: UseChatHelpers['status']
+  fetchStatus?: string
+  isLastAssistantMessage: boolean
+  onRegenerate: () => void
+}
+
+const Message = memo(
+  ({
+    message,
+    status,
+    fetchStatus,
+    isLastAssistantMessage,
+    onRegenerate,
+  }: MessageProps) => {
+    return (
+      <div
+        className={cn(
+          'flex w-full flex-col gap-4 first-of-type:mt-16 last-of-type:mb-12'
+        )}
+      >
+        <div
+          className={cn('flex flex-col gap-2', {
+            'ml-auto w-fit rounded-lg bg-neutral-100 px-2 py-1 dark:bg-neutral-700/50':
+              message.role === 'user',
+            '': message.role === 'assistant',
+          })}
+        >
+          {message.annotations?.map((annotation, index) => {
+            const annotationList = annotation as Annotation
+            return (
+              <AnnotationDisplay
+                key={`annotation-display-${message.id}-${index}`}
+                annotation={annotationList.results}
+                messageId={message.id}
+                index={index}
+              />
+            )
+          })}
+          {message.role === 'assistant' &&
+            message.content.length === 0 &&
+            (fetchStatus === 'Success' || !fetchStatus) && (
+              <ShinyText
+                text="Generating..."
+                disabled={false}
+                speed={2}
+                className="w-full font-light text-sm"
+              />
+            )}
+          {message.parts.map((part, partIndex) => {
+            if (part.type === 'text' && message.role !== 'user') {
+              return (
+                <motion.div
+                  key={`${message.id}-${partIndex}`}
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1 }}
+                  transition={{ duration: 0.2 }}
+                >
+                  <TextMessagePart
+                    key={`${message.id}-${partIndex}`}
+                    text={part.text}
+                  />
+                </motion.div>
+              )
+            }
+            if (part.type === 'text' && message.role === 'user') {
+              return (
+                <div
+                  key={`${message.id}-${partIndex}`}
+                  className="flex flex-col gap-4 font-light text-sm"
+                >
+                  {part.text}
+                </div>
+              )
+            }
+            if (part.type === 'reasoning') {
+              return (
+                <ReasoningMessagePart
+                  key={`${message.id}-${partIndex}`}
+                  // @ts-expect-error export ReasoningUIPart
+                  part={part}
+                  isReasoning={
+                    status === 'streaming' &&
+                    isLastAssistantMessage &&
+                    partIndex === message.parts.length - 1
+                  }
+                />
+              )
+            }
+          })}
+        </div>
+        {message.role === 'assistant' &&
+          (!isLastAssistantMessage || status !== 'streaming') && (
+            <div className="-mt-3 -ml-0.5 flex justify-start gap-2 transition-opacity">
+              <button
+                type="button"
+                onClick={() => {
+                  navigator.clipboard.writeText(message.content)
+                }}
+                title="Copy to clipboard"
+              >
+                <ClipboardIcon className="size-4 text-neutral-500 hover:text-neutral-700 dark:hover:text-neutral-300" />
+              </button>
+              <button
+                disabled={status === 'streaming'}
+                className={'disabled:cursor-not-allowed'}
+                type="button"
+                onClick={onRegenerate}
+                title="Regenerate response"
+              >
+                <ArrowPathIcon className="size-4 text-neutral-500 hover:text-neutral-700 dark:hover:text-neutral-300" />
+              </button>
+            </div>
+          )}
+      </div>
+    )
+  },
+  (prevProps, nextProps) => {
+    // Only re-render if these props have changed
+    return (
+      prevProps.message.id === nextProps.message.id &&
+      prevProps.message.content === nextProps.message.content &&
+      prevProps.status === nextProps.status &&
+      prevProps.isLastAssistantMessage === nextProps.isLastAssistantMessage &&
+      prevProps.fetchStatus === nextProps.fetchStatus
+    )
+  }
+)
+
+Message.displayName = 'Message'
+
 export function Messages({
   messages,
   status,
@@ -342,120 +474,33 @@ export function Messages({
     }
   }
 
+  // Find last assistant message index for conditional rendering
+  const lastAssistantIndex = useMemo(
+    () => messages.findLastIndex((msg) => msg.role === 'assistant'),
+    [messages]
+  )
+
   return (
     <div
       className="scrollbar-hidden flex w-full flex-col items-center gap-4 overflow-y-scroll"
       ref={messagesRef}
     >
-      {messages.map((message, messageIndex) => {
-        return (
-          <div
-            key={`message-${message.id}`}
-            className={cn(
-              'flex w-full flex-col gap-4 first-of-type:mt-16 last-of-type:mb-12'
-            )}
-          >
-            <div
-              className={cn('flex flex-col gap-2', {
-                'ml-auto w-fit rounded-lg bg-neutral-100 px-2 py-1 dark:bg-neutral-700/50':
-                  message.role === 'user',
-                '': message.role === 'assistant',
-              })}
-            >
-              {message.annotations?.map((annotation, index) => {
-                const annotationList = annotation as Annotation
-                return (
-                  <AnnotationDisplay
-                    key={`annotation-display-${message.id}-${index}`}
-                    annotation={annotationList.results}
-                    messageId={message.id}
-                    index={index}
-                  />
-                )
-              })}
-              {message.role === 'assistant' &&
-                message.content.length === 0 &&
-                (fetchStatus === 'Success' || !fetchStatus) && (
-                  <ShinyText
-                    text="Generating..."
-                    disabled={false}
-                    speed={2}
-                    className="w-full font-light text-sm"
-                  />
-                )}
-              {message.parts.map((part, partIndex) => {
-                if (part.type === 'text' && message.role !== 'user') {
-                  return (
-                    <motion.div
-                      key={`${message.id}-${partIndex}`}
-                      initial={{ opacity: 0 }}
-                      animate={{ opacity: 1 }}
-                      transition={{ duration: 0.2 }}
-                    >
-                      <TextMessagePart
-                        key={`${message.id}-${partIndex}`}
-                        text={part.text}
-                      />
-                    </motion.div>
-                  )
-                }
-                if (part.type === 'text' && message.role === 'user') {
-                  return (
-                    <div
-                      key={`${message.id}-${partIndex}`}
-                      className="flex flex-col gap-4 font-light text-sm"
-                    >
-                      {part.text}
-                    </div>
-                  )
-                }
-                if (part.type === 'reasoning') {
-                  return (
-                    <ReasoningMessagePart
-                      key={`${message.id}-${partIndex}`}
-                      // @ts-expect-error export ReasoningUIPart
-                      part={part}
-                      isReasoning={
-                        status === 'streaming' &&
-                        partIndex === message.parts.length - 1
-                      }
-                    />
-                  )
-                }
-              })}
-            </div>
-            {message.role === 'assistant' &&
-              (messageIndex !==
-                messages.findLastIndex((msg) => msg.role === 'assistant') ||
-                status !== 'streaming') && (
-                <div className="-mt-3 -ml-0.5 flex justify-start gap-2 transition-opacity">
-                  <button
-                    type="button"
-                    onClick={() => {
-                      navigator.clipboard.writeText(message.content)
-                    }}
-                    title="Copy to clipboard"
-                  >
-                    <ClipboardIcon className="size-4 text-neutral-500 hover:text-neutral-700 dark:hover:text-neutral-300" />
-                  </button>
-                  <button
-                    disabled={status === 'streaming'}
-                    className={'disabled:cursor-not-allowed'}
-                    type="button"
-                    onClick={() => {
-                      // 删除messages这个索引后的消息
-                      const newMessages = messages.slice(0, messageIndex + 1)
-                      setMessagesAndReload(newMessages)
-                    }}
-                    title="Regenerate response"
-                  >
-                    <ArrowPathIcon className="size-4 text-neutral-500 hover:text-neutral-700 dark:hover:text-neutral-300" />
-                  </button>
-                </div>
-              )}
-          </div>
-        )
-      })}
+      {messages.map((message, messageIndex) => (
+        <Message
+          key={`message-${message.id}-${messageIndex}`}
+          message={message}
+          status={status}
+          fetchStatus={fetchStatus}
+          isLastAssistantMessage={
+            message.role === 'assistant' && messageIndex === lastAssistantIndex
+          }
+          onRegenerate={() => {
+            // Delete messages after this index
+            const newMessages = messages.slice(0, messageIndex + 1)
+            setMessagesAndReload(newMessages)
+          }}
+        />
+      ))}
 
       {fetchStatus &&
         fetchStatus !== 'Success' &&
