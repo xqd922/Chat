@@ -2,7 +2,7 @@ import { ModelList, type modelID, models } from '@/lib/models'
 import { useChat } from '@ai-sdk/react'
 import { GlobeAltIcon, LightBulbIcon } from '@heroicons/react/24/solid'
 import { parseAsBoolean, parseAsStringLiteral, useQueryState } from 'nuqs'
-import { useState } from 'react'
+import { memo, useCallback, useMemo, useState } from 'react'
 import { toast } from 'sonner'
 import { Input } from './input'
 
@@ -15,7 +15,7 @@ import { cn } from '@/lib/utils'
 import { Footnote } from './footnote'
 import { ArrowUpIcon, ChevronDownIcon, StopIcon } from './icons'
 
-export default function UserControl() {
+const UserControl = memo(function UserControl() {
   const [input, setInput] = useState<string>('')
   const [selectedModelId, setSelectedModelId] = useQueryState<modelID>(
     SelectedModelId,
@@ -42,7 +42,49 @@ export default function UserControl() {
     },
   })
 
-  const isGeneratingResponse = ['streaming', 'submitted'].includes(status)
+  const isGeneratingResponse = useMemo(() => {
+    return ['streaming', 'submitted'].includes(status)
+  }, [status])
+
+  const toggleReasoning = useCallback(() => {
+    setIsReasoningEnabled((prev) => !prev)
+  }, [setIsReasoningEnabled])
+
+  const toggleSearch = useCallback(() => {
+    setIsSearchEnabled((prev) => !prev)
+  }, [setIsSearchEnabled])
+
+  const handleModelChange = useCallback(
+    (event: React.ChangeEvent<HTMLSelectElement>) => {
+      const newModelId = event.target.value as modelID
+      setSelectedModelId(newModelId)
+      if (!newModelId.includes('deepseek-r1')) {
+        setIsReasoningEnabled(false)
+      } else {
+        setIsReasoningEnabled(true)
+      }
+    },
+    [setSelectedModelId, setIsReasoningEnabled]
+  )
+
+  const handleSubmit = useCallback(() => {
+    if (input === '') {
+      return
+    }
+
+    if (isGeneratingResponse) {
+      stop()
+    } else {
+      setData(undefined)
+      append({
+        role: 'user',
+        content: input,
+        createdAt: new Date(),
+      })
+    }
+
+    setInput('')
+  }, [input, isGeneratingResponse, stop, setData, append, setInput])
 
   return (
     <div className="flex w-full flex-col gap-4">
@@ -63,9 +105,7 @@ export default function UserControl() {
                 'bg-green-600 dark:bg-green-700': isReasoningEnabled,
               }
             )}
-            onClick={() => {
-              setIsReasoningEnabled(!isReasoningEnabled)
-            }}
+            onClick={toggleReasoning}
           >
             <LightBulbIcon className={cn('mb-[2px] size-[10px]')} />
             <p className="[text-shadow:_0_1px_0_rgb(0_0_0_/_20%)]">Think</p>
@@ -78,9 +118,7 @@ export default function UserControl() {
                 'bg-blue-600 dark:bg-blue-700': isSearchEnabled,
               }
             )}
-            onClick={() => {
-              setIsSearchEnabled(!isSearchEnabled)
-            }}
+            onClick={toggleSearch}
           >
             <GlobeAltIcon className={cn('mb-[2px] size-[10px]')} />
             <p className="[text-shadow:_0_1px_0_rgb(0_0_0_/_20%)]">Search</p>
@@ -96,14 +134,7 @@ export default function UserControl() {
             <select
               className="absolute left-0 w-full cursor-pointer p-1 opacity-0"
               value={selectedModelId}
-              onChange={(event) => {
-                if (!event.target.value.includes('deepseek-r1')) {
-                  setIsReasoningEnabled(false)
-                } else {
-                  setIsReasoningEnabled(true)
-                }
-                setSelectedModelId(event.target.value as modelID)
-              }}
+              onChange={handleModelChange}
             >
               {Object.entries(models).map(([id, name]) => (
                 <option key={id} value={id}>
@@ -122,24 +153,7 @@ export default function UserControl() {
                   isGeneratingResponse || input === '',
               }
             )}
-            onClick={() => {
-              if (input === '') {
-                return
-              }
-
-              if (isGeneratingResponse) {
-                stop()
-              } else {
-                setData(undefined)
-                append({
-                  role: 'user',
-                  content: input,
-                  createdAt: new Date(),
-                })
-              }
-
-              setInput('')
-            }}
+            onClick={handleSubmit}
           >
             {isGeneratingResponse ? <StopIcon /> : <ArrowUpIcon />}
           </button>
@@ -148,4 +162,6 @@ export default function UserControl() {
       <Footnote />
     </div>
   )
-}
+})
+
+export default UserControl

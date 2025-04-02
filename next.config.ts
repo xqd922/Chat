@@ -1,7 +1,6 @@
 import type { NextConfig } from 'next'
 
 const nextConfig: NextConfig = {
-  output: 'standalone',
   transpilePackages: ['geist'],
   eslint: {
     // Warning: This allows production builds to successfully complete even if
