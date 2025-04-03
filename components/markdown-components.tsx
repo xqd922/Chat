@@ -1,3 +1,4 @@
+import { cn } from '@/lib/utils'
 import Link from 'next/link'
 import type { Components } from 'react-markdown'
 
@@ -18,6 +19,33 @@ export const markdownComponents: Partial<Components> = {
       {children}
     </pre>
   ),
+  img: ({ src, alt, ...props }) => {
+    const isCitation = alt?.includes('citation')
+
+    if (isCitation) {
+      return (
+        <span className="inline-flex items-center align-middle">
+          <img
+            aria-label="citation"
+            className="mx-0 my-0 inline-block size-4 rounded-full border-[1px] border-neutral-200 bg-white align-middle dark:border-neutral-800 dark:bg-black"
+            src={src}
+            alt={alt}
+            {...props}
+          />
+        </span>
+      )
+    }
+
+    return (
+      <img
+        aria-label="image"
+        className="mx-auto mb-4 max-h-[500px] max-w-full rounded-lg"
+        src={src}
+        alt={alt}
+        {...props}
+      />
+    )
+  },
   ol: ({ children, ...props }) => {
     return (
       <ol className="ml-6 list-outside list-decimal" {...props}>

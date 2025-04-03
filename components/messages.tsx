@@ -127,7 +127,6 @@ type AnnotationResult = {
   icon_url: string
 }
 
-// Update the AnnotationDisplay component to handle popups
 function AnnotationDisplay({
   annotation,
   messageId,
@@ -160,7 +159,6 @@ function AnnotationDisplay({
   }
 
   useEffect(() => {
-    // Add global click event to close popup when clicking outside
     const handleClickOutside = (event: MouseEvent) => {
       if (
         popupRef.current &&
@@ -170,7 +168,6 @@ function AnnotationDisplay({
       }
     }
 
-    // Add escape key handler
     const handleEscKey = (event: KeyboardEvent) => {
       if (event.key === 'Escape') {
         setActiveCitation(null)
@@ -192,10 +189,9 @@ function AnnotationDisplay({
     e.preventDefault()
     e.stopPropagation()
 
-    // Calculate position for popup
     const rect = e.currentTarget.getBoundingClientRect()
     const x = rect.left
-    const y = rect.bottom + window.scrollY + 5 // Show popup below the citation
+    const y = rect.bottom + window.scrollY + 5
 
     setPopupPosition({ x, y })
     setActiveCitation(citationIndex)
@@ -261,7 +257,6 @@ function AnnotationDisplay({
         )}
       </AnimatePresence>
 
-      {/* Citation Popup */}
       {activeCitation !== null && (
         <div
           ref={popupRef}
@@ -275,7 +270,7 @@ function AnnotationDisplay({
               setActiveCitation(null)
             }
           }}
-          onClick={(e) => e.stopPropagation()} // Prevent clicks inside popup from closing it
+          onClick={(e) => e.stopPropagation()}
         >
           <h4 className="mb-1 font-medium">
             {annotation[activeCitation].title || `Source ${activeCitation + 1}`}
@@ -372,6 +367,26 @@ const Message = memo(
     isLastAssistantMessage,
     onRegenerate,
   }: MessageProps) => {
+    // 展平所有 annotation.results 以便根据引用索引查找
+    const allResults =
+      message.annotations?.flatMap((annotation) => {
+        const typedAnnotation = annotation as Annotation | null
+        return typedAnnotation?.results || []
+      }) || []
+
+    // 替换引用标识为 Markdown 图标链接
+    const replaceCitations = (text: string) => {
+      return text.replace(/\[(\d+)\]/g, (match, numStr) => {
+        const num = Number.parseInt(numStr, 10)
+        // 检查索引是否在有效范围内
+        if (num >= 1 && num <= allResults.length) {
+          const result = allResults[num - 1] // 索引从 0 开始，因此减 1
+          return `[ ![citation ${num}](${result.icon_url}) ](${result.url})`
+        }
+        return match // 如果索引无效，保留原始文本
+      })
+    }
+
     return (
       <div
         className={cn(
@@ -417,7 +432,7 @@ const Message = memo(
                 >
                   <TextMessagePart
                     key={`${message.id}-${partIndex}`}
-                    text={part.text}
+                    text={replaceCitations(part.text)} // 对助手消息的文本进行引用替换
                   />
                 </motion.div>
               )
@@ -428,7 +443,7 @@ const Message = memo(
                   key={`${message.id}-${partIndex}`}
                   className="flex flex-col gap-4 font-light text-sm"
                 >
-                  {part.text}
+                  {part.text} {/* 用户消息不处理引用，直接渲染 */}
                 </div>
               )
             }
@@ -475,7 +490,7 @@ const Message = memo(
     )
   },
   (prevProps, nextProps) => {
-    // Only re-render if these props have changed
+    // 仅当这些属性发生变化时重新渲染
     return (
       prevProps.message.id === nextProps.message.id &&
       prevProps.message.content === nextProps.message.content &&
@@ -513,7 +528,6 @@ export function Messages({
     }
   }
 
-  // Find last assistant message index for conditional rendering
   const lastAssistantIndex = useMemo(
     () => messages.findLastIndex((msg) => msg.role === 'assistant'),
     [messages]
@@ -534,7 +548,6 @@ export function Messages({
             message.role === 'assistant' && messageIndex === lastAssistantIndex
           }
           onRegenerate={() => {
-            // Delete messages after this index
             const newMessages = messages.slice(0, messageIndex + 1)
             setMessagesAndReload(newMessages)
           }}

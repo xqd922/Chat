@@ -33,7 +33,8 @@
         "noUselessTypeConstraint": "error"
       },
       "a11y": {
-        "useValidAnchor": "off"
+        "useValidAnchor": "off",
+        "useAltText": "off"
       },
       "correctness": {
         "noUnusedVariables": "error",
