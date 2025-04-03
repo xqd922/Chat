@@ -376,6 +376,9 @@ const Message = memo(
 
     // 替换引用标识为 Markdown 图标链接
     const replaceCitations = (text: string) => {
+      if (allResults.length === 0) {
+        return text
+      }
       return text.replace(/\[(\d+)\]/g, (match, numStr) => {
         const num = Number.parseInt(numStr, 10)
         // 检查索引是否在有效范围内
