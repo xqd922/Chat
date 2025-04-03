@@ -33,18 +33,6 @@ export const myProvider = customProvider({
       }),
       model: deepseek('deepseek-ai/DeepSeek-R1'),
     }),
-    'deepseek-r1-7B': wrapLanguageModel({
-      middleware: extractReasoningMiddleware({
-        tagName: 'think',
-      }),
-      model: deepseek('deepseek-ai/DeepSeek-R1-Distill-Qwen-7B'),
-    }),
-    'deepSeek-r1-distill-qwen-32B': wrapLanguageModel({
-      middleware: extractReasoningMiddleware({
-        tagName: 'think',
-      }),
-      model: deepseek('deepseek-ai/DeepSeek-R1-Distill-Qwen-32B'),
-    }),
     'gpt-4o': wrapLanguageModel({
       middleware: defaultSettingsMiddleware({
         settings: {
@@ -72,26 +60,17 @@ export const myProvider = customProvider({
 export type modelID = Parameters<(typeof myProvider)['languageModel']>['0']
 export const ModelList = [
   'deepseek-r1',
-  'deepseek-r1-7B',
-  'deepSeek-r1-distill-qwen-32B',
   'gpt-4o',
   'llama-3.3-70b-specdec',
   'qwen-qwq-32b',
 ] as const
 
-export const ReasoningModelList = [
-  'deepseek-r1',
-  'deepseek-r1-7B',
-  'deepSeek-r1-distill-qwen-32B',
-  'qwen-qwq-32b',
-]
+export const ReasoningModelList = ['deepseek-r1', 'qwen-qwq-32b']
 
 export const DefaultModelID = 'qwen-qwq-32b'
 
 export const models: Record<modelID, string> = {
   'deepseek-r1': 'DeepSeek-R1',
-  'deepseek-r1-7B': 'DeepSeek-R1 Distill Qwen 7B',
-  'deepSeek-r1-distill-qwen-32B': 'DeepSeek-R1 Distill Qwen 32B',
   'gpt-4o': 'GPT-4o',
   'llama-3.3-70b-specdec': 'Llama-3.3-70B SpecDec',
   'qwen-qwq-32b': 'Qwen-QWQ-32B',

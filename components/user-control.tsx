@@ -65,9 +65,9 @@ const UserControl = memo(function UserControl() {
       const newModelId = event.target.value as modelID
       setSelectedModelId(newModelId)
       if (ReasoningModelList.includes(newModelId)) {
-        setIsReasoningEnabled(false)
-      } else {
         setIsReasoningEnabled(true)
+      } else {
+        setIsReasoningEnabled(false)
       }
     },
     [setSelectedModelId, setIsReasoningEnabled]
