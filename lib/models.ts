@@ -62,7 +62,7 @@ export const myProvider = customProvider({
     'qwen-qwq-32b': wrapLanguageModel({
       middleware: extractReasoningMiddleware({
         tagName: 'think',
-        startWithReasoning: true
+        startWithReasoning: true,
       }),
       model: groq('qwen-qwq-32b'),
     }),

@@ -124,6 +124,7 @@ type AnnotationResult = {
   title: string
   url: string
   content: string
+  icon_url: string
 }
 
 // Update the AnnotationDisplay component to handle popups
@@ -201,12 +202,9 @@ function AnnotationDisplay({
   }
 
   const websiteIconList = annotation.map((item) => {
-    const url = new URL(item.url)
-    const hostname = url.hostname
-    const iconUrl = `https://favicon.im/${hostname}`
     return {
-      src: iconUrl,
-      name: hostname,
+      src: item.icon_url,
+      name: item.title,
     } as AvatarData
   })
 

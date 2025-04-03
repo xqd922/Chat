@@ -35,6 +35,13 @@ async function fetchTavilySearch(query: string) {
   }
 }
 
+function getIconUrl(urlPath: string) {
+  const url = new URL(urlPath)
+  const hostname = url.hostname
+  const iconUrl = `https://favicon.im/${hostname}`
+  return iconUrl
+}
+
 export async function POST(request: NextRequest) {
   const {
     messages,
@@ -80,6 +87,7 @@ export async function POST(request: NextRequest) {
               title: result.title,
               url: result.url,
               content: result.content,
+              icon_url: getIconUrl(result.url),
             })
           ),
         }
