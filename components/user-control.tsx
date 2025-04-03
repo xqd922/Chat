@@ -1,4 +1,10 @@
-import { DefaultModelID, ModelList, type modelID, models } from '@/lib/models'
+import {
+  DefaultModelID,
+  ModelList,
+  ReasoningModelList,
+  type modelID,
+  models,
+} from '@/lib/models'
 import { useChat } from '@ai-sdk/react'
 import { GlobeAltIcon, LightBulbIcon } from '@heroicons/react/24/solid'
 import { parseAsBoolean, parseAsStringLiteral, useQueryState } from 'nuqs'
@@ -23,7 +29,7 @@ const UserControl = memo(function UserControl() {
   )
   const [isReasoningEnabled, setIsReasoningEnabled] = useQueryState<boolean>(
     IsReasoningEnabled,
-    parseAsBoolean.withDefault(selectedModelId.includes('deepseek-r1'))
+    parseAsBoolean.withDefault(ReasoningModelList.includes(selectedModelId))
   )
   const [isSearchEnabled, setIsSearchEnabled] = useQueryState<boolean>(
     IsSearchEnabled,
@@ -58,7 +64,7 @@ const UserControl = memo(function UserControl() {
     (event: React.ChangeEvent<HTMLSelectElement>) => {
       const newModelId = event.target.value as modelID
       setSelectedModelId(newModelId)
-      if (!newModelId.includes('deepseek-r1')) {
+      if (ReasoningModelList.includes(newModelId)) {
         setIsReasoningEnabled(false)
       } else {
         setIsReasoningEnabled(true)
