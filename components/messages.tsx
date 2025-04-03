@@ -483,7 +483,8 @@ const Message = memo(
       prevProps.message.id === nextProps.message.id &&
       prevProps.message.content === nextProps.message.content &&
       prevProps.status === nextProps.status &&
-      prevProps.isLastAssistantMessage === nextProps.isLastAssistantMessage
+      prevProps.isLastAssistantMessage === nextProps.isLastAssistantMessage &&
+      prevProps.fetchStatus === nextProps.fetchStatus
     )
   }
 )
