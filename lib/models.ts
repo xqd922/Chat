@@ -79,6 +79,13 @@ export const ModelList = [
   'qwen-qwq-32b',
 ] as const
 
+export const ReasoningModelList = [
+  'deepseek-r1',
+  'deepseek-r1-7B',
+  'deepSeek-r1-distill-qwen-32B',
+  'qwen-qwq-32b',
+]
+
 export const DefaultModelID = 'qwen-qwq-32b'
 
 export const models: Record<modelID, string> = {
