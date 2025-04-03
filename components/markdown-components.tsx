@@ -1,8 +1,19 @@
 import { cn } from '@/lib/utils'
 import Link from 'next/link'
 import type { Components } from 'react-markdown'
+import { ButtonCopy } from './button-copy'
+import { CodeBlock, CodeBlockCode, CodeBlockGroup } from './code-block'
+
+function extractLanguage(className?: string): string {
+  if (!className) return 'plaintext'
+  const match = className.match(/language-(\w+)/)
+  return match ? match[1] : 'plaintext'
+}
 
 export const markdownComponents: Partial<Components> = {
+  hr: () => {
+    return <hr className=" hidden" />
+  },
   p: ({ children }) => {
     const isPreTag =
       Array.isArray(children) &&
@@ -14,11 +25,7 @@ export const markdownComponents: Partial<Components> = {
     }
     return <p className="font-light text-sm leading-6">{children}</p>
   },
-  pre: ({ children }) => (
-    <pre className="overflow-x-auto rounded-lg bg-neutral-100 p-2 text-black dark:bg-neutral-800 dark:text-white">
-      {children}
-    </pre>
-  ),
+  pre: ({ children }) => <pre className="overflow-x-auto">{children}</pre>,
   img: ({ src, alt, ...props }) => {
     const isCitation = alt?.includes('citation')
 
@@ -53,16 +60,41 @@ export const markdownComponents: Partial<Components> = {
       </ol>
     )
   },
-  code: ({ className, children }) => {
-    const match = /language-(\w+)/.exec(className || '')
-    return match ? (
-      <pre className="overflow-x-auto rounded-lg bg-neutral-100 p-2 text-black dark:bg-neutral-800 dark:text-white">
-        <code className={`language-${match[1]} text-sm`}>{children}</code>
-      </pre>
-    ) : (
-      <code className="mx-[1px] rounded-md bg-neutral-200 px-1 text-[12px] dark:bg-neutral-800">
-        {children}
-      </code>
+  code: function CodeComponent({ className, children, ...props }) {
+    const isInline =
+      !props.node?.position?.start.line ||
+      props.node?.position?.start.line === props.node?.position?.end.line
+
+    if (isInline) {
+      return (
+        <span
+          className={cn(
+            'mx-0.5 rounded-sm bg-neutral-200/80 px-1 font-mono text-[13px] dark:bg-neutral-700',
+            className
+          )}
+          {...props}
+        >
+          {children}
+        </span>
+      )
+    }
+
+    const language = extractLanguage(className)
+
+    return (
+      <CodeBlock className={className}>
+        <CodeBlockGroup className="flex h-9 items-center justify-between border-b-[1px] px-4 dark:border-neutral-800">
+          <div className="py-1 pr-2 font-medium font-serif text-xs">
+            {language}
+          </div>
+        </CodeBlockGroup>
+        <div className="sticky top-16 lg:top-0">
+          <div className="absolute right-0 bottom-0 flex h-9 items-center pr-1.5">
+            <ButtonCopy code={children as string} />
+          </div>
+        </div>
+        <CodeBlockCode code={children as string} language={language} />
+      </CodeBlock>
     )
   },
   li: ({ children, ...props }) => {
@@ -101,42 +133,42 @@ export const markdownComponents: Partial<Components> = {
   },
   h1: ({ children, ...props }) => {
     return (
-      <h1 className="mt-6 mb-2 font-semibold text-3xl" {...props}>
+      <h1 className="mt-4 mb-2 font-semibold text-3xl" {...props}>
         {children}
       </h1>
     )
   },
   h2: ({ children, ...props }) => {
     return (
-      <h2 className="mt-6 mb-2 font-semibold text-2xl" {...props}>
+      <h2 className="mt-4 mb-2 font-semibold text-2xl" {...props}>
         {children}
       </h2>
     )
   },
   h3: ({ children, ...props }) => {
     return (
-      <h3 className="mt-6 mb-2 font-semibold text-xl" {...props}>
+      <h3 className="mt-4 mb-2 font-semibold text-xl" {...props}>
         {children}
       </h3>
     )
   },
   h4: ({ children, ...props }) => {
     return (
-      <h4 className="mt-6 mb-2 font-semibold text-lg" {...props}>
+      <h4 className="mt-4 mb-2 font-semibold text-lg" {...props}>
         {children}
       </h4>
     )
   },
   h5: ({ children, ...props }) => {
     return (
-      <h5 className="mt-6 mb-2 font-semibold text-base" {...props}>
+      <h5 className="mt-4 mb-2 font-semibold text-base" {...props}>
         {children}
       </h5>
     )
   },
   h6: ({ children, ...props }) => {
     return (
-      <h6 className="mt-6 mb-2 font-semibold text-sm" {...props}>
+      <h6 className="mt-4 mb-2 font-semibold text-sm" {...props}>
         {children}
       </h6>
     )
