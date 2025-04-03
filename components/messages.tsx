@@ -8,7 +8,7 @@ import { AnimatePresence, motion } from 'framer-motion'
 import { memo, useEffect, useMemo, useRef, useState } from 'react'
 import type React from 'react'
 import Markdown from 'react-markdown'
-import ReactMarkdown, { type Components } from 'react-markdown'
+import ReactMarkdown from 'react-markdown'
 import { type AvatarData, AvatarGroup } from './avatar-group'
 import { ChevronDownIcon, ChevronUpIcon } from './icons'
 import { markdownComponents } from './markdown-components'
@@ -439,10 +439,10 @@ const Message = memo(
     // Only re-render if these props have changed
     return (
       prevProps.message.id === nextProps.message.id &&
-      prevProps.message.content === nextProps.message.content &&
+      prevProps.message.content === nextProps.message.content
       // prevProps.status === nextProps.status &&
-      prevProps.isLastAssistantMessage === nextProps.isLastAssistantMessage &&
-      prevProps.fetchStatus === nextProps.fetchStatus
+      // prevProps.isLastAssistantMessage === nextProps.isLastAssistantMessage &&
+      // prevProps.fetchStatus === nextProps.fetchStatus
     )
   }
 )
