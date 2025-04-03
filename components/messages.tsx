@@ -605,9 +605,9 @@ export function Messages({
         {/* Scroll to bottom button */}
         {showScrollButton && (
           <motion.button
-            initial={{ opacity: 0, scale: 0.8 }}
-            animate={{ opacity: 1, scale: 1 }}
-            exit={{ opacity: 0, scale: 0.8 }}
+            initial={{ opacity: 0, scale: 0.8, filter: 'blur(5px)' }}
+            animate={{ opacity: 1, scale: 1, filter: 'blur(0px)' }}
+            exit={{ opacity: 0, scale: 0.8, filter: 'blur(5px)' }}
             className="-translate-x-1/2 fixed bottom-[150px] left-1/2 z-10 flex size-6 items-center justify-center rounded-full bg-black shadow-md transition-colors hover:bg-neutral-700 dark:bg-neutral-700 dark:hover:bg-neutral-600"
             onClick={scrollToBottom}
             title="Scroll to bottom"
