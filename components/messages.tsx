@@ -8,7 +8,6 @@ import type { UIMessage } from 'ai'
 import { AnimatePresence, motion } from 'framer-motion'
 import { memo, useEffect, useMemo, useRef, useState } from 'react'
 import type React from 'react'
-import Markdown from 'react-markdown'
 import rehypeExternalLinks from 'rehype-external-links'
 import rehypeKatex from 'rehype-katex'
 import remarkGfm from 'remark-gfm'
@@ -94,12 +93,12 @@ export function ReasoningMessagePart({
           >
             {part.details.map((detail, detailIndex) =>
               detail.type === 'text' ? (
-                <Markdown
+                <MemoizedReactMarkdown
                   key={`${detailIndex}-${detail.text}`}
                   components={markdownComponents}
                 >
                   {detail.text}
-                </Markdown>
+                </MemoizedReactMarkdown>
               ) : (
                 '<redacted>'
               )
