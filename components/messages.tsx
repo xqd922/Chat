@@ -221,7 +221,7 @@ function AnnotationDisplay({
         onClick={() => setIsExpanded(!isExpanded)}
         tabIndex={0}
       >
-        {annotation.length} webpages
+        <p className={'font-semibold'}>{annotation.length}</p> Webpages
         <AvatarGroup
           avatars={websiteIconList}
           overlap={'sm'}
