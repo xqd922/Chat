@@ -409,29 +409,27 @@ const Message = memo(
             }
           })}
         </div>
-        {message.role === 'assistant' &&
-          (!isLastAssistantMessage || status !== 'streaming') && (
-            <div className="-mt-3 -ml-0.5 flex justify-start gap-2 transition-opacity">
-              <button
-                type="button"
-                onClick={() => {
-                  navigator.clipboard.writeText(message.content)
-                }}
-                title="Copy to clipboard"
-              >
-                <ClipboardIcon className="size-4 text-neutral-500 hover:text-neutral-700 dark:hover:text-neutral-300" />
-              </button>
-              <button
-                disabled={status === 'streaming'}
-                className={'disabled:cursor-not-allowed'}
-                type="button"
-                onClick={onRegenerate}
-                title="Regenerate response"
-              >
-                <ArrowPathIcon className="size-4 text-neutral-500 hover:text-neutral-700 dark:hover:text-neutral-300" />
-              </button>
-            </div>
-          )}
+        {message.role === 'assistant' && (
+          <div className="-mt-3 -ml-0.5 flex justify-start gap-2 transition-opacity">
+            <button
+              type="button"
+              onClick={() => {
+                navigator.clipboard.writeText(message.content)
+              }}
+              title="Copy to clipboard"
+            >
+              <ClipboardIcon className="size-4 text-neutral-500 hover:text-neutral-700 dark:hover:text-neutral-300" />
+            </button>
+            <button
+              className={'disabled:cursor-not-allowed'}
+              type="button"
+              onClick={onRegenerate}
+              title="Regenerate response"
+            >
+              <ArrowPathIcon className="size-4 text-neutral-500 hover:text-neutral-700 dark:hover:text-neutral-300" />
+            </button>
+          </div>
+        )}
       </div>
     )
   },
@@ -440,9 +438,6 @@ const Message = memo(
     return (
       prevProps.message.id === nextProps.message.id &&
       prevProps.message.content === nextProps.message.content
-      // prevProps.status === nextProps.status &&
-      // prevProps.isLastAssistantMessage === nextProps.isLastAssistantMessage &&
-      // prevProps.fetchStatus === nextProps.fetchStatus
     )
   }
 )
