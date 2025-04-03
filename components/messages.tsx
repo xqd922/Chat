@@ -4,6 +4,7 @@ import { MemoizedReactMarkdown } from '@/components/markdown'
 import { cn } from '@/lib/utils'
 import type { UseChatHelpers } from '@ai-sdk/react'
 import { ArrowPathIcon, ClipboardIcon } from '@heroicons/react/24/outline'
+import { ArrowDownIcon } from '@heroicons/react/24/solid'
 import type { UIMessage } from 'ai'
 import { AnimatePresence, motion } from 'framer-motion'
 import { memo, useEffect, useMemo, useRef, useState } from 'react'
@@ -513,12 +514,38 @@ export function Messages({
 }: MessagesProps) {
   const messagesRef = useRef<HTMLDivElement>(null)
   const messagesLength = useMemo(() => messages.length, [messages])
+  const [showScrollButton, setShowScrollButton] = useState(false)
 
   useEffect(() => {
     if (messagesRef.current) {
       messagesRef.current.scrollTop = messagesRef.current.scrollHeight
     }
   }, [messagesLength])
+
+  // Add scroll event handler to show/hide scroll button
+  useEffect(() => {
+    const messagesContainer = messagesRef.current
+    if (!messagesContainer) return
+
+    const handleScroll = () => {
+      const { scrollTop, scrollHeight, clientHeight } = messagesContainer
+      // Show button when scrolled up at least 200px from bottom
+      const isScrolledUp = scrollHeight - scrollTop - clientHeight > 50
+      setShowScrollButton(isScrolledUp)
+    }
+
+    messagesContainer.addEventListener('scroll', handleScroll)
+    return () => messagesContainer.removeEventListener('scroll', handleScroll)
+  }, [])
+
+  const scrollToBottom = () => {
+    if (messagesRef.current) {
+      messagesRef.current.scrollTo({
+        top: messagesRef.current.scrollHeight,
+        behavior: 'smooth',
+      })
+    }
+  }
 
   const setMessagesAndReload = (messages: Array<UIMessage>) => {
     if (setMessages) {
@@ -536,7 +563,7 @@ export function Messages({
 
   return (
     <div
-      className="scrollbar-hidden flex w-full flex-col items-center gap-4 overflow-y-scroll"
+      className="scrollbar-hidden relative flex w-full flex-col items-center gap-4 overflow-y-scroll"
       ref={messagesRef}
     >
       {messages.map((message, messageIndex) => (
@@ -574,6 +601,21 @@ export function Messages({
           className="mb-12 w-full font-light text-sm"
         />
       )}
+      <AnimatePresence initial={false}>
+        {/* Scroll to bottom button */}
+        {showScrollButton && (
+          <motion.button
+            initial={{ opacity: 0, scale: 0.8 }}
+            animate={{ opacity: 1, scale: 1 }}
+            exit={{ opacity: 0, scale: 0.8 }}
+            className="-translate-x-1/2 fixed bottom-[150px] left-1/2 z-10 flex size-6 items-center justify-center rounded-full bg-black shadow-md transition-colors hover:bg-neutral-700 dark:bg-neutral-700 dark:hover:bg-neutral-600"
+            onClick={scrollToBottom}
+            title="Scroll to bottom"
+          >
+            <ArrowDownIcon className=" size-3 text-neutral-100 dark:text-neutral-200" />
+          </motion.button>
+        )}
+      </AnimatePresence>
     </div>
   )
 }

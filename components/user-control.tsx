@@ -18,7 +18,6 @@ import {
   SelectedModelId,
 } from '@/lib/nusq'
 import { cn } from '@/lib/utils'
-import { Footnote } from './footnote'
 import { ArrowUpIcon, ChevronDownIcon, StopIcon } from './icons'
 
 const UserControl = memo(function UserControl() {
@@ -165,7 +164,6 @@ const UserControl = memo(function UserControl() {
           </button>
         </div>
       </div>
-      <Footnote />
     </div>
   )
 })
