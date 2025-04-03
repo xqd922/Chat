@@ -9,7 +9,7 @@ on:
       - "v*"
 
 env:
-  REGISTRY_IMAGE: ghcr.io/hamster1963/ai-sdk-reasoning-starter
+  REGISTRY_IMAGE: ghcr.io/hamster1963/hamster-ai-sdk
 
 jobs:
   build-and-push:
