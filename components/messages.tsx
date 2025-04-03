@@ -9,9 +9,7 @@ import { AnimatePresence, motion } from 'framer-motion'
 import { memo, useEffect, useMemo, useRef, useState } from 'react'
 import type React from 'react'
 import rehypeExternalLinks from 'rehype-external-links'
-import rehypeKatex from 'rehype-katex'
 import remarkGfm from 'remark-gfm'
-import remarkMath from 'remark-math'
 import { type AvatarData, AvatarGroup } from './avatar-group'
 import { ChevronDownIcon, ChevronUpIcon } from './icons'
 import { markdownComponents } from './markdown-components'
@@ -301,36 +299,36 @@ function AnnotationDisplay({
   )
 }
 
-const preprocessLaTeX = (content: string) => {
-  const blockProcessedContent = content.replace(
-    /\\\[([\s\S]*?)\\]/g,
-    (_, equation) => `$$${equation}$$`
-  )
-
-  return blockProcessedContent.replace(
-    /\\\(([\s\S]*?)\\\)/g,
-    (_, equation) => `$${equation}$`
-  )
-}
+// const preprocessLaTeX = (content: string) => {
+//   const blockProcessedContent = content.replace(
+//     /\\\[([\s\S]*?)\\]/g,
+//     (_, equation) => `$$${equation}$$`
+//   )
+//
+//   return blockProcessedContent.replace(
+//     /\\\(([\s\S]*?)\\\)/g,
+//     (_, equation) => `$${equation}$`
+//   )
+// }
 
 export function TextMessagePart({ text }: TextMessagePartProps) {
-  const containsLaTeX = /\\\[([\s\S]*?)\\]|\\\(([\s\S]*?)\\\)/.test(text || '')
-  const processedData = preprocessLaTeX(text || '')
+  // const containsLaTeX = /\\\[([\s\S]*?)\\]|\\\(([\s\S]*?)\\\)/.test(text || '')
+  // const processedData = preprocessLaTeX(text || '')
 
-  if (containsLaTeX) {
-    return (
-      <MemoizedReactMarkdown
-        rehypePlugins={[
-          [rehypeExternalLinks, { target: '_blank' }],
-          [rehypeKatex],
-        ]}
-        remarkPlugins={[remarkGfm, remarkMath]}
-        components={markdownComponents}
-      >
-        {processedData}
-      </MemoizedReactMarkdown>
-    )
-  }
+  // if (containsLaTeX) {
+  //   return (
+  //     <MemoizedReactMarkdown
+  //       rehypePlugins={[
+  //         [rehypeExternalLinks, { target: '_blank' }],
+  //         [rehypeKatex],
+  //       ]}
+  //       remarkPlugins={[remarkGfm, remarkMath]}
+  //       components={markdownComponents}
+  //     >
+  //       {processedData}
+  //     </MemoizedReactMarkdown>
+  //   )
+  // }
 
   return (
     <MemoizedReactMarkdown
