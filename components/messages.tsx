@@ -1,5 +1,6 @@
 'use client'
 
+import { MemoizedReactMarkdown } from '@/components/markdown'
 import { cn } from '@/lib/utils'
 import type { UseChatHelpers } from '@ai-sdk/react'
 import { ArrowPathIcon, ClipboardIcon } from '@heroicons/react/24/outline'
@@ -8,7 +9,10 @@ import { AnimatePresence, motion } from 'framer-motion'
 import { memo, useEffect, useMemo, useRef, useState } from 'react'
 import type React from 'react'
 import Markdown from 'react-markdown'
-import ReactMarkdown from 'react-markdown'
+import rehypeExternalLinks from 'rehype-external-links'
+import rehypeKatex from 'rehype-katex'
+import remarkGfm from 'remark-gfm'
+import remarkMath from 'remark-math'
 import { type AvatarData, AvatarGroup } from './avatar-group'
 import { ChevronDownIcon, ChevronUpIcon } from './icons'
 import { markdownComponents } from './markdown-components'
@@ -305,8 +309,46 @@ function AnnotationDisplay({
   )
 }
 
+const preprocessLaTeX = (content: string) => {
+  const blockProcessedContent = content.replace(
+    /\\\[([\s\S]*?)\\]/g,
+    (_, equation) => `$$${equation}$$`
+  )
+
+  return blockProcessedContent.replace(
+    /\\\(([\s\S]*?)\\\)/g,
+    (_, equation) => `$${equation}$`
+  )
+}
+
 export function TextMessagePart({ text }: TextMessagePartProps) {
-  return <ReactMarkdown components={markdownComponents}>{text}</ReactMarkdown>
+  const containsLaTeX = /\\\[([\s\S]*?)\\]|\\\(([\s\S]*?)\\\)/.test(text || '')
+  const processedData = preprocessLaTeX(text || '')
+
+  if (containsLaTeX) {
+    return (
+      <MemoizedReactMarkdown
+        rehypePlugins={[
+          [rehypeExternalLinks, { target: '_blank' }],
+          [rehypeKatex],
+        ]}
+        remarkPlugins={[remarkGfm, remarkMath]}
+        components={markdownComponents}
+      >
+        {processedData}
+      </MemoizedReactMarkdown>
+    )
+  }
+
+  return (
+    <MemoizedReactMarkdown
+      rehypePlugins={[[rehypeExternalLinks, { target: '_blank' }]]}
+      remarkPlugins={[remarkGfm]}
+      components={markdownComponents}
+    >
+      {text}
+    </MemoizedReactMarkdown>
+  )
 }
 
 interface MessagesProps {
