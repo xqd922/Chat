@@ -17,7 +17,6 @@ const MODEL_QWEN = 'qwen-qwq-32b'
 const MODEL_QUASAR = 'openrouter/quasar-alpha'
 const MODEL_DEEPSEEK_R1 = 'deepseek-r1-250120'
 const MODEL_DEEPSEEK_V3 = 'deepseek-v3-250324'
-const MODEL_GEMINI = 'gemini-2.5-pro'
 
 const copilot = createOpenAI({
   apiKey: process.env.COPILOT_API_KEY,
@@ -91,7 +90,6 @@ export const ModelList = [
   MODEL_QUASAR,
   MODEL_DEEPSEEK_R1,
   MODEL_DEEPSEEK_V3,
-  MODEL_GEMINI,
 ] as const
 
 export const ReasoningModelList = [MODEL_QWEN, MODEL_DEEPSEEK_R1] as const
