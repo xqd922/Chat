@@ -5,14 +5,9 @@ import {
   wrapLanguageModel,
 } from 'ai'
 
-import { createDeepSeek } from '@ai-sdk/deepseek'
 import { createGroq } from '@ai-sdk/groq'
 import { createOpenAI } from '@ai-sdk/openai'
-
-const deepseek = createDeepSeek({
-  apiKey: process.env.DEEPSEEK_API_KEY,
-  baseURL: process.env.DEEPSEEK_API_URL,
-})
+import { createOpenRouter } from '@openrouter/ai-sdk-provider'
 
 const copilot = createOpenAI({
   apiKey: process.env.COPILOT_API_KEY,
@@ -24,15 +19,13 @@ const groq = createGroq({
   apiKey: process.env.GROQ_API_KEY,
 })
 
+const openrouter = createOpenRouter({
+  apiKey: process.env.OPENROUTER_API_KEY,
+})
+
 // custom provider with different model settings:
 export const myProvider = customProvider({
   languageModels: {
-    'deepseek-r1': wrapLanguageModel({
-      middleware: extractReasoningMiddleware({
-        tagName: 'think',
-      }),
-      model: deepseek('deepseek-ai/DeepSeek-R1'),
-    }),
     'gpt-4o': wrapLanguageModel({
       middleware: defaultSettingsMiddleware({
         settings: {
@@ -54,24 +47,30 @@ export const myProvider = customProvider({
       }),
       model: groq('qwen-qwq-32b'),
     }),
+    'openrouter/quasar-alpha': wrapLanguageModel({
+      middleware: defaultSettingsMiddleware({
+        settings: {},
+      }),
+      model: openrouter('openrouter/quasar-alpha'),
+    }),
   },
 })
 
 export type modelID = Parameters<(typeof myProvider)['languageModel']>['0']
 export const ModelList = [
-  'deepseek-r1',
   'gpt-4o',
   'llama-3.3-70b-specdec',
   'qwen-qwq-32b',
+  'openrouter/quasar-alpha',
 ] as const
 
-export const ReasoningModelList = ['deepseek-r1', 'qwen-qwq-32b']
+export const ReasoningModelList = ['qwen-qwq-32b']
 
 export const DefaultModelID = 'qwen-qwq-32b'
 
 export const models: Record<modelID, string> = {
-  'deepseek-r1': 'DeepSeek-R1',
   'gpt-4o': 'GPT-4o',
   'llama-3.3-70b-specdec': 'Llama-3.3-70B SpecDec',
   'qwen-qwq-32b': 'Qwen-QWQ-32B',
+  'openrouter/quasar-alpha': 'Quasar Alpha',
 }
