@@ -105,7 +105,7 @@ export const ModelList = [
   MODEL_GEMINI_2,
 ] as const
 
-export const ReasoningModelList = [MODEL_QWEN, MODEL_DEEPSEEK_R1] as const
+export const ReasoningModelList = [MODEL_QWEN, MODEL_DEEPSEEK_R1]
 
 export const DefaultModelID = MODEL_QWEN
 
