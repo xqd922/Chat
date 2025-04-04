@@ -10,6 +10,15 @@ import { createGroq } from '@ai-sdk/groq'
 import { createOpenAI } from '@ai-sdk/openai'
 import { createOpenRouter } from '@openrouter/ai-sdk-provider'
 
+// Model ID constants
+const MODEL_GPT4O = 'gpt-4o'
+const MODEL_LLAMA = 'llama-3.3-70b-specdec'
+const MODEL_QWEN = 'qwen-qwq-32b'
+const MODEL_QUASAR = 'openrouter/quasar-alpha'
+const MODEL_DEEPSEEK_R1 = 'deepseek-r1-250120'
+const MODEL_DEEPSEEK_V3 = 'deepseek-v3-250324'
+const MODEL_GEMINI = 'gemini-2.5-pro'
+
 const copilot = createOpenAI({
   apiKey: process.env.COPILOT_API_KEY,
   baseURL: process.env.COPILOT_API_URL,
@@ -32,67 +41,68 @@ const openrouter = createOpenRouter({
 // custom provider with different model settings:
 export const myProvider = customProvider({
   languageModels: {
-    'gpt-4o': wrapLanguageModel({
+    [MODEL_GPT4O]: wrapLanguageModel({
       middleware: defaultSettingsMiddleware({
         settings: {
           temperature: 0.8,
         },
       }),
-      model: copilot('gpt-4o'),
+      model: copilot(MODEL_GPT4O),
     }),
-    'llama-3.3-70b-specdec': wrapLanguageModel({
+    [MODEL_LLAMA]: wrapLanguageModel({
       middleware: defaultSettingsMiddleware({
         settings: {},
       }),
-      model: groq('llama-3.3-70b-specdec'),
+      model: groq(MODEL_LLAMA),
     }),
-    'qwen-qwq-32b': wrapLanguageModel({
+    [MODEL_QWEN]: wrapLanguageModel({
       middleware: extractReasoningMiddleware({
         tagName: 'think',
         startWithReasoning: true,
       }),
-      model: groq('qwen-qwq-32b'),
+      model: groq(MODEL_QWEN),
     }),
-    'openrouter/quasar-alpha': wrapLanguageModel({
+    [MODEL_QUASAR]: wrapLanguageModel({
       middleware: defaultSettingsMiddleware({
         settings: {},
       }),
-      model: openrouter('openrouter/quasar-alpha'),
+      model: openrouter(MODEL_QUASAR),
     }),
-    'deepseek-r1': wrapLanguageModel({
+    [MODEL_DEEPSEEK_R1]: wrapLanguageModel({
       middleware: extractReasoningMiddleware({
         tagName: 'think',
       }),
-      model: ark('deepseek-r1-250120'),
+      model: ark(MODEL_DEEPSEEK_R1),
     }),
-    'deepseek-v3': wrapLanguageModel({
+    [MODEL_DEEPSEEK_V3]: wrapLanguageModel({
       middleware: defaultSettingsMiddleware({
         settings: {},
       }),
-      model: ark('deepseek-v3-250324'),
+      model: ark(MODEL_DEEPSEEK_V3),
     }),
   },
 })
 
 export type modelID = Parameters<(typeof myProvider)['languageModel']>['0']
 export const ModelList = [
-  'gpt-4o',
-  'llama-3.3-70b-specdec',
-  'qwen-qwq-32b',
-  'openrouter/quasar-alpha',
-  'deepseek-r1',
-  'deepseek-v3',
+  MODEL_GPT4O,
+  MODEL_LLAMA,
+  MODEL_QWEN,
+  MODEL_QUASAR,
+  MODEL_DEEPSEEK_R1,
+  MODEL_DEEPSEEK_V3,
+  MODEL_GEMINI,
 ] as const
 
-export const ReasoningModelList = ['qwen-qwq-32b', 'deepseek-r1'] as const
+export const ReasoningModelList = [MODEL_QWEN, MODEL_DEEPSEEK_R1] as const
 
-export const DefaultModelID = 'qwen-qwq-32b'
+export const DefaultModelID = MODEL_QWEN
 
 export const models: Record<modelID, string> = {
-  'deepseek-r1': 'DeepSeek R1',
-  'deepseek-v3': 'DeepSeek V3',
-  'gpt-4o': 'GPT-4o',
-  'llama-3.3-70b-specdec': 'Llama-3.3-70B SpecDec',
-  'qwen-qwq-32b': 'Qwen-QWQ-32B',
-  'openrouter/quasar-alpha': 'Quasar Alpha',
+  [MODEL_DEEPSEEK_R1]: 'DeepSeek R1',
+  [MODEL_DEEPSEEK_V3]: 'DeepSeek V3',
+  [MODEL_GPT4O]: 'GPT-4o',
+  [MODEL_LLAMA]: 'Llama-3.3-70B SpecDec',
+  [MODEL_QWEN]: 'Qwen-QWQ-32B',
+  [MODEL_QUASAR]: 'Quasar Alpha',
 }
