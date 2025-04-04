@@ -65,6 +65,12 @@ export const myProvider = customProvider({
       }),
       model: ark('deepseek-r1-250120'),
     }),
+    'deepseek-v3': wrapLanguageModel({
+      middleware: defaultSettingsMiddleware({
+        settings: {},
+      }),
+      model: ark('deepseek-v3-250324'),
+    }),
   },
 })
 
@@ -75,6 +81,7 @@ export const ModelList = [
   'qwen-qwq-32b',
   'openrouter/quasar-alpha',
   'deepseek-r1',
+  'deepseek-v3',
 ] as const
 
 export const ReasoningModelList = ['qwen-qwq-32b', 'deepseek-r1'] as const
@@ -83,6 +90,7 @@ export const DefaultModelID = 'qwen-qwq-32b'
 
 export const models: Record<modelID, string> = {
   'deepseek-r1': 'DeepSeek R1',
+  'deepseek-v3': 'DeepSeek V3',
   'gpt-4o': 'GPT-4o',
   'llama-3.3-70b-specdec': 'Llama-3.3-70B SpecDec',
   'qwen-qwq-32b': 'Qwen-QWQ-32B',
