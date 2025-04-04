@@ -5,6 +5,7 @@ import {
   wrapLanguageModel,
 } from 'ai'
 
+import { createDeepSeek } from '@ai-sdk/deepseek'
 import { createGroq } from '@ai-sdk/groq'
 import { createOpenAI } from '@ai-sdk/openai'
 import { createOpenRouter } from '@openrouter/ai-sdk-provider'
@@ -13,6 +14,11 @@ const copilot = createOpenAI({
   apiKey: process.env.COPILOT_API_KEY,
   baseURL: process.env.COPILOT_API_URL,
   compatibility: 'compatible',
+})
+
+const ark = createDeepSeek({
+  apiKey: process.env.ARK_API_KEY,
+  baseURL: process.env.ARK_API_URL,
 })
 
 const groq = createGroq({
@@ -53,6 +59,12 @@ export const myProvider = customProvider({
       }),
       model: openrouter('openrouter/quasar-alpha'),
     }),
+    'deepseek-r1': wrapLanguageModel({
+      middleware: extractReasoningMiddleware({
+        tagName: 'think',
+      }),
+      model: ark('deepseek-r1-250120'),
+    }),
   },
 })
 
@@ -62,13 +74,15 @@ export const ModelList = [
   'llama-3.3-70b-specdec',
   'qwen-qwq-32b',
   'openrouter/quasar-alpha',
+  'deepseek-r1',
 ] as const
 
-export const ReasoningModelList = ['qwen-qwq-32b']
+export const ReasoningModelList = ['qwen-qwq-32b', 'deepseek-r1'] as const
 
 export const DefaultModelID = 'qwen-qwq-32b'
 
 export const models: Record<modelID, string> = {
+  'deepseek-r1': 'DeepSeek R1',
   'gpt-4o': 'GPT-4o',
   'llama-3.3-70b-specdec': 'Llama-3.3-70B SpecDec',
   'qwen-qwq-32b': 'Qwen-QWQ-32B',
