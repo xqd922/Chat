@@ -6,6 +6,7 @@ import {
 } from 'ai'
 
 import { createDeepSeek } from '@ai-sdk/deepseek'
+import { createGoogleGenerativeAI } from '@ai-sdk/google'
 import { createGroq } from '@ai-sdk/groq'
 import { createOpenAI } from '@ai-sdk/openai'
 import { createOpenRouter } from '@openrouter/ai-sdk-provider'
@@ -17,6 +18,7 @@ const MODEL_QWEN = 'qwen-qwq-32b'
 const MODEL_QUASAR = 'openrouter/quasar-alpha'
 const MODEL_DEEPSEEK_R1 = 'deepseek-r1-250120'
 const MODEL_DEEPSEEK_V3 = 'deepseek-v3-250324'
+const MODEL_GEMINI_2 = 'gemini-2.0-flash'
 
 const copilot = createOpenAI({
   apiKey: process.env.COPILOT_API_KEY,
@@ -35,6 +37,10 @@ const groq = createGroq({
 
 const openrouter = createOpenRouter({
   apiKey: process.env.OPENROUTER_API_KEY,
+})
+
+const google = createGoogleGenerativeAI({
+  apiKey: process.env.GOOGLE_API_KEY,
 })
 
 // custom provider with different model settings:
@@ -79,6 +85,12 @@ export const myProvider = customProvider({
       }),
       model: ark(MODEL_DEEPSEEK_V3),
     }),
+    [MODEL_GEMINI_2]: wrapLanguageModel({
+      middleware: defaultSettingsMiddleware({
+        settings: {},
+      }),
+      model: google(MODEL_GEMINI_2),
+    }),
   },
 })
 
@@ -90,6 +102,7 @@ export const ModelList = [
   MODEL_QUASAR,
   MODEL_DEEPSEEK_R1,
   MODEL_DEEPSEEK_V3,
+  MODEL_GEMINI_2,
 ] as const
 
 export const ReasoningModelList = [MODEL_QWEN, MODEL_DEEPSEEK_R1] as const
@@ -103,4 +116,5 @@ export const models: Record<modelID, string> = {
   [MODEL_LLAMA]: 'Llama-3.3-70B SpecDec',
   [MODEL_QWEN]: 'Qwen-QWQ-32B',
   [MODEL_QUASAR]: 'Quasar Alpha',
+  [MODEL_GEMINI_2]: 'Gemini 2.0 Flash',
 }
