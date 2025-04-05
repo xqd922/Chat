@@ -1,3 +1,4 @@
+import { ClerkProvider } from '@clerk/nextjs'
 import { GeistMono } from 'geist/font/mono'
 import { GeistSans } from 'geist/font/sans'
 import type { Metadata, Viewport } from 'next'
@@ -25,14 +26,16 @@ export default function RootLayout({
   children: React.ReactNode
 }>) {
   return (
-    <html
-      lang="en"
-      className={`${GeistSans.variable} ${GeistMono.variable} bg-background`}
-    >
-      <body>
-        <Toaster position="top-center" />
-        <NuqsAdapter>{children}</NuqsAdapter>
-      </body>
-    </html>
+    <ClerkProvider>
+      <html
+        lang="en"
+        className={`${GeistSans.variable} ${GeistMono.variable} bg-background`}
+      >
+        <body>
+          <Toaster position="top-center" />
+          <NuqsAdapter>{children}</NuqsAdapter>
+        </body>
+      </html>
+    </ClerkProvider>
   )
 }

@@ -1,10 +1,6 @@
 import { type modelID, myProvider } from '@/lib/models'
-import {
-  type Message,
-  createDataStreamResponse,
-  smoothStream,
-  streamText,
-} from 'ai'
+import { auth } from '@clerk/nextjs/server'
+import { type Message, createDataStreamResponse, streamText } from 'ai'
 import type { NextRequest } from 'next/server'
 
 // New function to call Tavily API
@@ -43,6 +39,8 @@ function getIconUrl(urlPath: string) {
 }
 
 export async function POST(request: NextRequest) {
+  await auth.protect()
+
   const {
     messages,
     selectedModelId,
