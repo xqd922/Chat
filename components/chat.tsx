@@ -155,12 +155,12 @@ export function Chat() {
           {isSignedIn && (
             <button
               type="button"
-              className="rounded-md p-2 text-neutral-500 hover:bg-neutral-100 md:hidden dark:hover:bg-neutral-800"
+              className="rounded-md bg-neutral-200 p-2 text-neutral-500 backdrop-blur-sm transition-colors hover:bg-neutral-100 md:hidden dark:bg-neutral-800/80 dark:hover:bg-neutral-700"
               onClick={() => setSidebarOpen(!sidebarOpen)}
             >
               <svg
-                width="24"
-                height="24"
+                width="16"
+                height="16"
                 viewBox="0 0 24 24"
                 fill="none"
                 xmlns="http://www.w3.org/2000/svg"
@@ -190,7 +190,7 @@ export function Chat() {
 
         <div
           className={cn(
-            'flex h-full w-full max-w-3xl flex-col items-center px-4 pt-8 pb-4 md:px-0',
+            'flex h-full w-full max-w-3xl flex-col items-center px-4 pb-4 md:px-0',
             {
               'justify-between': messages.length > 0,
               'justify-center gap-4': messages.length === 0,

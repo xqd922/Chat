@@ -515,6 +515,33 @@ export function Messages({
   const messagesRef = useRef<HTMLDivElement>(null)
   const messagesLength = useMemo(() => messages.length, [messages])
   const [showScrollButton, setShowScrollButton] = useState(false)
+  const [scrollButtonPosition, setScrollButtonPosition] = useState({
+    left: 0,
+    width: 0,
+  })
+
+  // 在组件加载和窗口大小改变时计算消息容器的位置
+  useEffect(() => {
+    const updateScrollButtonPosition = () => {
+      if (messagesRef.current) {
+        const rect = messagesRef.current.getBoundingClientRect()
+        setScrollButtonPosition({
+          left: rect.left + rect.width / 2,
+          width: rect.width,
+        })
+      }
+    }
+
+    // 初始化计算位置
+    updateScrollButtonPosition()
+
+    // 添加窗口大小改变事件监听器
+    window.addEventListener('resize', updateScrollButtonPosition)
+
+    return () => {
+      window.removeEventListener('resize', updateScrollButtonPosition)
+    }
+  }, [])
 
   useEffect(() => {
     if (messagesRef.current) {
@@ -608,11 +635,15 @@ export function Messages({
             initial={{ opacity: 0, scale: 0.8, filter: 'blur(5px)' }}
             animate={{ opacity: 1, scale: 1, filter: 'blur(0px)' }}
             exit={{ opacity: 0, scale: 0.8, filter: 'blur(5px)' }}
-            className="-translate-x-1/2 fixed bottom-[150px] left-1/2 z-10 flex size-6 items-center justify-center rounded-full bg-black shadow-md transition-colors hover:bg-neutral-700 dark:bg-neutral-700 dark:hover:bg-neutral-600"
+            className="fixed bottom-[150px] z-10 flex size-6 items-center justify-center rounded-full bg-black shadow-md transition-colors hover:bg-neutral-700 dark:bg-neutral-700 dark:hover:bg-neutral-600"
+            style={{
+              left: `${scrollButtonPosition.left}px`,
+              transform: 'translateX(-50%)',
+            }}
             onClick={scrollToBottom}
             title="Scroll to bottom"
           >
-            <ArrowDownIcon className=" size-3 text-neutral-100 dark:text-neutral-200" />
+            <ArrowDownIcon className="size-3 text-neutral-100 dark:text-neutral-200" />
           </motion.button>
         )}
       </AnimatePresence>
