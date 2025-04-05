@@ -3,7 +3,7 @@
 import { Chat } from '@/components/chat'
 import { Loader } from '@/components/loader'
 import { createChatSession } from '@/lib/message-storage'
-import { useUser } from '@clerk/nextjs'
+import { ClerkLoaded, ClerkLoading, useUser } from '@clerk/nextjs'
 import { useRouter, useSearchParams } from 'next/navigation'
 import { Suspense, useEffect } from 'react'
 
@@ -25,20 +25,18 @@ function Session() {
 }
 
 export default function Home() {
-  const { isLoaded } = useUser()
-  if (!isLoaded) {
-    return (
-      <div className="flex size-full h-dvh flex-col items-center justify-center">
-        <Loader visible={true} />
-      </div>
-    )
-  }
-
   return (
     <div className="flex size-full flex-col items-center">
       <Suspense>
-        <Session />
-        <Chat />
+        <ClerkLoading>
+          <div className="flex size-full h-dvh flex-col items-center justify-center">
+            <Loader visible={true} />
+          </div>
+        </ClerkLoading>
+        <ClerkLoaded>
+          <Session />
+          <Chat />
+        </ClerkLoaded>
       </Suspense>
     </div>
   )

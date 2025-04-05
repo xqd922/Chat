@@ -128,7 +128,7 @@ export function Chat() {
     }
   }, [messages, isSignedIn, user, sessionId])
 
-  if (!restoredSessionContent) {
+  if (!restoredSessionContent && user) {
     return (
       <div className="flex h-dvh w-full flex-col items-center justify-center">
         <Loader visible={true} />
