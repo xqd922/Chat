@@ -6,8 +6,8 @@ import { useUser } from '@clerk/nextjs'
 import { useRouter, useSearchParams } from 'next/navigation'
 import { Suspense, useEffect } from 'react'
 
-function Session(){
-const { user, isSignedIn, isLoaded } = useUser()
+function Session() {
+  const { user, isSignedIn, isLoaded } = useUser()
   const searchParams = useSearchParams()
   const sessionParam = searchParams.get('session')
   const router = useRouter()
@@ -24,11 +24,10 @@ const { user, isSignedIn, isLoaded } = useUser()
 }
 
 export default function Home() {
-  
   return (
     <div className="flex size-full flex-col items-center">
       <Suspense>
-<Session/>
+        <Session />
         <Chat />
       </Suspense>
     </div>
