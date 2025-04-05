@@ -99,7 +99,7 @@ export function ChatHistory({
           </div>
         ) : (
           <ul className="space-y-1">
-            {sessions.map((session, index) => (
+            {sessions.map((session) => (
               <li
                 key={session.id}
                 className={`cursor-pointer rounded-md px-3 py-2 text-sm transition-colors ${
@@ -115,7 +115,7 @@ export function ChatHistory({
                     {session.title}
                   </span>
                   <button
-                    disabled={index === 0}
+                    disabled={sessions.length <= 1}
                     type="button"
                     className="group rounded p-1 transition-opacity hover:bg-red-100 disabled:opacity-0 dark:hover:bg-red-700"
                     onClick={(e) => handleDeleteChat(e, session.id)}

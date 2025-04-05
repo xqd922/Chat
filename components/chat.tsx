@@ -27,6 +27,7 @@ export function Chat() {
   const searchParams = useSearchParams()
   const sessionId = searchParams.get('session')
   const [sidebarOpen, setSidebarOpen] = useState(false)
+  const [initialRedirectDone, setInitialRedirectDone] = useState(false)
 
   // Add a ref to the sidebar
   const sidebarRef = useRef<HTMLDivElement>(null)
@@ -62,11 +63,53 @@ export function Chat() {
     console.log(`Active chat session: ${sessionId || 'primary'}`)
   }, [sessionId])
 
+  // Only handle session redirection once
+  useEffect(() => {
+    if (initialRedirectDone) return
+
+    const handleInitialSession = async () => {
+      // Only proceed if all conditions are met
+      if (!isLoaded || !isSignedIn || !user) return
+
+      console.log('Checking for existing sessions...')
+      const userSessions = getUserSessions(user.id)
+
+      // Only redirect if we don't have a session ID in the URL
+      if (!sessionId) {
+        if (userSessions.length > 0) {
+          // Sort sessions by createdAt in descending order (newest first)
+          const sortedSessions = [...userSessions].sort(
+            (a, b) =>
+              new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
+          )
+
+          console.log(
+            `Found ${userSessions.length} sessions. Redirecting to most recent: ${sortedSessions[0].id}`
+          )
+          setInitialRedirectDone(true)
+          router.replace(`/?session=${sortedSessions[0].id}`)
+        } else {
+          console.log('No existing sessions found, creating new session')
+          const newSession = createChatSession(user.id)
+          setInitialRedirectDone(true)
+          router.replace(`/?session=${newSession.id}`)
+        }
+      } else {
+        setInitialRedirectDone(true)
+      }
+    }
+
+    if (isLoaded) {
+      handleInitialSession()
+    }
+  }, [isLoaded, isSignedIn, user, sessionId, router, initialRedirectDone])
+
   // Load session messages when user or sessionId changes
   useEffect(() => {
     if (isSignedIn && user && sessionId) {
       const session = getChatSession(user.id, sessionId)
       if (session) {
+        console.log(`Loading messages for session ${sessionId}`)
         setMessages(session.messages)
       }
     }
@@ -75,40 +118,10 @@ export function Chat() {
   // Save messages when they change
   useEffect(() => {
     if (isSignedIn && user && sessionId && messages.length > 0) {
+      console.log(`Saving ${messages.length} messages for session ${sessionId}`)
       saveMessages(user.id, sessionId, messages)
     }
   }, [messages, isSignedIn, user, sessionId])
-
-  // Create a new session when user signs in without a session
-  useEffect(() => {
-    if (isLoaded && isSignedIn && user && !sessionId) {
-      const newSession = createChatSession(user.id)
-      router.push(`/?session=${newSession.id}`)
-    }
-  }, [isLoaded, isSignedIn, user, sessionId, router])
-
-  // Redirect to most recent session on initial load
-  useEffect(() => {
-    if (isLoaded && isSignedIn && user && !sessionId) {
-      const userSessions = getUserSessions(user.id)
-
-      // If user has existing sessions, redirect to the most recent one
-      if (userSessions.length > 0) {
-        // Sort sessions by createdAt in descending order (newest first)
-        const sortedSessions = [...userSessions].sort((a, b) => {
-          return (
-            new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
-          )
-        })
-
-        // Redirect to the most recent session
-        router.push(`/?session=${sortedSessions[0].id}`)
-      } else {
-        // If no sessions exist, create a new one in the route handler
-        router.push('/?session=new')
-      }
-    }
-  }, [isLoaded, isSignedIn, user, sessionId, router])
 
   return (
     <div className="flex h-dvh w-full">
