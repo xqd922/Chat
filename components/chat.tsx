@@ -18,6 +18,7 @@ import {
 import { useRouter, useSearchParams } from 'next/navigation'
 import { useEffect, useRef, useState } from 'react'
 import { ChatHistory } from './chat-history'
+import { Loader } from './loader'
 import UserControl from './user-control'
 import UserMessages from './user-messages'
 
@@ -28,6 +29,7 @@ export function Chat() {
   const sessionId = searchParams.get('session')
   const [sidebarOpen, setSidebarOpen] = useState(false)
   const [initialRedirectDone, setInitialRedirectDone] = useState(false)
+  const [restoredSessionContent, setRestoredSessionContent] = useState(false)
 
   // Add a ref to the sidebar
   const sidebarRef = useRef<HTMLDivElement>(null)
@@ -111,6 +113,9 @@ export function Chat() {
       if (session) {
         console.log(`Loading messages for session ${sessionId}`)
         setMessages(session.messages)
+        if (!restoredSessionContent) {
+          setRestoredSessionContent(true)
+        }
       }
     }
   }, [isSignedIn, user, sessionId, setMessages])
@@ -122,6 +127,14 @@ export function Chat() {
       saveMessages(user.id, sessionId, messages)
     }
   }, [messages, isSignedIn, user, sessionId])
+
+  if (!restoredSessionContent) {
+    return (
+      <div className="flex h-dvh w-full flex-col items-center justify-center">
+        <Loader visible={true} />
+      </div>
+    )
+  }
 
   return (
     <div className="flex h-dvh w-full">
@@ -146,6 +159,7 @@ export function Chat() {
             userId={user?.id || ''}
             currentSessionId={sessionId || ''}
             onCloseSidebar={() => setSidebarOpen(false)}
+            restoredSessionContent={restoredSessionContent}
           />
         </div>
       )}

@@ -6,21 +6,25 @@ import {
   getUserSessions,
 } from '@/lib/message-storage'
 import type { ChatSession } from '@/lib/types'
+import { useUser } from '@clerk/nextjs'
 import { ArrowLeftIcon, PlusIcon, TrashIcon } from '@heroicons/react/24/outline'
 import { AnimatePresence, motion } from 'framer-motion'
 import { useRouter } from 'next/navigation'
 import { useEffect, useState } from 'react'
+import { Loader } from './loader'
 
 interface ChatHistoryProps {
   userId: string
   currentSessionId: string
   onCloseSidebar: () => void
+  restoredSessionContent: boolean
 }
 
 export function ChatHistory({
   userId,
   currentSessionId,
   onCloseSidebar,
+  restoredSessionContent,
 }: ChatHistoryProps) {
   const [sessions, setSessions] = useState<ChatSession[]>([])
   const router = useRouter()
@@ -70,6 +74,10 @@ export function ChatHistory({
     if (sortedSessions.length > 0) {
       router.replace(`/?session=${sortedSessions[0].id}`)
     }
+  }
+
+  if (!restoredSessionContent || sessions.length === 0) {
+    return <div className="flex h-full items-center justify-center" />
   }
 
   return (
