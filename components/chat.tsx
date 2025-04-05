@@ -14,6 +14,7 @@ import {
   UserButton,
   useUser,
 } from '@clerk/nextjs'
+import { Bars3Icon } from '@heroicons/react/24/outline'
 import { useRouter, useSearchParams } from 'next/navigation'
 import { useEffect, useState } from 'react'
 import { ChatHistory } from './chat-history'
@@ -73,8 +74,8 @@ export function Chat() {
         <div
           className={cn(
             'fixed top-0 bottom-0 left-0 z-40 flex w-64 flex-col border-neutral-200 border-r bg-neutral-50 transition-transform dark:border-neutral-800 dark:bg-neutral-900',
-            sidebarOpen ? 'translate-x-0' : '-translate-x-full',
-            'md:relative md:translate-x-0'
+            sidebarOpen ? 'translate-x-0' : '-translate-x-full'
+            // 'md:relative md:translate-x-0'
           )}
         >
           <ChatHistory
@@ -90,24 +91,10 @@ export function Chat() {
           {isSignedIn && (
             <button
               type="button"
-              className="ml-2 rounded-md p-2 text-neutral-500 hover:bg-neutral-100 md:hidden dark:hover:bg-neutral-800"
+              className="rounded-md p-2 text-neutral-500 hover:bg-neutral-100 dark:hover:bg-neutral-800"
               onClick={() => setSidebarOpen(!sidebarOpen)}
             >
-              <svg
-                width="24"
-                height="24"
-                viewBox="0 0 24 24"
-                fill="none"
-                xmlns="http://www.w3.org/2000/svg"
-              >
-                <path
-                  d="M3 18H21M3 12H21M3 6H21"
-                  stroke="currentColor"
-                  strokeWidth="2"
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                />
-              </svg>
+              <Bars3Icon className="h-6 w-6" />
             </button>
           )}
           <div className="flex-1" />
