@@ -26,7 +26,8 @@ export default function RootLayout({
   children: React.ReactNode
 }>) {
   return (
-    <ClerkProvider publishableKey='pk_live_Y2xlcmsuYWkuYnV5Y29mZmVlLnRvcCQ'>
+    // <ClerkProvider publishableKey="pk_live_Y2xlcmsuYWkuYnV5Y29mZmVlLnRvcCQ">
+    <ClerkProvider>
       <html
         lang="en"
         className={`${GeistSans.variable} ${GeistMono.variable} bg-background`}

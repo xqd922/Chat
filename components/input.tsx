@@ -7,7 +7,8 @@ import {
   SelectedModelId,
 } from '@/lib/nusq'
 import { useChat } from '@ai-sdk/react'
-import { SignIn, useUser } from '@clerk/nextjs'
+import { useUser } from '@clerk/nextjs'
+import { useSearchParams } from 'next/navigation'
 import { parseAsBoolean, parseAsStringLiteral, useQueryState } from 'nuqs'
 import { memo, useCallback } from 'react'
 import { toast } from 'sonner'
@@ -36,9 +37,11 @@ export const Input = memo(function Input({
     IsSearchEnabled,
     parseAsBoolean.withDefault(false)
   )
-
+  const searchParams = useSearchParams()
+  const sessionId = searchParams.get('session')
+  const chatId = sessionId || 'primary'
   const { append, setData } = useChat({
-    id: 'primary',
+    id: chatId,
     body: {
       selectedModelId: selectedModelId,
       isReasoningEnabled: isReasoningEnabled,

@@ -5,11 +5,16 @@ import {
   SelectedModelId,
 } from '@/lib/nusq'
 import { useChat } from '@ai-sdk/react'
+import { useSearchParams } from 'next/navigation'
 import { parseAsBoolean, parseAsStringLiteral, useQueryState } from 'nuqs'
+import { useEffect } from 'react'
 import { toast } from 'sonner'
 import { Messages } from './messages'
 
 export default function UserMessages() {
+  const searchParams = useSearchParams()
+  const sessionId = searchParams.get('session')
+
   const [selectedModelId] = useQueryState<modelID>(
     SelectedModelId,
     parseAsStringLiteral(ModelList).withDefault(DefaultModelID)
@@ -23,8 +28,11 @@ export default function UserMessages() {
     parseAsBoolean.withDefault(false)
   )
 
+  // Use a consistent chat ID across components
+  const chatId = sessionId || 'primary'
+
   const { messages, status, data, reload, setMessages } = useChat({
-    id: 'primary',
+    id: chatId,
     body: {
       selectedModelId: selectedModelId,
       isReasoningEnabled: isReasoningEnabled,
@@ -35,7 +43,12 @@ export default function UserMessages() {
     },
   })
 
-  // 获取最后一个消息的状态
+  // Debug output to console to help diagnose issues
+  useEffect(() => {
+    console.log(`Chat session ${chatId} has ${messages.length} messages`)
+  }, [messages.length, chatId])
+
+  // Get the status of the last message
   const fetchStatus =
     data && data.length > 0
       ? typeof data[data.length - 1] === 'object' &&

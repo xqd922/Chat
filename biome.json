@@ -34,7 +34,8 @@
       },
       "a11y": {
         "useValidAnchor": "off",
-        "useAltText": "off"
+        "useAltText": "off",
+        "useKeyWithClickEvents": "off"
       },
       "correctness": {
         "noUnusedVariables": "error",

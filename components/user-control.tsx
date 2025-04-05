@@ -1,3 +1,5 @@
+'use client'
+
 import {
   DefaultModelID,
   ModelList,
@@ -19,11 +21,18 @@ import {
 } from '@/lib/nusq'
 import { cn } from '@/lib/utils'
 import { useUser } from '@clerk/nextjs'
+import { useSearchParams } from 'next/navigation'
 import { ArrowUpIcon, ChevronDownIcon, StopIcon } from './icons'
 
 const UserControl = memo(function UserControl() {
   const { isSignedIn } = useUser()
   const [input, setInput] = useState<string>('')
+  const searchParams = useSearchParams()
+  const sessionId = searchParams.get('session')
+
+  // Use a consistent chat ID across components
+  const chatId = sessionId || 'primary'
+
   const [selectedModelId, setSelectedModelId] = useQueryState<modelID>(
     SelectedModelId,
     parseAsStringLiteral(ModelList).withDefault(DefaultModelID)
@@ -38,7 +47,7 @@ const UserControl = memo(function UserControl() {
   )
 
   const { append, status, stop, setData } = useChat({
-    id: 'primary',
+    id: chatId,
     body: {
       selectedModelId: selectedModelId,
       isReasoningEnabled: isReasoningEnabled,
@@ -74,6 +83,7 @@ const UserControl = memo(function UserControl() {
     [setSelectedModelId, setIsReasoningEnabled]
   )
 
+  // Log when messages are sent
   const handleSubmit = useCallback(() => {
     if (input === '') {
       return
@@ -88,6 +98,7 @@ const UserControl = memo(function UserControl() {
       }
 
       setData(undefined)
+      console.log(`Sending message to chat ${chatId}: ${input}`)
       append({
         role: 'user',
         content: input,
@@ -96,7 +107,16 @@ const UserControl = memo(function UserControl() {
     }
 
     setInput('')
-  }, [input, isGeneratingResponse, stop, setData, append, setInput])
+  }, [
+    input,
+    isGeneratingResponse,
+    stop,
+    setData,
+    append,
+    setInput,
+    isSignedIn,
+    chatId,
+  ])
 
   return (
     <div className="flex w-full flex-col gap-4">
