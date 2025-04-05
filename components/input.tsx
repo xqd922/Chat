@@ -7,6 +7,7 @@ import {
   SelectedModelId,
 } from '@/lib/nusq'
 import { useChat } from '@ai-sdk/react'
+import { SignIn, useUser } from '@clerk/nextjs'
 import { parseAsBoolean, parseAsStringLiteral, useQueryState } from 'nuqs'
 import { memo, useCallback } from 'react'
 import { toast } from 'sonner'
@@ -22,6 +23,7 @@ export const Input = memo(function Input({
   setInput,
   isGeneratingResponse,
 }: InputProps) {
+  const { isSignedIn } = useUser()
   const [selectedModelId] = useQueryState<modelID>(
     SelectedModelId,
     parseAsStringLiteral(ModelList).withDefault(DefaultModelID)
@@ -55,7 +57,7 @@ export const Input = memo(function Input({
   )
 
   const handleKeyDown = useCallback(
-    (event: React.KeyboardEvent<HTMLTextAreaElement>) => {
+    async (event: React.KeyboardEvent<HTMLTextAreaElement>) => {
       if (event.key === 'Enter' && !event.shiftKey) {
         event.preventDefault()
 
@@ -65,6 +67,11 @@ export const Input = memo(function Input({
 
         if (isGeneratingResponse) {
           toast.error('Please wait for the model to finish its response!')
+          return
+        }
+
+        if (!isSignedIn) {
+          toast.error('Please sign in to use this feature!')
           return
         }
 

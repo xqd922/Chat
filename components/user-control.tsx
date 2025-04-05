@@ -18,9 +18,11 @@ import {
   SelectedModelId,
 } from '@/lib/nusq'
 import { cn } from '@/lib/utils'
+import { useUser } from '@clerk/nextjs'
 import { ArrowUpIcon, ChevronDownIcon, StopIcon } from './icons'
 
 const UserControl = memo(function UserControl() {
+  const { isSignedIn } = useUser()
   const [input, setInput] = useState<string>('')
   const [selectedModelId, setSelectedModelId] = useQueryState<modelID>(
     SelectedModelId,
@@ -80,6 +82,11 @@ const UserControl = memo(function UserControl() {
     if (isGeneratingResponse) {
       stop()
     } else {
+      if (!isSignedIn) {
+        toast.error('Please sign in to use this feature!')
+        return
+      }
+
       setData(undefined)
       append({
         role: 'user',

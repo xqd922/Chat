@@ -3,7 +3,6 @@
 import { cn } from '@/lib/utils'
 import { useChat } from '@ai-sdk/react'
 import { SignInButton, SignedIn, SignedOut, UserButton } from '@clerk/nextjs'
-import { dark } from '@clerk/themes'
 import UserControl from './user-control'
 import UserMessages from './user-messages'
 
