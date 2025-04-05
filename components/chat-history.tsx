@@ -81,7 +81,7 @@ export function ChatHistory({
           </button>
           <button
             type="button"
-            className="rounded-full p-1 hover:bg-neutral-100 dark:hover:bg-neutral-800"
+            className="rounded-full p-1 hover:bg-neutral-100 md:hidden dark:hover:bg-neutral-800"
             onClick={onCloseSidebar}
             aria-label="Close Sidebar"
           >
@@ -104,7 +104,7 @@ export function ChatHistory({
                 key={session.id}
                 className={`cursor-pointer rounded-md px-3 py-2 text-sm transition-colors ${
                   session.id === currentSessionId
-                    ? 'bg-neutral-200/50 dark:bg-neutral-700'
+                    ? 'bg-neutral-200/50 dark:bg-neutral-700/50'
                     : 'hover:bg-neutral-100 dark:hover:bg-neutral-800'
                 }
                 `}

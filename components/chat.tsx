@@ -155,7 +155,7 @@ export function Chat() {
           {isSignedIn && (
             <button
               type="button"
-              className="ml-2 rounded-md p-2 text-neutral-500 hover:bg-neutral-100 md:hidden dark:hover:bg-neutral-800"
+              className="rounded-md p-2 text-neutral-500 hover:bg-neutral-100 md:hidden dark:hover:bg-neutral-800"
               onClick={() => setSidebarOpen(!sidebarOpen)}
             >
               <svg
