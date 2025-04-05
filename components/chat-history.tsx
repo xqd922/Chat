@@ -59,11 +59,13 @@ export function ChatHistory({
     // Refresh sessions list
     setSessions(getUserSessions(userId))
 
-    // If we deleted the current session, create a new one
-    if (sessionId === currentSessionId) {
-      const newSession = createChatSession(userId)
-      router.push(`/?session=${newSession.id}`)
-    }
+    // Sort sessions by createdAt in descending order (newest first)
+    const sortedSessions = [...getUserSessions(userId)].sort(
+      (a, b) =>
+        new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
+    )
+
+    router.replace(`/?session=${sortedSessions[0].id}`)
   }
 
   return (
@@ -121,7 +123,7 @@ export function ChatHistory({
                     onClick={(e) => handleDeleteChat(e, session.id)}
                     aria-label="Delete chat"
                   >
-                    <TrashIcon className="h-4 w-4 text-neutral-500 group-hover:text-red-600" />
+                    <TrashIcon className="h-4 w-4 text-neutral-500 group-hover:text-red-600 dark:group-hover:text-red-200" />
                   </button>
                 </div>
                 <div className="text-neutral-500 text-xs">

@@ -43,11 +43,6 @@ export default function UserMessages() {
     },
   })
 
-  // Debug output to console to help diagnose issues
-  useEffect(() => {
-    console.log(`Chat session ${chatId} has ${messages.length} messages`)
-  }, [messages.length, chatId])
-
   // Get the status of the last message
   const fetchStatus =
     data && data.length > 0
