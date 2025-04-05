@@ -53,7 +53,7 @@
   "packages": {
     "@ai-sdk/deepseek": ["@ai-sdk/deepseek@0.2.6", "", { "dependencies": { "@ai-sdk/openai-compatible": "0.2.6", "@ai-sdk/provider": "1.1.0", "@ai-sdk/provider-utils": "2.2.4" }, "peerDependencies": { "zod": "^3.0.0" } }, "sha512-3ucedFAGrR6p4OxPc+hukL41+y/m+vPS9OvpvfOk5kZ4VxmpfnXY38riONSpNpK1UIJh8p5GwovVSz0Ybqhc8w=="],
 
-    "@ai-sdk/google": ["@ai-sdk/google@1.2.6", "", { "dependencies": { "@ai-sdk/provider": "1.1.0", "@ai-sdk/provider-utils": "2.2.4" }, "peerDependencies": { "zod": "^3.0.0" } }, "sha512-e6vl+hmz7xZzWmsZZkLv89TZc19Vjgqj+RgvJNg03npRiuG4f1R/He1PD/JX6f0az//Y55CcozCcaj4vnMz6gQ=="],
+    "@ai-sdk/google": ["@ai-sdk/google@1.2.7", "", { "dependencies": { "@ai-sdk/provider": "1.1.0", "@ai-sdk/provider-utils": "2.2.4" }, "peerDependencies": { "zod": "^3.0.0" } }, "sha512-swGJ4nPRB83ZQgR9W5fF7usvZmZsBN61+dm03Hz/dRVVLLLTVZq/0YtpFZ8Yj0utNs9K+NvY0456e7cN3Ff8TQ=="],
 
     "@ai-sdk/groq": ["@ai-sdk/groq@1.2.4", "", { "dependencies": { "@ai-sdk/provider": "1.1.0", "@ai-sdk/provider-utils": "2.2.4" }, "peerDependencies": { "zod": "^3.0.0" } }, "sha512-jeO/tO8lGpk7L/zpPPSeZ6tMYwcXq2LbPEgmvTDhdrSj4AwYhL9WiEmZerixsKzNuOxjAzP0QZOns1SpsGaC2A=="],
 
@@ -255,7 +255,7 @@
 
     "@ungap/structured-clone": ["@ungap/structured-clone@1.3.0", "", {}, "sha512-WmoN8qaIAo7WTYWbAZuG8PYEhn5fkz7dZrqTBZ7dtt//lL2Gwms1IcnQ5yHqjDfX8Ft5j4YzDM23f87zBfDe9g=="],
 
-    "ai": ["ai@4.3.0", "", { "dependencies": { "@ai-sdk/provider": "1.1.0", "@ai-sdk/provider-utils": "2.2.4", "@ai-sdk/react": "1.2.6", "@ai-sdk/ui-utils": "1.2.5", "@opentelemetry/api": "1.9.0", "jsondiffpatch": "0.6.0" }, "peerDependencies": { "react": "^18 || ^19 || ^19.0.0-rc", "zod": "^3.23.8" }, "optionalPeers": ["react"] }, "sha512-PxyQYKhWaU3LiZEpeKRaekVonZIbWdKAwgnqm0CSAxy1MFufmYEC5SM5Mc9uiK2DoHcbAL3d1jyaQ2fSDAJL8w=="],
+    "ai": ["ai@4.3.1", "", { "dependencies": { "@ai-sdk/provider": "1.1.0", "@ai-sdk/provider-utils": "2.2.4", "@ai-sdk/react": "1.2.6", "@ai-sdk/ui-utils": "1.2.5", "@opentelemetry/api": "1.9.0", "jsondiffpatch": "0.6.0" }, "peerDependencies": { "react": "^18 || ^19 || ^19.0.0-rc", "zod": "^3.23.8" }, "optionalPeers": ["react"] }, "sha512-6RSRE0x0FAUZxWpLOq6yrh1IFXakvvJgHs8xPHtt8VmsTqhgjP5GClguaGs+KCpVbVfdygwgji7YJjOwq80suQ=="],
 
     "ansi-regex": ["ansi-regex@6.1.0", "", {}, "sha512-7HSX4QQb4CspciLpVFwyRe79O3xsIZDDLER21kERQ71oaPodF8jL725AgJMFAYbooIqolJoRLuM81SpeUkpkvA=="],
 
