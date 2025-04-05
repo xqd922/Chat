@@ -3,6 +3,7 @@
 import {
   createChatSession,
   getChatSession,
+  getUserSessions,
   saveMessages,
 } from '@/lib/message-storage'
 import { cn } from '@/lib/utils'
@@ -14,34 +15,52 @@ import {
   UserButton,
   useUser,
 } from '@clerk/nextjs'
-import { Bars3Icon } from '@heroicons/react/24/outline'
 import { useRouter, useSearchParams } from 'next/navigation'
-import { useEffect, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { ChatHistory } from './chat-history'
 import UserControl from './user-control'
 import UserMessages from './user-messages'
 
 export function Chat() {
-  const { isSignedIn, user, isLoaded } = useUser()
+  const { user, isSignedIn, isLoaded } = useUser()
+  const router = useRouter()
   const searchParams = useSearchParams()
   const sessionId = searchParams.get('session')
+  const [sidebarOpen, setSidebarOpen] = useState(false)
 
-  // Use a consistent chat ID across components
-  const chatId = sessionId || 'primary'
+  // Add a ref to the sidebar
+  const sidebarRef = useRef<HTMLDivElement>(null)
 
-  // Initialize messages separately for the active chat
   const { messages, setMessages } = useChat({
-    id: chatId,
+    id: sessionId || 'primary',
   })
+
+  // Close sidebar when clicking outside of it
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (
+        sidebarOpen &&
+        sidebarRef.current &&
+        !sidebarRef.current.contains(event.target as Node)
+      ) {
+        setSidebarOpen(false)
+      }
+    }
+
+    // Only add the event listener if the sidebar is open
+    if (sidebarOpen) {
+      document.addEventListener('mousedown', handleClickOutside)
+    }
+
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside)
+    }
+  }, [sidebarOpen])
 
   // Log current chat session
   useEffect(() => {
-    console.log(`Active chat session: ${chatId}`)
-  }, [chatId])
-
-  const router = useRouter()
-
-  const [sidebarOpen, setSidebarOpen] = useState(false)
+    console.log(`Active chat session: ${sessionId || 'primary'}`)
+  }, [sessionId])
 
   // Load session messages when user or sessionId changes
   useEffect(() => {
@@ -68,14 +87,46 @@ export function Chat() {
     }
   }, [isLoaded, isSignedIn, user, sessionId, router])
 
+  // Redirect to most recent session on initial load
+  useEffect(() => {
+    if (isLoaded && isSignedIn && user && !sessionId) {
+      const userSessions = getUserSessions(user.id)
+
+      // If user has existing sessions, redirect to the most recent one
+      if (userSessions.length > 0) {
+        // Sort sessions by createdAt in descending order (newest first)
+        const sortedSessions = [...userSessions].sort((a, b) => {
+          return (
+            new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
+          )
+        })
+
+        // Redirect to the most recent session
+        router.push(`/?session=${sortedSessions[0].id}`)
+      } else {
+        // If no sessions exist, create a new one in the route handler
+        router.push('/?session=new')
+      }
+    }
+  }, [isLoaded, isSignedIn, user, sessionId, router])
+
   return (
     <div className="flex h-dvh w-full">
+      {/* Overlay for mobile when sidebar is open */}
+      {isSignedIn && sidebarOpen && (
+        <div
+          className="fixed inset-0 z-30 bg-black/20 backdrop-blur-sm md:hidden"
+          aria-hidden="true"
+        />
+      )}
+
       {isSignedIn && (
         <div
+          ref={sidebarRef}
           className={cn(
             'fixed top-0 bottom-0 left-0 z-40 flex w-64 flex-col border-neutral-200 border-r bg-neutral-50 transition-transform dark:border-neutral-800 dark:bg-neutral-900',
-            sidebarOpen ? 'translate-x-0' : '-translate-x-full'
-            // 'md:relative md:translate-x-0'
+            sidebarOpen ? 'translate-x-0' : '-translate-x-full',
+            'md:relative md:translate-x-0'
           )}
         >
           <ChatHistory
@@ -91,10 +142,24 @@ export function Chat() {
           {isSignedIn && (
             <button
               type="button"
-              className="rounded-md p-2 text-neutral-500 hover:bg-neutral-100 dark:hover:bg-neutral-800"
+              className="ml-2 rounded-md p-2 text-neutral-500 hover:bg-neutral-100 md:hidden dark:hover:bg-neutral-800"
               onClick={() => setSidebarOpen(!sidebarOpen)}
             >
-              <Bars3Icon className="h-6 w-6" />
+              <svg
+                width="24"
+                height="24"
+                viewBox="0 0 24 24"
+                fill="none"
+                xmlns="http://www.w3.org/2000/svg"
+              >
+                <path
+                  d="M3 18H21M3 12H21M3 6H21"
+                  stroke="currentColor"
+                  strokeWidth="2"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                />
+              </svg>
             </button>
           )}
           <div className="flex-1" />

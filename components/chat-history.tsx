@@ -24,10 +24,16 @@ export function ChatHistory({
   const [sessions, setSessions] = useState<ChatSession[]>([])
   const router = useRouter()
 
+  // Update to refresh sessions whenever userId or currentSessionId changes
   useEffect(() => {
     if (userId) {
       const userSessions = getUserSessions(userId)
-      setSessions(userSessions)
+      // Sort sessions by createdAt in descending order (newest first)
+      const sortedSessions = [...userSessions].sort(
+        (a, b) =>
+          new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
+      )
+      setSessions(sortedSessions)
     }
   }, [userId, currentSessionId])
 
@@ -41,7 +47,7 @@ export function ChatHistory({
 
   const handleSelectChat = (sessionId: string) => {
     router.push(`/?session=${sessionId}`)
-    // onCloseSidebar()
+    onCloseSidebar()
   }
 
   const handleDeleteChat = (e: React.MouseEvent, sessionId: string) => {
@@ -105,7 +111,9 @@ export function ChatHistory({
                 onClick={() => handleSelectChat(session.id)}
               >
                 <div className="flex items-center justify-between">
-                  <span className="line-clamp-1 font-serif">{session.title}</span>
+                  <span className="line-clamp-1 font-serif">
+                    {session.title}
+                  </span>
                   <button
                     disabled={index === 0}
                     type="button"
@@ -117,7 +125,7 @@ export function ChatHistory({
                   </button>
                 </div>
                 <div className="text-neutral-500 text-xs">
-                  {new Date(session.updatedAt).toLocaleString()}
+                  {new Date(session.createdAt).toLocaleString()}
                 </div>
               </li>
             ))}
