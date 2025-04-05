@@ -190,7 +190,7 @@ export function Chat() {
 
         <div
           className={cn(
-            'flex h-full w-full max-w-3xl flex-col items-center px-4 pb-4 md:px-0',
+            'flex h-full w-full max-w-3xl flex-col items-center px-4 pb-4',
             {
               'justify-between': messages.length > 0,
               'justify-center gap-4': messages.length === 0,
