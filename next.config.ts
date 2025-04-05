@@ -13,7 +13,7 @@ const nextConfig: NextConfig = {
     webpackBuildWorker: true,
     parallelServerBuildTraces: true,
     parallelServerCompiles: true,
-    inlineCss: true,
+    // inlineCss: true,
     reactCompiler: true,
   },
   logging: {
