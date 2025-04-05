@@ -41,7 +41,7 @@ export function ChatHistory({
 
   const handleSelectChat = (sessionId: string) => {
     router.push(`/?session=${sessionId}`)
-    onCloseSidebar()
+    // onCloseSidebar()
   }
 
   const handleDeleteChat = (e: React.MouseEvent, sessionId: string) => {
@@ -63,7 +63,7 @@ export function ChatHistory({
   return (
     <div className="flex h-full flex-col overflow-hidden">
       <div className="flex items-center justify-between border-neutral-200 border-b px-4 py-2 dark:border-neutral-800">
-        <h2 className="font-semibold">Chat History</h2>
+        <h2 className="font-semibold font-serif">Chat History</h2>
         <div className="flex gap-2">
           <button
             type="button"
@@ -71,7 +71,7 @@ export function ChatHistory({
             onClick={handleNewChat}
             aria-label="New Chat"
           >
-            <PlusIcon className="h-5 w-5" />
+            <PlusIcon className="size-4" />
           </button>
           <button
             type="button"
@@ -79,7 +79,7 @@ export function ChatHistory({
             onClick={onCloseSidebar}
             aria-label="Close Sidebar"
           >
-            <ArrowLeftIcon className="h-5 w-5" />
+            <ArrowLeftIcon className="size-4" />
           </button>
         </div>
       </div>
@@ -98,14 +98,14 @@ export function ChatHistory({
                 key={session.id}
                 className={`cursor-pointer rounded-md px-3 py-2 text-sm transition-colors ${
                   session.id === currentSessionId
-                    ? 'bg-neutral-200 dark:bg-neutral-700'
+                    ? 'bg-neutral-200/50 dark:bg-neutral-700'
                     : 'hover:bg-neutral-100 dark:hover:bg-neutral-800'
                 }
                 `}
                 onClick={() => handleSelectChat(session.id)}
               >
                 <div className="flex items-center justify-between">
-                  <span className="line-clamp-1">{session.title}</span>
+                  <span className="line-clamp-1 font-serif">{session.title}</span>
                   <button
                     disabled={index === 0}
                     type="button"
