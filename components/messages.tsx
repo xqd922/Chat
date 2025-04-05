@@ -520,6 +520,33 @@ export function Messages({
     width: 0,
   })
 
+  // Use a ref to track the current message ID to detect session changes
+  const previousMessagesRef = useRef<string>('')
+
+  // Reset scroll button state when switching between sessions
+  useEffect(() => {
+    // Create a message ID signature to identify the session
+    const currentMessagesSignature = messages.map((m) => m.id).join('-')
+
+    // Check if the messages have changed significantly (session switch)
+    if (
+      previousMessagesRef.current &&
+      previousMessagesRef.current !== currentMessagesSignature &&
+      messages.length > 0
+    ) {
+      // Reset scroll button state
+      setShowScrollButton(false)
+
+      // Scroll to bottom of new session
+      if (messagesRef.current) {
+        messagesRef.current.scrollTop = messagesRef.current.scrollHeight
+      }
+    }
+
+    // Update the ref with current messages signature
+    previousMessagesRef.current = currentMessagesSignature
+  }, [messages])
+
   // 在组件加载和窗口大小改变时计算消息容器的位置
   useEffect(() => {
     const updateScrollButtonPosition = () => {
@@ -556,14 +583,32 @@ export function Messages({
 
     const handleScroll = () => {
       const { scrollTop, scrollHeight, clientHeight } = messagesContainer
-      // Show button when scrolled up at least 200px from bottom
+      // Show button when scrolled up at least 50px from bottom
       const isScrolledUp = scrollHeight - scrollTop - clientHeight > 50
       setShowScrollButton(isScrolledUp)
     }
 
     messagesContainer.addEventListener('scroll', handleScroll)
+
+    // Run the scroll handler immediately to set correct initial state
+    handleScroll()
+
     return () => messagesContainer.removeEventListener('scroll', handleScroll)
-  }, [])
+  }, []) // Remove messages from the dependencies array
+
+  // Use a separate effect to run the scroll check when messages change
+  useEffect(() => {
+    // This will only run the check without re-adding the event listener
+    if (messagesRef.current) {
+      const { scrollTop, scrollHeight, clientHeight } = messagesRef.current
+      const isScrolledUp = scrollHeight - scrollTop - clientHeight > 50
+      if (!showScrollButton && isScrolledUp) {
+        setShowScrollButton(isScrolledUp)
+      } else if (showScrollButton && !isScrolledUp) {
+        setShowScrollButton(false)
+      }
+    }
+  }, [messages])
 
   const scrollToBottom = () => {
     if (messagesRef.current) {
