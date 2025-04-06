@@ -86,7 +86,7 @@ export function ChatHistory({
         <h2 className="font-medium font-serif text-lg text-neutral-800 dark:text-neutral-200">
           Chat History
         </h2>
-        <div className="flex gap-3">
+        <div className="flex gap-0.5">
           <button
             type="button"
             className="rounded-full p-1.5 text-neutral-600 transition-colors hover:bg-neutral-200 hover:text-neutral-900 dark:text-neutral-400 dark:hover:bg-neutral-700 dark:hover:text-neutral-100"
