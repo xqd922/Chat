@@ -5,8 +5,7 @@ permissions:
   
 on:
   push:
-    tags:
-      - "v*"
+    branches: ["main"]
 
 env:
   REGISTRY_IMAGE: ghcr.io/hamster1963/hamster-ai-sdk
