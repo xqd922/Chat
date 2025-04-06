@@ -680,7 +680,7 @@ export function Messages({
             initial={{ opacity: 0, scale: 0.8, filter: 'blur(5px)' }}
             animate={{ opacity: 1, scale: 1, filter: 'blur(0px)' }}
             exit={{ opacity: 0, scale: 0.8, filter: 'blur(5px)' }}
-            className="fixed bottom-[150px] z-10 flex size-6 items-center justify-center rounded-full bg-black shadow-md transition-colors hover:bg-neutral-700 dark:bg-neutral-700 dark:hover:bg-neutral-600"
+            className="-ml-[12px] fixed bottom-[150px] z-10 flex size-6 items-center justify-center rounded-full bg-black shadow-md transition-colors hover:bg-neutral-700 dark:bg-neutral-700 dark:hover:bg-neutral-600"
             style={{
               left: `${scrollButtonPosition.left}px`,
               transform: 'translateX(-50%)',
