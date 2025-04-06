@@ -138,10 +138,10 @@ export function Chat() {
 
   return (
     <div className="flex h-dvh w-full">
-      {/* Overlay for mobile when sidebar is open */}
+      {/* Overlay for both mobile and desktop when sidebar is open */}
       {isSignedIn && sidebarOpen && (
         <div
-          className="fixed inset-0 z-30 bg-black/20 backdrop-blur-sm md:hidden"
+          className="fixed inset-0 z-30 bg-black/20 backdrop-blur-sm"
           aria-hidden="true"
         />
       )}
@@ -150,9 +150,8 @@ export function Chat() {
         <div
           ref={sidebarRef}
           className={cn(
-            'fixed top-0 bottom-0 left-0 z-40 flex w-64 flex-col border-neutral-200 border-r bg-neutral-50 transition-transform dark:border-neutral-800 dark:bg-neutral-900',
-            sidebarOpen ? 'translate-x-0' : '-translate-x-full',
-            'md:relative md:translate-x-0'
+            'fixed top-0 bottom-0 left-0 z-40 flex w-64 flex-col bg-transparent p-2 transition-transform',
+            sidebarOpen ? 'translate-x-0' : '-translate-x-full'
           )}
         >
           <ChatHistory
@@ -169,7 +168,7 @@ export function Chat() {
           {isSignedIn && (
             <button
               type="button"
-              className="rounded-md bg-neutral-200 p-2 text-neutral-500 backdrop-blur-sm transition-colors hover:bg-neutral-100 md:hidden dark:bg-neutral-800/80 dark:hover:bg-neutral-700"
+              className="rounded-md bg-neutral-50 p-2 text-neutral-500 backdrop-blur-sm transition-colors hover:bg-neutral-100 dark:bg-neutral-800/80 dark:hover:bg-neutral-700"
               onClick={() => setSidebarOpen(!sidebarOpen)}
             >
               <svg

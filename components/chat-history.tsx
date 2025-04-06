@@ -81,7 +81,7 @@ export function ChatHistory({
   }
 
   return (
-    <div className="flex h-full flex-col overflow-hidden bg-gradient-to-b from-neutral-50 to-neutral-100 dark:from-neutral-900 dark:to-neutral-950">
+    <div className="flex h-full flex-col overflow-hidden rounded-lg border-[1px] border-transparent bg-gradient-to-b from-neutral-50 to-neutral-100 dark:border-neutral-800 dark:from-neutral-900 dark:to-neutral-950">
       <div className="flex items-center justify-between border-neutral-200 border-b bg-white/80 px-4 py-3 backdrop-blur-sm dark:border-neutral-800 dark:bg-neutral-900/80">
         <h2 className="font-medium font-serif text-lg text-neutral-800 dark:text-neutral-200">
           Chat History
@@ -89,7 +89,7 @@ export function ChatHistory({
         <div className="flex gap-3">
           <button
             type="button"
-            className="rounded-full p-1.5 text-neutral-600 hover:bg-neutral-200 hover:text-neutral-900 dark:text-neutral-400 dark:hover:bg-neutral-700 dark:hover:text-neutral-100"
+            className="rounded-full p-1.5 text-neutral-600 transition-colors hover:bg-neutral-200 hover:text-neutral-900 dark:text-neutral-400 dark:hover:bg-neutral-700 dark:hover:text-neutral-100"
             onClick={handleNewChat}
             aria-label="New Chat"
           >
@@ -97,7 +97,7 @@ export function ChatHistory({
           </button>
           <button
             type="button"
-            className="rounded-full p-1.5 text-neutral-600 hover:bg-neutral-200 hover:text-neutral-900 md:hidden dark:text-neutral-400 dark:hover:bg-neutral-700 dark:hover:text-neutral-100"
+            className="rounded-full p-1.5 text-neutral-600 transition-colors hover:bg-neutral-200 hover:text-neutral-900 dark:text-neutral-400 dark:hover:bg-neutral-700 dark:hover:text-neutral-100"
             onClick={onCloseSidebar}
             aria-label="Close Sidebar"
           >
