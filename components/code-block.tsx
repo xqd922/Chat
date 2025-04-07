@@ -1,7 +1,7 @@
 'use client'
 
 import { cn } from '@/lib/utils'
-import { memo, useEffect, useState } from 'react'
+import { memo, useEffect, useRef, useState } from 'react'
 import { codeToHtml } from 'shiki'
 
 export const CodeBlock = ({
@@ -48,23 +48,83 @@ interface CodeBlockCodeProps {
 // Non-memoized version that will be wrapped
 const CodeBlockCodeBase = ({ code, language }: CodeBlockCodeProps) => {
   const [highlightedHtml, setHighlightedHtml] = useState<string | null>(null)
+  const [isProcessing, setIsProcessing] = useState(false)
+  const abortControllerRef = useRef<AbortController | null>(null)
+  const debounceTimerRef = useRef<NodeJS.Timeout | null>(null)
 
   const classNames = cn(
     'w-full overflow-x-auto text-[13px] [&>pre]:px-4 [&>pre]:py-4'
   )
 
   useEffect(() => {
-    async function highlight() {
-      const html = await codeToHtml(code, {
-        lang: language,
-        themes: {
-          light: 'github-light',
-          dark: 'github-dark',
-        },
-      })
-      setHighlightedHtml(html)
+    // Cancel any ongoing highlight operation
+    if (abortControllerRef.current) {
+      abortControllerRef.current.abort()
     }
-    highlight()
+
+    // Clear any pending debounce timer
+    if (debounceTimerRef.current) {
+      clearTimeout(debounceTimerRef.current)
+    }
+
+    // 不要在每次渲染时都设置 isProcessing
+    // 只在实际需要处理时设置
+    const isLargeCode = code.length > 5000
+    const debounceTime = isLargeCode ? 300 : 100
+
+    // 只在实际开始处理时设置状态
+    const processId = setTimeout(() => {
+      if (!isProcessing) {
+        setIsProcessing(true)
+      }
+
+      const executeHighlight = async () => {
+        try {
+          abortControllerRef.current = new AbortController()
+          const signal = abortControllerRef.current.signal
+
+          // Simple wrapper to make the shiki call abortable
+          const abortableHighlight = async () => {
+            if (signal.aborted) return null
+
+            return await codeToHtml(code, {
+              lang: language || 'plaintext', // 确保始终有语言值
+              themes: {
+                light: 'github-light',
+                dark: 'github-dark',
+              },
+            })
+          }
+
+          const html = await abortableHighlight()
+
+          if (!signal.aborted && html) {
+            setHighlightedHtml(html)
+          }
+        } catch (error) {
+          // 检查错误对象是否有 name 属性
+          const errorName = error?.name ? error.name : ''
+          if (errorName !== 'AbortError') {
+            console.error('Error highlighting code:', error)
+          }
+        } finally {
+          setIsProcessing(false)
+        }
+      }
+
+      executeHighlight()
+    }, debounceTime)
+
+    debounceTimerRef.current = processId
+
+    return () => {
+      if (debounceTimerRef.current) {
+        clearTimeout(debounceTimerRef.current)
+      }
+      if (abortControllerRef.current) {
+        abortControllerRef.current.abort()
+      }
+    }
   }, [code, language])
 
   return highlightedHtml ? (
@@ -79,25 +139,6 @@ const CodeBlockCodeBase = ({ code, language }: CodeBlockCodeProps) => {
       </pre>
     </div>
   )
-
-  // return (
-  // <Highlight theme={themes.github} code={code} language={language as any}>
-  //   {({ className, style, tokens, getLineProps, getTokenProps }) => (
-  //     <pre
-  //       className={cn('overflow-auto p-4 pb-4 text-sm', className)}
-  //       style={style}
-  //     >
-  //       {tokens.map((line, i) => (
-  //         <div key={i} {...getLineProps({ line })}>
-  //           {line.map((token, key) => (
-  //             <span key={key} {...getTokenProps({ token })} />
-  //           ))}
-  //         </div>
-  //       ))}
-  //     </pre>
-  //   )}
-  // </Highlight>
-  // )
 }
 
 // Memoized version to prevent re-renders
