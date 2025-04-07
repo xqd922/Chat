@@ -6,6 +6,7 @@ import {
   getUserSessions,
   saveMessages,
 } from '@/lib/message-storage'
+import { supabase } from '@/lib/supabase-client'
 import { cn } from '@/lib/utils'
 import { useChat } from '@ai-sdk/react'
 import {
@@ -34,7 +35,7 @@ export function Chat() {
   // Add a ref to the sidebar
   const sidebarRef = useRef<HTMLDivElement>(null)
 
-  const { messages, setMessages } = useChat({
+  const { messages, setMessages, status } = useChat({
     id: sessionId || 'primary',
   })
 
@@ -64,6 +65,45 @@ export function Chat() {
   useEffect(() => {
     console.log(`Active chat session: ${sessionId || 'primary'}`)
   }, [sessionId])
+
+  // Set up real-time subscription to Supabase changes
+  useEffect(() => {
+    if (!isSignedIn || !user || !sessionId) return
+
+    // Create subscription for the current session
+    const supaSubscription = supabase
+      .channel(`session-${sessionId}`)
+      .on(
+        'postgres_changes',
+        {
+          event: 'UPDATE',
+          schema: 'public',
+          table: 'chat_sessions',
+          filter: `id=eq.${sessionId}`,
+        },
+        async (payload) => {
+          console.log('Received real-time update for session:', sessionId)
+
+          // Only update if we're not the source of this change
+          // This prevents update loops when our own component saves changes
+          if (payload.new && payload.new.updatedat !== payload.old.updatedat) {
+            // Fetch the latest session data
+            const session = await getChatSession(user.id, sessionId)
+            if (session && status === 'ready') {
+              console.log('Updating messages from real-time change')
+              setMessages(session.messages)
+            }
+          }
+        }
+      )
+      .subscribe()
+
+    // Clean up subscription when component unmounts or session changes
+    return () => {
+      console.log('Cleaning up Supabase subscription')
+      supaSubscription.unsubscribe()
+    }
+  }, [isSignedIn, user, sessionId, setMessages])
 
   // Only handle session redirection once
   useEffect(() => {
