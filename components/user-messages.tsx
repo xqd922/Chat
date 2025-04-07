@@ -68,9 +68,8 @@ export default function UserMessages() {
         }
       }
     }
-
     saveUserMessages()
-  }, [messages, isSignedIn, user, sessionId, status])
+  }, [status])
 
   return (
     <>
