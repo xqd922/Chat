@@ -325,7 +325,7 @@ export function Chat() {
           )}
         >
           {isSwitchingSession ? (
-            <div className="z-50 flex h-dvh items-center justify-center">
+            <div className="fixed inset-0 z-50 flex items-center justify-center bg-transparent">
               <Loader visible={true} />
             </div>
           ) : (
