@@ -25,14 +25,8 @@ export default function RootLayout({
 }: Readonly<{
   children: React.ReactNode
 }>) {
-  let publishableKey = 'pk_live_Y2xlcmsuYWkuYnV5Y29mZmVlLnRvcCQ'
-
-  if (process.env.NODE_ENV === 'development') {
-    publishableKey = 'pk_test_Z29sZGVuLWJpc29uLTE4LmNsZXJrLmFjY291bnRzLmRldiQ'
-  }
-
   return (
-    <ClerkProvider publishableKey={publishableKey}>
+    <ClerkProvider>
       <html
         lang="en"
         className={`${GeistSans.variable} ${GeistMono.variable} bg-background`}
