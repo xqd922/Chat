@@ -21,18 +21,13 @@ import {
 } from '@/lib/nusq'
 import { cn } from '@/lib/utils'
 import { useUser } from '@clerk/nextjs'
-import { useSearchParams } from 'next/navigation'
 import { ArrowUpIcon, ChevronDownIcon, StopIcon } from './icons'
-import type { Message, UIMessage } from 'ai'
 
 interface UserControlProps {
-  messages: UIMessage[]
-  setMessages: (messages: Message[] | ((messages: Message[]) => Message[])) => void
   sessionId: string
-  userId: string
 }
 
-const UserControl = memo(function UserControl({ messages, setMessages, sessionId, userId }: UserControlProps) {
+const UserControl = memo(function UserControl({ sessionId }: UserControlProps) {
   const { isSignedIn } = useUser()
   const [input, setInput] = useState<string>('')
 

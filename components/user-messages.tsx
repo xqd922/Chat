@@ -7,12 +7,12 @@ import {
 } from '@/lib/nusq'
 import { useChat } from '@ai-sdk/react'
 import { useUser } from '@clerk/nextjs'
+import type { UIMessage } from 'ai'
 import { useSearchParams } from 'next/navigation'
 import { parseAsBoolean, parseAsStringLiteral, useQueryState } from 'nuqs'
 import { useEffect } from 'react'
 import { toast } from 'sonner'
 import { Messages } from './messages'
-import type { UIMessage } from 'ai'
 
 interface UserMessagesProps {
   messages: UIMessage[]

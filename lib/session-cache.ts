@@ -33,15 +33,18 @@ class SessionCacheManager {
   set(sessionId: string, data: ChatSession) {
     // 如果缓存已满，删除最旧的缓存
     if (Object.keys(this.cache).length >= this.maxSize) {
-      const oldestKey = Object.entries(this.cache).reduce((oldest, [key, value]) => {
-        return value.timestamp < this.cache[oldest].timestamp ? key : oldest
-      }, Object.keys(this.cache)[0])
+      const oldestKey = Object.entries(this.cache).reduce(
+        (oldest, [key, value]) => {
+          return value.timestamp < this.cache[oldest].timestamp ? key : oldest
+        },
+        Object.keys(this.cache)[0]
+      )
       delete this.cache[oldestKey]
     }
 
     this.cache[sessionId] = {
       data,
-      timestamp: Date.now()
+      timestamp: Date.now(),
     }
   }
 
@@ -56,4 +59,4 @@ class SessionCacheManager {
   }
 }
 
-export const sessionCache = new SessionCacheManager() 
+export const sessionCache = new SessionCacheManager()

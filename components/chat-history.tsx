@@ -32,7 +32,7 @@ export function ChatHistory({
   onSessionHover,
 }: ChatHistoryProps) {
   const [sessions, setSessions] = useState<ChatSession[]>([])
-  const router = useRouter()
+  const _router = useRouter()
 
   const fetchSessions = async () => {
     if (userId) {

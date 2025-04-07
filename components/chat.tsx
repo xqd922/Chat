@@ -33,7 +33,7 @@ export function Chat() {
   const [initialRedirectDone, setInitialRedirectDone] = useState(false)
   const [restoredSessionContent, setRestoredSessionContent] = useState(false)
   const [isSwitchingSession, setIsSwitchingSession] = useState(false)
-  const [nextSessionId, setNextSessionId] = useState<string | null>(null)
+  const [_nextSessionId, setNextSessionId] = useState<string | null>(null)
 
   // Add a ref to the sidebar
   const sidebarRef = useRef<HTMLDivElement>(null)
@@ -156,8 +156,11 @@ export function Chat() {
     } catch (error) {
       console.error('Failed to switch session:', error)
     } finally {
-      setIsSwitchingSession(false)
-      setNextSessionId(null)
+      // 添加短暂延迟以确保过渡动画完成
+      setTimeout(() => {
+        setIsSwitchingSession(false)
+        setNextSessionId(null)
+      }, 300)
     }
   }
 
@@ -321,20 +324,15 @@ export function Chat() {
             }
           )}
         >
-          {isSwitchingSession && (
-            <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/20 backdrop-blur-sm">
+          {isSwitchingSession ? (
+            <div className="z-50 flex h-dvh items-center justify-center">
               <Loader visible={true} />
             </div>
+          ) : (
+            <UserMessages messages={messages} />
           )}
 
-          <UserMessages messages={messages} />
-
-          <UserControl
-            messages={messages}
-            setMessages={setMessages}
-            sessionId={sessionId || ''}
-            userId={user?.id || ''}
-          />
+          <UserControl sessionId={sessionId || ''} />
         </div>
       </div>
     </div>
