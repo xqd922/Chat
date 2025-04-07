@@ -140,11 +140,16 @@ export function ChatHistory({
           <ul className="flex flex-col gap-1">
             <AnimatePresence initial={false}>
               {sessions.map((session) => (
-                <li
+                <div
                   key={session.id}
                   onMouseEnter={() => onSessionHover(session.id)}
                 >
-                  <div
+                  <motion.li
+                    initial={{ opacity: 0, height: 0, filter: 'blur(4px)' }}
+                    animate={{ opacity: 1, height: 'auto', filter: 'blur(0)' }}
+                    exit={{ opacity: 0, height: 'auto', filter: 'blur(4px)' }}
+                    transition={{ duration: 0.3 }}
+                    layout
                     onClick={(e) => handleSessionClick(e, session.id)}
                     className={`cursor-pointer rounded-lg ${
                       session.id === currentSessionId
@@ -169,8 +174,8 @@ export function ChatHistory({
                     <div className="px-4 pb-3 text-neutral-500 text-xs dark:text-neutral-400">
                       {new Date(session.createdat).toLocaleString()}
                     </div>
-                  </div>
-                </li>
+                  </motion.li>
+                </div>
               ))}
             </AnimatePresence>
           </ul>
