@@ -135,18 +135,21 @@ export function Chat() {
   return (
     <div className="flex h-dvh w-full">
       {/* Overlay for both mobile and desktop when sidebar is open */}
-      {isSignedIn && sidebarOpen && (
-        <div
-          className="fixed inset-0 z-30 bg-black/20 backdrop-blur-sm"
-          aria-hidden="true"
-        />
-      )}
+      <div
+        className={cn(
+          'fixed inset-0 z-30 bg-black/20 backdrop-blur-sm transition-opacity duration-300 ease-in-out',
+          isSignedIn && sidebarOpen
+            ? 'opacity-100'
+            : 'pointer-events-none opacity-0'
+        )}
+        aria-hidden={!sidebarOpen}
+      />
 
       {isSignedIn && (
         <div
           ref={sidebarRef}
           className={cn(
-            'fixed top-0 bottom-0 left-0 z-40 flex w-64 flex-col bg-transparent p-2 transition-transform',
+            'fixed top-0 bottom-0 left-0 z-40 flex w-64 flex-col bg-transparent p-2 transition-transform delay-100 duration-300 ease-in-out',
             sidebarOpen ? 'translate-x-0' : '-translate-x-full'
           )}
         >
