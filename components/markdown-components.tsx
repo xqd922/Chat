@@ -45,12 +45,12 @@ const CodeComponent = memo(
 
     return (
       <CodeBlock
-        className={className}
+        className={`${className} p-[2px] dark:bg-neutral-700/30`}
         style={{ maxWidth: '100%', overflowX: 'auto' }}
       >
-        <CodeBlockGroup className="flex h-9 items-center justify-between border-b-[1px] px-4 dark:border-neutral-800">
-          <div className="py-1 pr-2 font-medium font-serif text-xs">
-            {language}
+        <CodeBlockGroup className="flex h-9 items-center justify-between px-4">
+          <div className="py-1 pr-2 font-semibold text-xs">
+            {language.toLocaleUpperCase()}
           </div>
         </CodeBlockGroup>
         <div className="sticky top-0">

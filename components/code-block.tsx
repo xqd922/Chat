@@ -51,7 +51,7 @@ const CodeBlockCodeBase = ({ code, language }: CodeBlockCodeProps) => {
   const debounceTimerRef = useRef<NodeJS.Timeout | null>(null)
 
   const classNames = cn(
-    'w-full overflow-x-auto text-[13px]',
+    'w-full overflow-x-auto text-[13px] rounded-[8px] shadow-sm border-[1px] dark:bg-black border-neutral-200/50 dark:border-neutral-700/30',
     '[&>pre]:px-4 [&>pre]:py-4 [&>pre]:overflow-x-auto',
     '[&>pre]:w-full [&>pre]:whitespace-pre',
     '[&_code]:block [&_code]:overflow-x-auto [&_code]:break-all [&_code]:whitespace-pre-wrap'
