@@ -103,10 +103,7 @@ const CodeBlockCodeBase = ({ code, language }: CodeBlockCodeProps) => {
           }
         } catch (error) {
           // 检查错误对象是否有 name 属性
-          const errorName = error?.name ? error.name : ''
-          if (errorName !== 'AbortError') {
-            console.error('Error highlighting code:', error)
-          }
+          console.error('Error highlighting code:', error)
         } finally {
           setIsProcessing(false)
         }
