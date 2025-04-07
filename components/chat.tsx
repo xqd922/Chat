@@ -326,7 +326,12 @@ export function Chat() {
         >
           {isSwitchingSession ? (
             <div className="fixed inset-0 z-50 flex items-center justify-center bg-transparent">
-              <Loader visible={true} />
+              <div className="flex flex-col items-center gap-2">
+                <Loader visible={true} />
+                <p className="text-neutral-400/80 text-sm">
+                  Loading session...
+                </p>
+              </div>
             </div>
           ) : (
             <UserMessages messages={messages} />
