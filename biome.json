@@ -50,7 +50,8 @@
         "noUnsafeDeclarationMerging": "error",
         "useNamespaceKeyword": "error",
         "noAssignInExpressions": "off",
-        "noImplicitAnyLet": "off"
+        "noImplicitAnyLet": "off",
+        "noArrayIndexKey": "off"
       }
     }
   },

@@ -1,21 +1,36 @@
 'use client'
 
 import { cn } from '@/lib/utils'
-import type React from 'react'
-import { useEffect, useState } from 'react'
-import { codeToHtml } from 'shiki'
+import { Highlight, themes } from 'prism-react-renderer'
+import { memo } from 'react'
 
-export type CodeBlockProps = {
-  children?: React.ReactNode
-  className?: string
-} & React.HTMLProps<HTMLDivElement>
+export const CodeBlock = ({
+  children,
+  className,
+  ...props
+}: React.HTMLProps<HTMLPreElement>) => {
+  return (
+    <pre
+      className={cn(
+        'group relative mt-2 mb-3 overflow-hidden rounded-lg border border-neutral-200 bg-white dark:border-neutral-800 dark:bg-neutral-900',
+        className
+      )}
+      {...props}
+    >
+      {children}
+    </pre>
+  )
+}
 
-function CodeBlock({ children, className, ...props }: CodeBlockProps) {
+export const CodeBlockGroup = ({
+  children,
+  className,
+  ...props
+}: React.HTMLProps<HTMLDivElement>) => {
   return (
     <div
       className={cn(
-        'not-prose my-2 flex w-full flex-col overflow-clip border border-neutral-200 bg-neutral-100 dark:border-neutral-800 dark:bg-black',
-        'rounded-xl',
+        'flex h-9 items-center justify-between bg-neutral-100 dark:bg-neutral-800/50',
         className
       )}
       {...props}
@@ -25,72 +40,37 @@ function CodeBlock({ children, className, ...props }: CodeBlockProps) {
   )
 }
 
-export type CodeBlockCodeProps = {
+interface CodeBlockCodeProps {
   code: string
-  language?: string
-  theme?: string
-  className?: string
-} & React.HTMLProps<HTMLDivElement>
-
-function CodeBlockCode({
-  code,
-  language = 'tsx',
-  theme = 'github-light',
-  className,
-  ...props
-}: CodeBlockCodeProps) {
-  const [highlightedHtml, setHighlightedHtml] = useState<string | null>(null)
-
-  useEffect(() => {
-    async function highlight() {
-      const html = await codeToHtml(code, {
-        lang: language,
-        themes: {
-          light: 'github-light',
-          dark: 'github-dark',
-        },
-      })
-      setHighlightedHtml(html)
-    }
-    highlight()
-  }, [code, language, theme])
-
-  const classNames = cn(
-    'w-full overflow-x-auto text-[13px] [&>pre]:px-4 [&>pre]:py-4',
-    className
-  )
-
-  // SSR fallback: render plain code if not hydrated yet
-  return highlightedHtml ? (
-    <div
-      className={classNames}
-      dangerouslySetInnerHTML={{ __html: highlightedHtml }}
-      {...props}
-    />
-  ) : (
-    <div className={classNames} {...props}>
-      <pre>
-        <code>{code}</code>
-      </pre>
-    </div>
-  )
+  language: string
 }
 
-export type CodeBlockGroupProps = React.HTMLAttributes<HTMLDivElement>
-
-function CodeBlockGroup({
-  children,
-  className,
-  ...props
-}: CodeBlockGroupProps) {
+// Non-memoized version that will be wrapped
+const CodeBlockCodeBase = ({ code, language }: CodeBlockCodeProps) => {
   return (
-    <div
-      className={cn('flex items-center justify-between', className)}
-      {...props}
-    >
-      {children}
-    </div>
+    <Highlight theme={themes.github} code={code} language={language as any}>
+      {({ className, style, tokens, getLineProps, getTokenProps }) => (
+        <pre
+          className={cn('overflow-auto p-4 pb-4 text-sm', className)}
+          style={style}
+        >
+          {tokens.map((line, i) => (
+            <div key={i} {...getLineProps({ line })}>
+              {line.map((token, key) => (
+                <span key={key} {...getTokenProps({ token })} />
+              ))}
+            </div>
+          ))}
+        </pre>
+      )}
+    </Highlight>
   )
 }
 
-export { CodeBlockGroup, CodeBlockCode, CodeBlock }
+// Memoized version to prevent re-renders
+export const CodeBlockCode = memo(
+  CodeBlockCodeBase,
+  (prevProps, nextProps) =>
+    prevProps.code === nextProps.code &&
+    prevProps.language === nextProps.language
+)

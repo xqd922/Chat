@@ -312,6 +312,21 @@ function AnnotationDisplay({
 //   )
 // }
 
+// Memoize TextMessagePart to prevent unnecessary re-renders
+const MemoizedTextMessagePart = memo(
+  ({ text }: TextMessagePartProps) => (
+    <MemoizedReactMarkdown
+      rehypePlugins={[[rehypeExternalLinks, { target: '_blank' }]]}
+      remarkPlugins={[remarkGfm]}
+      components={markdownComponents}
+    >
+      {text}
+    </MemoizedReactMarkdown>
+  ),
+  (prevProps, nextProps) => prevProps.text === nextProps.text
+)
+MemoizedTextMessagePart.displayName = 'MemoizedTextMessagePart'
+
 export function TextMessagePart({ text }: TextMessagePartProps) {
   // const containsLaTeX = /\\\[([\s\S]*?)\\]|\\\(([\s\S]*?)\\\)/.test(text || '')
   // const processedData = preprocessLaTeX(text || '')
@@ -331,15 +346,7 @@ export function TextMessagePart({ text }: TextMessagePartProps) {
   //   )
   // }
 
-  return (
-    <MemoizedReactMarkdown
-      rehypePlugins={[[rehypeExternalLinks, { target: '_blank' }]]}
-      remarkPlugins={[remarkGfm]}
-      components={markdownComponents}
-    >
-      {text}
-    </MemoizedReactMarkdown>
-  )
+  return <MemoizedTextMessagePart text={text} />
 }
 
 interface MessagesProps {
@@ -389,6 +396,7 @@ const Message = memo(
       })
     }
 
+    // Add a message ID-based key for message parts to improve rendering
     return (
       <div
         className={cn(
@@ -424,35 +432,35 @@ const Message = memo(
               />
             )}
           {message.parts.map((part, partIndex) => {
+            // Generate a stable key based on content hash or other unique identifiers
+            const partKey = `${message.id}-${partIndex}-${part.type}`
+
             if (part.type === 'text' && message.role !== 'user') {
               return (
                 <motion.div
-                  key={`${message.id}-${partIndex}`}
+                  key={partKey}
                   initial={{ opacity: 0 }}
                   animate={{ opacity: 1 }}
                   transition={{ duration: 0.2 }}
                 >
-                  <TextMessagePart
-                    key={`${message.id}-${partIndex}`}
-                    text={replaceCitations(part.text)} // 对助手消息的文本进行引用替换
-                  />
+                  <TextMessagePart text={replaceCitations(part.text)} />
                 </motion.div>
               )
             }
             if (part.type === 'text' && message.role === 'user') {
               return (
                 <div
-                  key={`${message.id}-${partIndex}`}
+                  key={partKey}
                   className="flex flex-col gap-4 font-light text-sm"
                 >
-                  {part.text} {/* 用户消息不处理引用，直接渲染 */}
+                  {part.text}
                 </div>
               )
             }
             if (part.type === 'reasoning') {
               return (
                 <ReasoningMessagePart
-                  key={`${message.id}-${partIndex}`}
+                  key={partKey}
                   // @ts-expect-error export ReasoningUIPart
                   part={part}
                   isReasoning={
@@ -492,14 +500,28 @@ const Message = memo(
     )
   },
   (prevProps, nextProps) => {
-    // 仅当这些属性发生变化时重新渲染
-    return (
-      prevProps.message.id === nextProps.message.id &&
-      prevProps.message.content === nextProps.message.content &&
-      prevProps.status === nextProps.status &&
-      prevProps.isLastAssistantMessage === nextProps.isLastAssistantMessage &&
-      prevProps.fetchStatus === nextProps.fetchStatus
-    )
+    // Enhanced memoization logic that includes content changes in individual parts
+    if (
+      prevProps.message.id !== nextProps.message.id ||
+      prevProps.status !== nextProps.status ||
+      prevProps.isLastAssistantMessage !== nextProps.isLastAssistantMessage ||
+      prevProps.fetchStatus !== nextProps.fetchStatus
+    ) {
+      return false
+    }
+
+    // Check if content has changed
+    if (prevProps.message.content !== nextProps.message.content) {
+      return false
+    }
+
+    // Deep check of parts array if needed
+    if (prevProps.message.parts.length !== nextProps.message.parts.length) {
+      return false
+    }
+
+    // We've checked all critical props and found them equal, so don't re-render
+    return true
   }
 )
 

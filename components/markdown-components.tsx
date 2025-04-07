@@ -1,5 +1,6 @@
 import { cn } from '@/lib/utils'
 import Link from 'next/link'
+import { memo } from 'react'
 import type { Components } from 'react-markdown'
 import { ButtonCopy } from './button-copy'
 import { CodeBlock, CodeBlockCode, CodeBlockGroup } from './code-block'
@@ -9,6 +10,63 @@ function extractLanguage(className?: string): string {
   const match = className.match(/language-(\w+)/)
   return match ? match[1] : 'plaintext'
 }
+
+// Memoized inline code component
+const InlineCode = memo(
+  ({
+    className,
+    children,
+  }: { className?: string; children: React.ReactNode }) => (
+    <span
+      className={cn(
+        'mx-0.5 rounded-sm bg-neutral-200/80 px-1 font-mono text-[13px] dark:bg-neutral-700',
+        className
+      )}
+    >
+      {children}
+    </span>
+  )
+)
+InlineCode.displayName = 'InlineCode'
+
+// Memoized block code component
+const CodeComponent = memo(
+  function CodeComponent({ className, children, node }: any) {
+    const isInline =
+      !node?.position?.start.line ||
+      node?.position?.start.line === node?.position?.end.line
+
+    if (isInline) {
+      return <InlineCode className={className}>{children}</InlineCode>
+    }
+
+    const language = extractLanguage(className)
+    const codeString = children as string
+
+    return (
+      <CodeBlock className={className}>
+        <CodeBlockGroup className="flex h-9 items-center justify-between border-b-[1px] px-4 dark:border-neutral-800">
+          <div className="py-1 pr-2 font-medium font-serif text-xs">
+            {language}
+          </div>
+        </CodeBlockGroup>
+        <div className="sticky top-16 lg:top-0">
+          <div className="absolute right-0 bottom-0 flex h-9 items-center pr-1.5">
+            <ButtonCopy code={codeString} />
+          </div>
+        </div>
+        <CodeBlockCode code={codeString} language={language} />
+      </CodeBlock>
+    )
+  },
+  (prevProps, nextProps) => {
+    return (
+      prevProps.children === nextProps.children &&
+      prevProps.className === nextProps.className
+    )
+  }
+)
+CodeComponent.displayName = 'CodeComponent'
 
 export const markdownComponents: Partial<Components> = {
   hr: () => {
@@ -60,43 +118,7 @@ export const markdownComponents: Partial<Components> = {
       </ol>
     )
   },
-  code: function CodeComponent({ className, children, ...props }) {
-    const isInline =
-      !props.node?.position?.start.line ||
-      props.node?.position?.start.line === props.node?.position?.end.line
-
-    if (isInline) {
-      return (
-        <span
-          className={cn(
-            'mx-0.5 rounded-sm bg-neutral-200/80 px-1 font-mono text-[13px] dark:bg-neutral-700',
-            className
-          )}
-          {...props}
-        >
-          {children}
-        </span>
-      )
-    }
-
-    const language = extractLanguage(className)
-
-    return (
-      <CodeBlock className={className}>
-        <CodeBlockGroup className="flex h-9 items-center justify-between border-b-[1px] px-4 dark:border-neutral-800">
-          <div className="py-1 pr-2 font-medium font-serif text-xs">
-            {language}
-          </div>
-        </CodeBlockGroup>
-        <div className="sticky top-16 lg:top-0">
-          <div className="absolute right-0 bottom-0 flex h-9 items-center pr-1.5">
-            <ButtonCopy code={children as string} />
-          </div>
-        </div>
-        <CodeBlockCode code={children as string} language={language} />
-      </CodeBlock>
-    )
-  },
+  code: CodeComponent,
   li: ({ children, ...props }) => {
     return (
       <li className="py-1 font-light text-sm" {...props}>
