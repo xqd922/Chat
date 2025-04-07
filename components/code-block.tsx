@@ -67,10 +67,7 @@ const CodeBlockCodeBase = ({ code, language }: CodeBlockCodeProps) => {
       clearTimeout(debounceTimerRef.current)
     }
 
-    // 不要在每次渲染时都设置 isProcessing
-    // 只在实际需要处理时设置
-    const isLargeCode = code.length > 5000
-    const debounceTime = isLargeCode ? 300 : 100
+    const debounceTime = 1000
 
     // 只在实际开始处理时设置状态
     const processId = setTimeout(() => {

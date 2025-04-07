@@ -1,10 +1,6 @@
 import { type modelID, myProvider } from '@/lib/models'
 import { auth } from '@clerk/nextjs/server'
-import {
-  type Message,
-  createDataStreamResponse,
-  streamText,
-} from 'ai'
+import { type Message, createDataStreamResponse, streamText } from 'ai'
 import type { NextRequest } from 'next/server'
 
 // New function to call Tavily API
