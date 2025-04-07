@@ -7,7 +7,14 @@ import { ArrowPathIcon, ClipboardIcon } from '@heroicons/react/24/outline'
 import { ArrowDownIcon } from '@heroicons/react/24/solid'
 import type { UIMessage } from 'ai'
 import { AnimatePresence, motion } from 'framer-motion'
-import { memo, useEffect, useMemo, useRef, useState } from 'react'
+import {
+  memo,
+  useEffect,
+  useLayoutEffect,
+  useMemo,
+  useRef,
+  useState,
+} from 'react'
 import type React from 'react'
 import rehypeExternalLinks from 'rehype-external-links'
 import remarkGfm from 'remark-gfm'
@@ -531,18 +538,42 @@ export function Messages({
   setMessages,
 }: MessagesProps) {
   const messagesRef = useRef<HTMLDivElement>(null)
-  const messagesLength = useMemo(() => messages.length, [messages])
   const [showScrollButton, setShowScrollButton] = useState(false)
   const [scrollButtonPosition, setScrollButtonPosition] = useState({
     left: 0,
     width: 0,
   })
+  const [initialRenderComplete, setInitialRenderComplete] = useState(false)
+  const bottomAnchorRef = useRef<HTMLDivElement>(null)
 
   // Use a ref to track the current message ID to detect session changes
   const previousMessagesRef = useRef<string>('')
+  const prevMessagesLengthRef = useRef<number>(0)
 
-  // Reset scroll button state when switching between sessions
+  // Use layout effect to scroll before browser paint
+  const scrollToBottomImmediately = () => {
+    if (bottomAnchorRef.current) {
+      bottomAnchorRef.current.scrollIntoView({ behavior: 'auto' })
+    } else {
+      window.scrollTo({
+        top: document.body.scrollHeight,
+        behavior: 'auto',
+      })
+    }
+  }
+
+  // Initial render handling
   useEffect(() => {
+    setInitialRenderComplete(true)
+    scrollToBottomImmediately()
+    // Only run once on mount
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [])
+
+  // Reset scroll button state and scroll to bottom when switching between sessions
+  useLayoutEffect(() => {
+    if (!initialRenderComplete) return
+
     // Create a message ID signature to identify the session
     const currentMessagesSignature = messages.map((m) => m.id).join('-')
 
@@ -555,16 +586,18 @@ export function Messages({
       // Reset scroll button state
       setShowScrollButton(false)
 
-      // Scroll to bottom of page
-      window.scrollTo({
-        top: document.body.scrollHeight,
-        behavior: 'auto',
-      })
+      // Immediately scroll to bottom without animation
+      scrollToBottomImmediately()
+    }
+    // Also scroll to bottom when first message appears in a new conversation
+    else if (prevMessagesLengthRef.current === 0 && messages.length > 0) {
+      scrollToBottomImmediately()
     }
 
-    // Update the ref with current messages signature
+    // Update the refs with current messages signature and length
     previousMessagesRef.current = currentMessagesSignature
-  }, [messages])
+    prevMessagesLengthRef.current = messages.length
+  }, [messages, initialRenderComplete])
 
   // Calculate position for the scroll button based on window size
   useEffect(() => {
@@ -588,14 +621,6 @@ export function Messages({
       window.removeEventListener('resize', updateScrollButtonPosition)
     }
   }, [])
-
-  // Scroll to bottom when messages length changes
-  useEffect(() => {
-    window.scrollTo({
-      top: document.body.scrollHeight,
-      behavior: 'auto',
-    })
-  }, [messagesLength])
 
   // Add window scroll event handler to show/hide scroll button
   useEffect(() => {
@@ -632,10 +657,16 @@ export function Messages({
   }, [messages, showScrollButton])
 
   const scrollToBottom = () => {
-    window.scrollTo({
-      top: document.body.scrollHeight,
-      behavior: 'smooth',
-    })
+    if (bottomAnchorRef.current) {
+      bottomAnchorRef.current.scrollIntoView({
+        behavior: 'smooth' as ScrollBehavior,
+      })
+    } else {
+      window.scrollTo({
+        top: document.body.scrollHeight,
+        behavior: 'smooth' as ScrollBehavior,
+      })
+    }
   }
 
   const setMessagesAndReload = (messages: Array<UIMessage>) => {
@@ -652,9 +683,14 @@ export function Messages({
     [messages]
   )
 
+  // If it's the initial render, we can optionally show a minimal placeholder or loading state
+  if (!initialRenderComplete) {
+    return <div className="w-full" ref={messagesRef} />
+  }
+
   return (
     <div
-      className="scrollbar-hidden relative w-full flex-col items-center gap-4 pb-32"
+      className="scrollbar-hidden relative w-full flex-col items-center gap-4 pb-36"
       ref={messagesRef}
     >
       {messages.map((message, messageIndex) => (
@@ -692,6 +728,10 @@ export function Messages({
           className="mb-12 w-full font-light text-sm"
         />
       )}
+
+      {/* Invisible element at bottom to serve as a scroll anchor */}
+      <div ref={bottomAnchorRef} style={{ height: '1px', width: '100%' }} />
+
       <AnimatePresence initial={false}>
         {/* Scroll to bottom button */}
         {showScrollButton && (
