@@ -124,20 +124,6 @@ export function Chat() {
     loadSession()
   }, [isSignedIn, user, sessionId, setMessages, restoredSessionContent])
 
-  // Save messages when they change
-  useEffect(() => {
-    const saveUserMessages = async () => {
-      if (isSignedIn && user && sessionId && messages.length > 0) {
-        console.log(
-          `Saving ${messages.length} messages for session ${sessionId}`
-        )
-        await saveMessages(user.id, sessionId, messages)
-      }
-    }
-
-    saveUserMessages()
-  }, [messages, isSignedIn, user, sessionId])
-
   if (!restoredSessionContent && user) {
     return (
       <div className="flex h-dvh w-full flex-col items-center justify-center">
@@ -169,6 +155,7 @@ export function Chat() {
             currentSessionId={sessionId || ''}
             onCloseSidebar={() => setSidebarOpen(false)}
             restoredSessionContent={restoredSessionContent}
+            openState={sidebarOpen}
           />
         </div>
       )}

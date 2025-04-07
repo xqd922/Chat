@@ -1,3 +1,4 @@
+import { saveMessages } from '@/lib/message-storage'
 import { DefaultModelID, ModelList, type modelID } from '@/lib/models'
 import {
   IsReasoningEnabled,
@@ -5,6 +6,7 @@ import {
   SelectedModelId,
 } from '@/lib/nusq'
 import { useChat } from '@ai-sdk/react'
+import { useUser } from '@clerk/nextjs'
 import { useSearchParams } from 'next/navigation'
 import { parseAsBoolean, parseAsStringLiteral, useQueryState } from 'nuqs'
 import { useEffect } from 'react'
@@ -14,6 +16,7 @@ import { Messages } from './messages'
 export default function UserMessages() {
   const searchParams = useSearchParams()
   const sessionId = searchParams.get('session')
+  const { user, isSignedIn } = useUser()
 
   const [selectedModelId] = useQueryState<modelID>(
     SelectedModelId,
@@ -51,6 +54,23 @@ export default function UserMessages() {
         ? (data[data.length - 1] as { status?: string })?.status || undefined
         : undefined
       : undefined
+
+  // Save messages when they change and AI response is complete
+  useEffect(() => {
+    const saveUserMessages = async () => {
+      if (isSignedIn && user && sessionId && messages.length > 0) {
+        // Only save when not actively generating a response
+        if (status === 'ready') {
+          console.log(
+            `Saving ${messages.length} messages for session ${sessionId}`
+          )
+          await saveMessages(user.id, sessionId, messages)
+        }
+      }
+    }
+
+    saveUserMessages()
+  }, [messages, isSignedIn, user, sessionId, status])
 
   return (
     <>

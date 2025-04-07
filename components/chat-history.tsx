@@ -16,6 +16,7 @@ interface ChatHistoryProps {
   currentSessionId: string
   onCloseSidebar: () => void
   restoredSessionContent: boolean
+  openState: boolean
 }
 
 export function ChatHistory({
@@ -23,6 +24,7 @@ export function ChatHistory({
   currentSessionId,
   onCloseSidebar,
   restoredSessionContent,
+  openState,
 }: ChatHistoryProps) {
   const [sessions, setSessions] = useState<ChatSession[]>([])
   const router = useRouter()
@@ -41,8 +43,10 @@ export function ChatHistory({
 
   // Update to refresh sessions whenever userId or currentSessionId changes
   useEffect(() => {
-    fetchSessions()
-  }, [userId, currentSessionId])
+    if (openState) {
+      fetchSessions()
+    }
+  }, [userId, currentSessionId, openState])
 
   const handleNewChat = async () => {
     if (!userId) return
