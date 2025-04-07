@@ -12,8 +12,13 @@ import { parseAsBoolean, parseAsStringLiteral, useQueryState } from 'nuqs'
 import { useEffect } from 'react'
 import { toast } from 'sonner'
 import { Messages } from './messages'
+import type { UIMessage } from 'ai'
 
-export default function UserMessages() {
+interface UserMessagesProps {
+  messages: UIMessage[]
+}
+
+export default function UserMessages({ messages }: UserMessagesProps) {
   const searchParams = useSearchParams()
   const sessionId = searchParams.get('session')
   const { user, isSignedIn } = useUser()
@@ -34,7 +39,7 @@ export default function UserMessages() {
   // Use a consistent chat ID across components
   const chatId = sessionId || 'primary'
 
-  const { messages, status, data, reload, setMessages } = useChat({
+  const { status, data, reload, setMessages } = useChat({
     id: chatId,
     body: {
       selectedModelId: selectedModelId,

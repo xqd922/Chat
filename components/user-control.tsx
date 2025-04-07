@@ -23,12 +23,18 @@ import { cn } from '@/lib/utils'
 import { useUser } from '@clerk/nextjs'
 import { useSearchParams } from 'next/navigation'
 import { ArrowUpIcon, ChevronDownIcon, StopIcon } from './icons'
+import type { Message, UIMessage } from 'ai'
 
-const UserControl = memo(function UserControl() {
+interface UserControlProps {
+  messages: UIMessage[]
+  setMessages: (messages: Message[] | ((messages: Message[]) => Message[])) => void
+  sessionId: string
+  userId: string
+}
+
+const UserControl = memo(function UserControl({ messages, setMessages, sessionId, userId }: UserControlProps) {
   const { isSignedIn } = useUser()
   const [input, setInput] = useState<string>('')
-  const searchParams = useSearchParams()
-  const sessionId = searchParams.get('session')
 
   // Use a consistent chat ID across components
   const chatId = sessionId || 'primary'

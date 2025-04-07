@@ -6,6 +6,7 @@ import {
   getUserSessions,
   saveMessages,
 } from '@/lib/message-storage'
+import { sessionCache } from '@/lib/session-cache'
 import { supabase } from '@/lib/supabase-client'
 import { cn } from '@/lib/utils'
 import { useChat } from '@ai-sdk/react'
@@ -31,6 +32,8 @@ export function Chat() {
   const [sidebarOpen, setSidebarOpen] = useState(false)
   const [initialRedirectDone, setInitialRedirectDone] = useState(false)
   const [restoredSessionContent, setRestoredSessionContent] = useState(false)
+  const [isSwitchingSession, setIsSwitchingSession] = useState(false)
+  const [nextSessionId, setNextSessionId] = useState<string | null>(null)
 
   // Add a ref to the sidebar
   const sidebarRef = useRef<HTMLDivElement>(null)
@@ -92,6 +95,8 @@ export function Chat() {
             if (session && status === 'ready') {
               console.log('Updating messages from real-time change')
               setMessages(session.messages)
+              // 更新缓存
+              sessionCache.set(sessionId, session)
             }
           }
         }
@@ -104,6 +109,57 @@ export function Chat() {
       supaSubscription.unsubscribe()
     }
   }, [isSignedIn, user, sessionId, setMessages])
+
+  // 预加载下一个会话
+  const preloadNextSession = async (nextId: string) => {
+    if (!user || !nextId) return
+
+    // 检查缓存
+    const cachedSession = sessionCache.get(nextId)
+    if (cachedSession) {
+      console.log('Using cached session data for:', nextId)
+      return
+    }
+
+    // 预加载会话数据
+    console.log('Preloading session data for:', nextId)
+    const session = await getChatSession(user.id, nextId)
+    if (session) {
+      sessionCache.set(nextId, session)
+    }
+  }
+
+  // 处理会话切换
+  const handleSessionSwitch = async (newSessionId: string) => {
+    if (!user || newSessionId === sessionId) return
+
+    setIsSwitchingSession(true)
+    setNextSessionId(newSessionId)
+
+    try {
+      // 检查缓存
+      const cachedSession = sessionCache.get(newSessionId)
+      if (cachedSession) {
+        console.log('Using cached session data for:', newSessionId)
+        setMessages(cachedSession.messages)
+      } else {
+        // 获取新会话数据
+        const session = await getChatSession(user.id, newSessionId)
+        if (session) {
+          setMessages(session.messages)
+          sessionCache.set(newSessionId, session)
+        }
+      }
+
+      // 更新 URL
+      router.replace(`/?session=${newSessionId}`)
+    } catch (error) {
+      console.error('Failed to switch session:', error)
+    } finally {
+      setIsSwitchingSession(false)
+      setNextSessionId(null)
+    }
+  }
 
   // Only handle session redirection once
   useEffect(() => {
@@ -150,10 +206,23 @@ export function Chat() {
   useEffect(() => {
     const loadSession = async () => {
       if (isSignedIn && user && sessionId) {
+        // 检查缓存
+        const cachedSession = sessionCache.get(sessionId)
+        if (cachedSession) {
+          console.log('Using cached session data for:', sessionId)
+          setMessages(cachedSession.messages)
+          if (!restoredSessionContent) {
+            setRestoredSessionContent(true)
+          }
+          return
+        }
+
+        // 获取会话数据
         const session = await getChatSession(user.id, sessionId)
         if (session) {
           console.log(`Loading messages for session ${sessionId}`)
           setMessages(session.messages)
+          sessionCache.set(sessionId, session)
           if (!restoredSessionContent) {
             setRestoredSessionContent(true)
           }
@@ -199,6 +268,8 @@ export function Chat() {
             onCloseSidebar={() => setSidebarOpen(false)}
             restoredSessionContent={restoredSessionContent}
             openState={sidebarOpen}
+            onSessionSwitch={handleSessionSwitch}
+            onSessionHover={preloadNextSession}
           />
         </div>
       )}
@@ -250,8 +321,20 @@ export function Chat() {
             }
           )}
         >
-          <UserMessages />
-          <UserControl />
+          {isSwitchingSession && (
+            <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/20 backdrop-blur-sm">
+              <Loader visible={true} />
+            </div>
+          )}
+
+          <UserMessages messages={messages} />
+
+          <UserControl
+            messages={messages}
+            setMessages={setMessages}
+            sessionId={sessionId || ''}
+            userId={user?.id || ''}
+          />
         </div>
       </div>
     </div>

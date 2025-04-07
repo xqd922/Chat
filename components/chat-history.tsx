@@ -18,6 +18,8 @@ interface ChatHistoryProps {
   onCloseSidebar: () => void
   restoredSessionContent: boolean
   openState: boolean
+  onSessionSwitch: (sessionId: string) => Promise<void>
+  onSessionHover: (sessionId: string) => Promise<void>
 }
 
 export function ChatHistory({
@@ -26,6 +28,8 @@ export function ChatHistory({
   onCloseSidebar,
   restoredSessionContent,
   openState,
+  onSessionSwitch,
+  onSessionHover,
 }: ChatHistoryProps) {
   const [sessions, setSessions] = useState<ChatSession[]>([])
   const router = useRouter()
@@ -53,7 +57,7 @@ export function ChatHistory({
     if (!userId) return
 
     const newSession = await createChatSession(userId)
-    router.push(`/?session=${newSession.id}`)
+    await onSessionSwitch(newSession.id)
     onCloseSidebar()
   }
 
@@ -75,8 +79,14 @@ export function ChatHistory({
 
     // Navigate to the first session if available
     if (sortedSessions.length > 0) {
-      router.replace(`/?session=${sortedSessions[0].id}`)
+      await onSessionSwitch(sortedSessions[0].id)
     }
+  }
+
+  const handleSessionClick = async (e: React.MouseEvent, sessionId: string) => {
+    e.preventDefault()
+    await onSessionSwitch(sessionId)
+    onCloseSidebar()
   }
 
   if (!restoredSessionContent || sessions.length === 0) {
@@ -130,18 +140,12 @@ export function ChatHistory({
           <ul className="flex flex-col gap-1">
             <AnimatePresence initial={false}>
               {sessions.map((session) => (
-                <Link
-                  href={`/?session=${session.id}`}
+                <li
                   key={session.id}
-                  onClick={onCloseSidebar}
+                  onMouseEnter={() => onSessionHover(session.id)}
                 >
-                  <motion.li
-                    initial={{ opacity: 0, height: 0, filter: 'blur(4px)' }}
-                    animate={{ opacity: 1, height: 'auto', filter: 'blur(0)' }}
-                    exit={{ opacity: 0, height: 'auto', filter: 'blur(4px)' }}
-                    transition={{ duration: 0.3 }}
-                    layout
-                    key={session.id}
+                  <div
+                    onClick={(e) => handleSessionClick(e, session.id)}
                     className={`cursor-pointer rounded-lg ${
                       session.id === currentSessionId
                         ? 'bg-white shadow-sm ring-1 ring-neutral-200 dark:bg-neutral-800 dark:ring-neutral-700'
@@ -165,8 +169,8 @@ export function ChatHistory({
                     <div className="px-4 pb-3 text-neutral-500 text-xs dark:text-neutral-400">
                       {new Date(session.createdat).toLocaleString()}
                     </div>
-                  </motion.li>
-                </Link>
+                  </div>
+                </li>
               ))}
             </AnimatePresence>
           </ul>
