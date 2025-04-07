@@ -15,10 +15,14 @@ function Session() {
 
   // Handle the 'new' session parameter
   useEffect(() => {
-    if (isLoaded && isSignedIn && user && sessionParam === 'new') {
-      const newSession = createChatSession(user.id)
-      router.replace(`/?session=${newSession.id}`)
+    const createNewSession = async () => {
+      if (isLoaded && isSignedIn && user && sessionParam === 'new') {
+        const newSession = await createChatSession(user.id)
+        router.replace(`/?session=${newSession.id}`)
+      }
     }
+
+    createNewSession()
   }, [isLoaded, isSignedIn, user, sessionParam, router])
 
   return null

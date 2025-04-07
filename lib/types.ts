@@ -2,10 +2,10 @@ import type { Message } from 'ai'
 
 export interface ChatSession {
   id: string
-  userId: string
+  userid: string // Changed from userId to match Supabase column name
   title: string
-  createdAt: Date
-  updatedAt: Date
+  createdat: Date // Changed from createdAt to match Supabase column name
+  updatedat: Date // Changed from updatedAt to match Supabase column name
   messages: Message[]
 }
 

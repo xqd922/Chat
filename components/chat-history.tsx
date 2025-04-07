@@ -6,12 +6,10 @@ import {
   getUserSessions,
 } from '@/lib/message-storage'
 import type { ChatSession } from '@/lib/types'
-import { useUser } from '@clerk/nextjs'
 import { ArrowLeftIcon, PlusIcon, TrashIcon } from '@heroicons/react/24/outline'
 import { AnimatePresence, motion } from 'framer-motion'
 import { useRouter } from 'next/navigation'
 import { useEffect, useState } from 'react'
-import { Loader } from './loader'
 
 interface ChatHistoryProps {
   userId: string
@@ -29,23 +27,27 @@ export function ChatHistory({
   const [sessions, setSessions] = useState<ChatSession[]>([])
   const router = useRouter()
 
-  // Update to refresh sessions whenever userId or currentSessionId changes
-  useEffect(() => {
+  const fetchSessions = async () => {
     if (userId) {
-      const userSessions = getUserSessions(userId)
+      const userSessions = await getUserSessions(userId)
       // Sort sessions by createdAt in descending order (newest first)
       const sortedSessions = [...userSessions].sort(
         (a, b) =>
-          new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
+          new Date(b.createdat).getTime() - new Date(a.createdat).getTime()
       )
       setSessions(sortedSessions)
     }
+  }
+
+  // Update to refresh sessions whenever userId or currentSessionId changes
+  useEffect(() => {
+    fetchSessions()
   }, [userId, currentSessionId])
 
-  const handleNewChat = () => {
+  const handleNewChat = async () => {
     if (!userId) return
 
-    const newSession = createChatSession(userId)
+    const newSession = await createChatSession(userId)
     router.push(`/?session=${newSession.id}`)
     onCloseSidebar()
   }
@@ -55,18 +57,18 @@ export function ChatHistory({
     onCloseSidebar()
   }
 
-  const handleDeleteChat = (e: React.MouseEvent, sessionId: string) => {
+  const handleDeleteChat = async (e: React.MouseEvent, sessionId: string) => {
     e.stopPropagation()
     if (!userId) return
 
-    deleteChatSession(userId, sessionId)
+    await deleteChatSession(userId, sessionId)
 
     // Refresh sessions list
-    const userSessions = getUserSessions(userId)
+    const userSessions = await getUserSessions(userId)
     // Sort sessions by createdAt in descending order
     const sortedSessions = [...userSessions].sort(
       (a, b) =>
-        new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
+        new Date(b.createdat).getTime() - new Date(a.createdat).getTime()
     )
     setSessions(sortedSessions)
 
@@ -156,7 +158,7 @@ export function ChatHistory({
                     </button>
                   </div>
                   <div className="px-4 pb-3 text-neutral-500 text-xs dark:text-neutral-400">
-                    {new Date(session.createdAt).toLocaleString()}
+                    {new Date(session.createdat).toLocaleString()}
                   </div>
                 </motion.li>
               ))}

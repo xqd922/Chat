@@ -74,7 +74,7 @@ export function Chat() {
       if (!isLoaded || !isSignedIn || !user) return
 
       console.log('Checking for existing sessions...')
-      const userSessions = getUserSessions(user.id)
+      const userSessions = await getUserSessions(user.id)
 
       // Only redirect if we don't have a session ID in the URL
       if (!sessionId) {
@@ -82,7 +82,7 @@ export function Chat() {
           // Sort sessions by createdAt in descending order (newest first)
           const sortedSessions = [...userSessions].sort(
             (a, b) =>
-              new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
+              new Date(b.createdat).getTime() - new Date(a.createdat).getTime()
           )
 
           console.log(
@@ -92,7 +92,7 @@ export function Chat() {
           router.replace(`/?session=${sortedSessions[0].id}`)
         } else {
           console.log('No existing sessions found, creating new session')
-          const newSession = createChatSession(user.id)
+          const newSession = await createChatSession(user.id)
           setInitialRedirectDone(true)
           router.replace(`/?session=${newSession.id}`)
         }
@@ -108,24 +108,34 @@ export function Chat() {
 
   // Load session messages when user or sessionId changes
   useEffect(() => {
-    if (isSignedIn && user && sessionId) {
-      const session = getChatSession(user.id, sessionId)
-      if (session) {
-        console.log(`Loading messages for session ${sessionId}`)
-        setMessages(session.messages)
-        if (!restoredSessionContent) {
-          setRestoredSessionContent(true)
+    const loadSession = async () => {
+      if (isSignedIn && user && sessionId) {
+        const session = await getChatSession(user.id, sessionId)
+        if (session) {
+          console.log(`Loading messages for session ${sessionId}`)
+          setMessages(session.messages)
+          if (!restoredSessionContent) {
+            setRestoredSessionContent(true)
+          }
         }
       }
     }
-  }, [isSignedIn, user, sessionId, setMessages])
+
+    loadSession()
+  }, [isSignedIn, user, sessionId, setMessages, restoredSessionContent])
 
   // Save messages when they change
   useEffect(() => {
-    if (isSignedIn && user && sessionId && messages.length > 0) {
-      console.log(`Saving ${messages.length} messages for session ${sessionId}`)
-      saveMessages(user.id, sessionId, messages)
+    const saveUserMessages = async () => {
+      if (isSignedIn && user && sessionId && messages.length > 0) {
+        console.log(
+          `Saving ${messages.length} messages for session ${sessionId}`
+        )
+        await saveMessages(user.id, sessionId, messages)
+      }
     }
+
+    saveUserMessages()
   }, [messages, isSignedIn, user, sessionId])
 
   if (!restoredSessionContent && user) {

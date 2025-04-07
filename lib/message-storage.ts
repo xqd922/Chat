@@ -1,20 +1,29 @@
 import type { Message } from 'ai'
 import { v4 as uuidv4 } from 'uuid'
-import type { ChatSession, UserChatHistory } from './types'
+import { supabase } from './supabase-client'
+import type { ChatSession } from './types'
 
-const STORAGE_KEY = 'ai_chat_history'
+const TABLE_NAME = 'chat_sessions'
 
 // Get all chat sessions for a user
-export function getUserSessions(userId: string): ChatSession[] {
-  if (typeof window === 'undefined') return []
-
+export async function getUserSessions(userId: string): Promise<ChatSession[]> {
   try {
-    const storageData = localStorage.getItem(STORAGE_KEY)
-    if (!storageData) return []
+    const { data, error } = await supabase
+      .from(TABLE_NAME)
+      .select('*')
+      .eq('userid', userId)
+      .order('updatedat', { ascending: false })
 
-    const allUserHistory: Record<string, UserChatHistory> =
-      JSON.parse(storageData)
-    return allUserHistory[userId]?.sessions || []
+    if (error) {
+      console.error('Failed to get user sessions:', error)
+      return []
+    }
+
+    // Make sure messages is always an array
+    return (data || []).map((session) => ({
+      ...session,
+      messages: Array.isArray(session.messages) ? session.messages : [],
+    }))
   } catch (error) {
     console.error('Failed to get user sessions:', error)
     return []
@@ -22,81 +31,115 @@ export function getUserSessions(userId: string): ChatSession[] {
 }
 
 // Create a new chat session
-export function createChatSession(
+export async function createChatSession(
   userId: string,
   title = 'New Chat'
-): ChatSession {
+): Promise<ChatSession> {
   const newSession: ChatSession = {
     id: uuidv4(),
-    userId,
+    userid: userId,
     title,
-    createdAt: new Date(),
-    updatedAt: new Date(),
+    createdat: new Date(),
+    updatedat: new Date(),
     messages: [],
   }
 
-  const sessions = getUserSessions(userId)
-  saveSessions(userId, [newSession, ...sessions])
+  try {
+    const { error } = await supabase.from(TABLE_NAME).insert(newSession)
+
+    if (error) {
+      console.error('Failed to create chat session:', error)
+    }
+  } catch (error) {
+    console.error('Failed to create chat session:', error)
+  }
 
   return newSession
 }
 
 // Get a specific chat session
-export function getChatSession(
+export async function getChatSession(
   userId: string,
   sessionId: string
-): ChatSession | null {
-  const sessions = getUserSessions(userId)
-  return sessions.find((session) => session.id === sessionId) || null
+): Promise<ChatSession | null> {
+  try {
+    const { data, error } = await supabase
+      .from(TABLE_NAME)
+      .select('*')
+      .eq('userid', userId)
+      .eq('id', sessionId)
+      .single()
+
+    if (error) {
+      console.error('Failed to get chat session:', error)
+      return null
+    }
+
+    // Make sure messages is always an array
+    return data
+      ? {
+          ...data,
+          messages: Array.isArray(data.messages) ? data.messages : [],
+        }
+      : null
+  } catch (error) {
+    console.error('Failed to get chat session:', error)
+    return null
+  }
 }
 
 // Save messages to a specific chat session
-export function saveMessages(
+export async function saveMessages(
   userId: string,
   sessionId: string,
   messages: Message[]
-): void {
-  const sessions = getUserSessions(userId)
-  const sessionIndex = sessions.findIndex((session) => session.id === sessionId)
-
-  if (sessionIndex !== -1) {
-    sessions[sessionIndex].messages = messages
-    sessions[sessionIndex].updatedAt = new Date()
+): Promise<void> {
+  try {
+    let title = 'New Chat'
 
     // Update title based on the first user message if title is generic
-    if (sessions[sessionIndex].title === 'New Chat' && messages.length > 0) {
+    if (messages.length > 0) {
       const firstUserMessage = messages.find((m) => m.role === 'user')
       if (firstUserMessage) {
         const content = firstUserMessage.content.substring(0, 30)
-        sessions[sessionIndex].title =
-          content + (content.length > 30 ? '...' : '')
+        title = content + (content.length > 30 ? '...' : '')
       }
     }
 
-    saveSessions(userId, sessions)
+    const { error } = await supabase
+      .from(TABLE_NAME)
+      .update({
+        messages,
+        updatedat: new Date(),
+        title: title !== 'New Chat' ? title : undefined, // Only update title if it changed
+      })
+      .eq('userid', userId)
+      .eq('id', sessionId)
+
+    if (error) {
+      console.error('Failed to save messages:', error)
+    }
+  } catch (error) {
+    console.error('Failed to save messages:', error)
   }
 }
 
 // Delete a chat session
-export function deleteChatSession(userId: string, sessionId: string): void {
-  let sessions = getUserSessions(userId)
-  sessions = sessions.filter((session) => session.id !== sessionId)
-  saveSessions(userId, sessions)
-}
-
-// Helper to save sessions to storage
-function saveSessions(userId: string, sessions: ChatSession[]): void {
-  if (typeof window === 'undefined') return
-
+export async function deleteChatSession(
+  userId: string,
+  sessionId: string
+): Promise<void> {
   try {
-    const storageData = localStorage.getItem(STORAGE_KEY)
-    const allUserHistory: Record<string, UserChatHistory> = storageData
-      ? JSON.parse(storageData)
-      : {}
+    const { error } = await supabase
+      .from(TABLE_NAME)
+      .delete()
+      .eq('userid', userId)
+      .eq('id', sessionId)
 
-    allUserHistory[userId] = { sessions }
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(allUserHistory))
+    if (error) {
+      console.error('Failed to delete chat session:', error)
+    }
   } catch (error) {
-    console.error('Failed to save sessions:', error)
+    console.error('Failed to delete chat session:', error)
   }
 }
