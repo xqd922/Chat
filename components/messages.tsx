@@ -555,17 +555,18 @@ export function Messages({
       // Reset scroll button state
       setShowScrollButton(false)
 
-      // Scroll to bottom of new session
-      if (messagesRef.current) {
-        messagesRef.current.scrollTop = messagesRef.current.scrollHeight
-      }
+      // Scroll to bottom of page
+      window.scrollTo({
+        top: document.body.scrollHeight,
+        behavior: 'auto',
+      })
     }
 
     // Update the ref with current messages signature
     previousMessagesRef.current = currentMessagesSignature
   }, [messages])
 
-  // 在组件加载和窗口大小改变时计算消息容器的位置
+  // Calculate position for the scroll button based on window size
   useEffect(() => {
     const updateScrollButtonPosition = () => {
       if (messagesRef.current) {
@@ -577,10 +578,10 @@ export function Messages({
       }
     }
 
-    // 初始化计算位置
+    // Initialize position
     updateScrollButtonPosition()
 
-    // 添加窗口大小改变事件监听器
+    // Add window resize event listener
     window.addEventListener('resize', updateScrollButtonPosition)
 
     return () => {
@@ -588,53 +589,53 @@ export function Messages({
     }
   }, [])
 
+  // Scroll to bottom when messages length changes
   useEffect(() => {
-    if (messagesRef.current) {
-      messagesRef.current.scrollTop = messagesRef.current.scrollHeight
-    }
+    window.scrollTo({
+      top: document.body.scrollHeight,
+      behavior: 'auto',
+    })
   }, [messagesLength])
 
-  // Add scroll event handler to show/hide scroll button
+  // Add window scroll event handler to show/hide scroll button
   useEffect(() => {
-    const messagesContainer = messagesRef.current
-    if (!messagesContainer) return
-
     const handleScroll = () => {
-      const { scrollTop, scrollHeight, clientHeight } = messagesContainer
+      // Calculate distance from bottom of page
+      const scrollPosition = window.scrollY + window.innerHeight
+      const bottomOfPage = document.body.scrollHeight
+
       // Show button when scrolled up at least 50px from bottom
-      const isScrolledUp = scrollHeight - scrollTop - clientHeight > 50
+      const isScrolledUp = bottomOfPage - scrollPosition > 50
       setShowScrollButton(isScrolledUp)
     }
 
-    messagesContainer.addEventListener('scroll', handleScroll)
+    window.addEventListener('scroll', handleScroll)
 
     // Run the scroll handler immediately to set correct initial state
     handleScroll()
 
-    return () => messagesContainer.removeEventListener('scroll', handleScroll)
-  }, []) // Remove messages from the dependencies array
+    return () => window.removeEventListener('scroll', handleScroll)
+  }, [])
 
-  // Use a separate effect to run the scroll check when messages change
+  // Use a separate effect to check if we need to show the scroll button when messages change
   useEffect(() => {
-    // This will only run the check without re-adding the event listener
-    if (messagesRef.current) {
-      const { scrollTop, scrollHeight, clientHeight } = messagesRef.current
-      const isScrolledUp = scrollHeight - scrollTop - clientHeight > 50
-      if (!showScrollButton && isScrolledUp) {
-        setShowScrollButton(isScrolledUp)
-      } else if (showScrollButton && !isScrolledUp) {
-        setShowScrollButton(false)
-      }
+    // Check if we're scrolled away from bottom and should show the button
+    const scrollPosition = window.scrollY + window.innerHeight
+    const bottomOfPage = document.body.scrollHeight
+    const isScrolledUp = bottomOfPage - scrollPosition > 50
+
+    if (!showScrollButton && isScrolledUp) {
+      setShowScrollButton(isScrolledUp)
+    } else if (showScrollButton && !isScrolledUp) {
+      setShowScrollButton(false)
     }
-  }, [messages])
+  }, [messages, showScrollButton])
 
   const scrollToBottom = () => {
-    if (messagesRef.current) {
-      messagesRef.current.scrollTo({
-        top: messagesRef.current.scrollHeight,
-        behavior: 'smooth',
-      })
-    }
+    window.scrollTo({
+      top: document.body.scrollHeight,
+      behavior: 'smooth',
+    })
   }
 
   const setMessagesAndReload = (messages: Array<UIMessage>) => {
@@ -653,7 +654,7 @@ export function Messages({
 
   return (
     <div
-      className="scrollbar-hidden relative flex w-full flex-col items-center gap-4 overflow-y-scroll"
+      className="scrollbar-hidden relative w-full flex-col items-center gap-4 pb-32"
       ref={messagesRef}
     >
       {messages.map((message, messageIndex) => (
@@ -698,7 +699,7 @@ export function Messages({
             initial={{ opacity: 0, scale: 0.8, filter: 'blur(5px)' }}
             animate={{ opacity: 1, scale: 1, filter: 'blur(0px)' }}
             exit={{ opacity: 0, scale: 0.8, filter: 'blur(5px)' }}
-            className="-ml-[12px] fixed bottom-[150px] z-10 flex size-6 items-center justify-center rounded-full bg-black shadow-md transition-colors hover:bg-neutral-700 dark:bg-neutral-700 dark:hover:bg-neutral-600"
+            className="fixed bottom-[150px] z-10 flex size-6 items-center justify-center rounded-full bg-black shadow-md transition-colors hover:bg-neutral-700 dark:bg-neutral-700 dark:hover:bg-neutral-600"
             style={{
               left: `${scrollButtonPosition.left}px`,
               transform: 'translateX(-50%)',

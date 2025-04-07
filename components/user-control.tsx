@@ -119,8 +119,8 @@ const UserControl = memo(function UserControl() {
   ])
 
   return (
-    <div className="flex w-full flex-col gap-4">
-      <div className="relative flex w-full flex-col gap-1 rounded-2xl border-[1px] border-neutral-200/60 bg-neutral-100 px-2 py-3 shadow-lg shadow-neutral-100 dark:border-neutral-700 dark:bg-neutral-800 dark:shadow-none">
+    <div className="fixed right-0 bottom-0 left-0 z-10 flex w-full flex-col items-center justify-center gap-4 px-4 py-2">
+      <div className="relative mx-auto flex w-full max-w-3xl flex-col gap-1 rounded-2xl border-[1px] border-neutral-200/60 bg-neutral-100 px-2 py-3 shadow-lg shadow-neutral-100 dark:border-neutral-700 dark:bg-neutral-800 dark:shadow-none">
         <Input
           input={input}
           setInput={setInput}

@@ -173,7 +173,7 @@ export function Chat() {
   }
 
   return (
-    <div className="flex h-dvh w-full">
+    <div className="flex min-h-dvh w-full">
       {/* Overlay for both mobile and desktop when sidebar is open */}
       <div
         className={cn(
@@ -189,7 +189,7 @@ export function Chat() {
         <div
           ref={sidebarRef}
           className={cn(
-            'fixed top-0 bottom-0 left-0 z-40 flex w-64 flex-col bg-transparent p-2 transition-transform delay-100 duration-300 ease-in-out',
+            'fixed top-0 bottom-0 left-0 z-40 flex w-64 flex-col bg-transparent p-2 transition-transform duration-300 ease-in-out',
             sidebarOpen ? 'translate-x-0' : '-translate-x-full'
           )}
         >

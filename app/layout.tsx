@@ -29,7 +29,7 @@ export default function RootLayout({
     <ClerkProvider>
       <html
         lang="en"
-        className={`${GeistSans.variable} ${GeistMono.variable} bg-background`}
+        className={`${GeistSans.variable} ${GeistMono.variable} bg-white/80 dark:bg-black/80`}
       >
         <body>
           <Toaster position="top-center" />
