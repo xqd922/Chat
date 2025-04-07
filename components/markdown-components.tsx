@@ -44,13 +44,16 @@ const CodeComponent = memo(
     const codeString = children as string
 
     return (
-      <CodeBlock className={className}>
+      <CodeBlock
+        className={className}
+        style={{ maxWidth: '100%', overflowX: 'auto' }}
+      >
         <CodeBlockGroup className="flex h-9 items-center justify-between border-b-[1px] px-4 dark:border-neutral-800">
           <div className="py-1 pr-2 font-medium font-serif text-xs">
             {language}
           </div>
         </CodeBlockGroup>
-        <div className="sticky top-16 lg:top-0">
+        <div className="sticky top-0">
           <div className="absolute right-0 bottom-0 flex h-9 items-center pr-1.5">
             <ButtonCopy code={codeString} />
           </div>
@@ -83,7 +86,18 @@ export const markdownComponents: Partial<Components> = {
     }
     return <p className="font-light text-sm leading-6">{children}</p>
   },
-  pre: ({ children }) => <pre className="overflow-x-auto">{children}</pre>,
+  pre: ({ children }) => (
+    <pre
+      className="overflow-x-auto"
+      style={{
+        maxWidth: '100%',
+        overflowX: 'auto',
+        wordBreak: 'break-word',
+      }}
+    >
+      {children}
+    </pre>
+  ),
   img: ({ src, alt, ...props }) => {
     const isCitation = alt?.includes('citation')
 

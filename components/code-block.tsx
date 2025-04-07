@@ -8,17 +8,18 @@ export const CodeBlock = ({
   children,
   className,
   ...props
-}: React.HTMLProps<HTMLPreElement>) => {
+}: React.HTMLProps<HTMLDivElement>) => {
   return (
-    <pre
+    <div
       className={cn(
-        'group relative mt-2 mb-3 overflow-hidden rounded-lg border border-neutral-200 bg-white dark:border-neutral-800 dark:bg-neutral-900',
+        'not-prose my-2 flex w-full flex-col overflow-hidden rounded-xl border border-neutral-200 bg-neutral-100 dark:border-neutral-800 dark:bg-black',
         className
       )}
+      style={{ maxWidth: '100%' }}
       {...props}
     >
       {children}
-    </pre>
+    </div>
   )
 }
 
@@ -29,10 +30,7 @@ export const CodeBlockGroup = ({
 }: React.HTMLProps<HTMLDivElement>) => {
   return (
     <div
-      className={cn(
-        'flex h-9 items-center justify-between bg-neutral-100 dark:bg-neutral-800/50',
-        className
-      )}
+      className={cn('flex items-center justify-between', className)}
       {...props}
     >
       {children}
@@ -53,7 +51,10 @@ const CodeBlockCodeBase = ({ code, language }: CodeBlockCodeProps) => {
   const debounceTimerRef = useRef<NodeJS.Timeout | null>(null)
 
   const classNames = cn(
-    'w-full overflow-x-auto text-[13px] [&>pre]:px-4 [&>pre]:py-4'
+    'w-full overflow-x-auto text-[13px]',
+    '[&>pre]:px-4 [&>pre]:py-4 [&>pre]:overflow-x-auto',
+    '[&>pre]:w-full [&>pre]:whitespace-pre',
+    '[&_code]:block [&_code]:overflow-x-auto [&_code]:break-all [&_code]:whitespace-pre-wrap'
   )
 
   useEffect(() => {
@@ -125,11 +126,34 @@ const CodeBlockCodeBase = ({ code, language }: CodeBlockCodeProps) => {
     <div
       className={classNames}
       dangerouslySetInnerHTML={{ __html: highlightedHtml }}
+      style={{
+        maxWidth: '100%',
+        overflowX: 'auto',
+      }}
     />
   ) : (
-    <div className={classNames}>
-      <pre>
-        <code>{code}</code>
+    <div
+      className={classNames}
+      style={{
+        maxWidth: '100%',
+        overflowX: 'auto',
+      }}
+    >
+      <pre
+        className="w-full"
+        style={{
+          maxWidth: '100%',
+          overflowX: 'auto',
+          whiteSpace: 'pre-wrap',
+          wordBreak: 'break-word',
+        }}
+      >
+        <code
+          className="block overflow-x-auto"
+          style={{ wordBreak: 'break-word' }}
+        >
+          {code}
+        </code>
       </pre>
     </div>
   )
