@@ -1,8 +1,8 @@
 'use client'
 
 import { cn } from '@/lib/utils'
-import { Highlight, themes } from 'prism-react-renderer'
-import { memo } from 'react'
+import { memo, useEffect, useState } from 'react'
+import { codeToHtml } from 'shiki'
 
 export const CodeBlock = ({
   children,
@@ -47,24 +47,57 @@ interface CodeBlockCodeProps {
 
 // Non-memoized version that will be wrapped
 const CodeBlockCodeBase = ({ code, language }: CodeBlockCodeProps) => {
-  return (
-    <Highlight theme={themes.github} code={code} language={language as any}>
-      {({ className, style, tokens, getLineProps, getTokenProps }) => (
-        <pre
-          className={cn('overflow-auto p-4 pb-4 text-sm', className)}
-          style={style}
-        >
-          {tokens.map((line, i) => (
-            <div key={i} {...getLineProps({ line })}>
-              {line.map((token, key) => (
-                <span key={key} {...getTokenProps({ token })} />
-              ))}
-            </div>
-          ))}
-        </pre>
-      )}
-    </Highlight>
+  const [highlightedHtml, setHighlightedHtml] = useState<string | null>(null)
+
+  const classNames = cn(
+    'w-full overflow-x-auto text-[13px] [&>pre]:px-4 [&>pre]:py-4'
   )
+
+  useEffect(() => {
+    async function highlight() {
+      const html = await codeToHtml(code, {
+        lang: language,
+        themes: {
+          light: 'github-light',
+          dark: 'github-dark',
+        },
+      })
+      setHighlightedHtml(html)
+    }
+    highlight()
+  }, [code, language])
+
+  return highlightedHtml ? (
+    <div
+      className={classNames}
+      dangerouslySetInnerHTML={{ __html: highlightedHtml }}
+    />
+  ) : (
+    <div className={classNames}>
+      <pre>
+        <code>{code}</code>
+      </pre>
+    </div>
+  )
+
+  // return (
+  // <Highlight theme={themes.github} code={code} language={language as any}>
+  //   {({ className, style, tokens, getLineProps, getTokenProps }) => (
+  //     <pre
+  //       className={cn('overflow-auto p-4 pb-4 text-sm', className)}
+  //       style={style}
+  //     >
+  //       {tokens.map((line, i) => (
+  //         <div key={i} {...getLineProps({ line })}>
+  //           {line.map((token, key) => (
+  //             <span key={key} {...getTokenProps({ token })} />
+  //           ))}
+  //         </div>
+  //       ))}
+  //     </pre>
+  //   )}
+  // </Highlight>
+  // )
 }
 
 // Memoized version to prevent re-renders

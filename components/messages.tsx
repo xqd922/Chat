@@ -437,14 +437,10 @@ const Message = memo(
 
             if (part.type === 'text' && message.role !== 'user') {
               return (
-                <motion.div
+                <TextMessagePart
                   key={partKey}
-                  initial={{ opacity: 0 }}
-                  animate={{ opacity: 1 }}
-                  transition={{ duration: 0.2 }}
-                >
-                  <TextMessagePart text={replaceCitations(part.text)} />
-                </motion.div>
+                  text={replaceCitations(part.text)}
+                />
               )
             }
             if (part.type === 'text' && message.role === 'user') {
