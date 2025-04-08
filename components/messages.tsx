@@ -412,7 +412,7 @@ const Message = memo(
       >
         <div
           className={cn('flex flex-col gap-2', {
-            'ml-auto w-fit rounded-lg bg-neutral-100 px-2 py-1 dark:bg-neutral-700/50':
+            'mb-3 ml-auto w-fit rounded-lg bg-neutral-100 px-2 py-1 dark:bg-neutral-700/50':
               message.role === 'user',
             '': message.role === 'assistant',
           })}
@@ -690,7 +690,7 @@ export function Messages({
 
   return (
     <div
-      className="scrollbar-hidden relative w-full flex-col items-center gap-4 pb-36"
+      className="relative w-full flex-col items-center gap-4 pb-36"
       ref={messagesRef}
     >
       {messages.map((message, messageIndex) => (
