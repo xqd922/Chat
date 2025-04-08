@@ -774,6 +774,7 @@ export function Messages({
             className="-mt-4 mb-12 w-full font-light text-sm"
           />
         )}
+
       {status === 'submitted' && (
         <ShinyText
           text="Connecting..."
