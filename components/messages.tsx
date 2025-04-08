@@ -39,6 +39,9 @@ export function ReasoningMessagePart({
   isReasoning,
 }: ReasoningMessagePartProps) {
   const [isExpanded, setIsExpanded] = useState(false)
+  const [reasoningSeconds, setReasoningSeconds] = useState<number | null>(null)
+  const startTimeRef = useRef<number | null>(null)
+  const timerRef = useRef<ReturnType<typeof setInterval> | null>(null)
 
   const variants = {
     collapsed: {
@@ -56,10 +59,59 @@ export function ReasoningMessagePart({
   }
 
   useEffect(() => {
+    // Start timing when reasoning begins
+    if (isReasoning && !startTimeRef.current) {
+      startTimeRef.current = Date.now()
+
+      // Update the timer every 100ms for a smooth display
+      timerRef.current = setInterval(() => {
+        if (startTimeRef.current) {
+          const elapsedSeconds = (Date.now() - startTimeRef.current) / 1000
+          setReasoningSeconds(elapsedSeconds)
+        }
+      }, 100)
+    }
+
+    // Stop timing when reasoning ends
+    if (!isReasoning && startTimeRef.current) {
+      if (timerRef.current) {
+        clearInterval(timerRef.current)
+        timerRef.current = null
+      }
+      // Set final time
+      const finalTime = (Date.now() - startTimeRef.current) / 1000
+      setReasoningSeconds(finalTime)
+      startTimeRef.current = null
+    }
+
+    // Clean up timer when component unmounts
+    return () => {
+      if (timerRef.current) {
+        clearInterval(timerRef.current)
+      }
+    }
+  }, [isReasoning])
+
+  useEffect(() => {
     if (!isReasoning) {
       setIsExpanded(false)
     }
   }, [isReasoning])
+
+  // Format the reasoning time display
+  const getReasoningTimeText = () => {
+    if (reasoningSeconds === null) {
+      return 'Reasoned for a few seconds'
+    }
+
+    if (reasoningSeconds < 1) {
+      return 'Reasoned for less than a second'
+    }
+    if (reasoningSeconds === 1) {
+      return 'Reasoned for 1 second'
+    }
+    return `Reasoned for ${reasoningSeconds.toFixed(1)} seconds`
+  }
 
   return (
     <div className="flex flex-col">
@@ -79,7 +131,7 @@ export function ReasoningMessagePart({
           />
         ) : (
           <p className="font-light text-[#54545494] text-sm transition-colors hover:text-black/80 dark:text-[#b5b5b5a4] dark:hover:text-white/80">
-            Reasoned for a few seconds
+            {getReasoningTimeText()}
           </p>
         )}
 
