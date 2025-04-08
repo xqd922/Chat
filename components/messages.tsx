@@ -742,7 +742,7 @@ export function Messages({
 
   return (
     <div
-      className="relative w-full flex-col items-center gap-4 pb-36"
+      className={cn("relative w-full flex-col items-center gap-4 pb-36")}
       ref={messagesRef}
     >
       {messages.map((message, messageIndex) => (
@@ -777,7 +777,7 @@ export function Messages({
           text="Connecting..."
           disabled={false}
           speed={2}
-          className="mb-12 w-full font-light text-sm"
+          className="w-full font-light text-sm"
         />
       )}
 
