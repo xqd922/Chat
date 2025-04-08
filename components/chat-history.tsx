@@ -31,12 +31,10 @@ export function ChatHistory({
   onSessionHover,
 }: ChatHistoryProps) {
   const [sessions, setSessions] = useState<ChatSession[]>([])
-  const [isLoading, setIsLoading] = useState(false)
   const _router = useRouter()
 
   const fetchSessions = async () => {
     if (userId) {
-      setIsLoading(true)
       try {
         const userSessions = await getUserSessions(userId)
         // Sort sessions by createdAt in descending order (newest first)
@@ -46,7 +44,7 @@ export function ChatHistory({
         )
         setSessions(sortedSessions)
       } finally {
-        setIsLoading(false)
+        
       }
     }
   }
@@ -56,7 +54,7 @@ export function ChatHistory({
     if (openState) {
       fetchSessions()
     }
-  }, [userId, currentSessionId, openState])
+  }, [userId, openState])
 
   const handleNewChat = async () => {
     if (!userId) return
@@ -121,11 +119,7 @@ export function ChatHistory({
       </div>
 
       <div className="flex-1 overflow-y-auto p-3">
-        {isLoading ? (
-          <div className="flex h-full items-center justify-center">
-            <Loader visible={true} />
-          </div>
-        ) : sessions.length === 0 ? (
+        {sessions.length === 0 ? (
           <div className="flex h-full flex-col items-center justify-center gap-3 p-4">
             <div className="rounded-full bg-neutral-200 p-3 dark:bg-neutral-700">
               <PlusIcon className="size-6 text-neutral-500 dark:text-neutral-300" />
