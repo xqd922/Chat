@@ -33,7 +33,7 @@ export function Chat() {
   const [initialRedirectDone, setInitialRedirectDone] = useState(false)
   const [restoredSessionContent, setRestoredSessionContent] = useState(false)
   const [isSwitchingSession, setIsSwitchingSession] = useState(false)
-  const [_nextSessionId, setNextSessionId] = useState<string | null>(null)
+  const [sessionsPreloaded, setSessionsPreloaded] = useState(false)
 
   // Add a ref to the sidebar
   const sidebarRef = useRef<HTMLDivElement>(null)
@@ -41,6 +41,19 @@ export function Chat() {
   const { messages, setMessages, status } = useChat({
     id: sessionId || 'primary',
   })
+
+  // Preload sessions in background for smoother sidebar opening
+  useEffect(() => {
+    const preloadSessions = async () => {
+      if (isSignedIn && user && !sessionsPreloaded) {
+        console.log('Preloading sessions data in background')
+        await getUserSessions(user.id)
+        setSessionsPreloaded(true)
+      }
+    }
+
+    preloadSessions()
+  }, [isSignedIn, user, sessionsPreloaded])
 
   // Close sidebar when clicking outside of it
   useEffect(() => {
@@ -134,7 +147,6 @@ export function Chat() {
     if (!user || newSessionId === sessionId) return
 
     setIsSwitchingSession(true)
-    setNextSessionId(newSessionId)
 
     try {
       // 检查缓存
@@ -159,7 +171,6 @@ export function Chat() {
       // 添加短暂延迟以确保过渡动画完成
       setTimeout(() => {
         setIsSwitchingSession(false)
-        setNextSessionId(null)
       }, 300)
     }
   }
@@ -269,7 +280,6 @@ export function Chat() {
             userId={user?.id || ''}
             currentSessionId={sessionId || ''}
             onCloseSidebar={() => setSidebarOpen(false)}
-            restoredSessionContent={restoredSessionContent}
             openState={sidebarOpen}
             onSessionSwitch={handleSessionSwitch}
             onSessionHover={preloadNextSession}

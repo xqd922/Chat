@@ -11,12 +11,12 @@ import { AnimatePresence, motion } from 'framer-motion'
 import Link from 'next/link'
 import { useRouter } from 'next/navigation'
 import { useEffect, useState } from 'react'
+import { Loader } from './loader'
 
 interface ChatHistoryProps {
   userId: string
   currentSessionId: string
   onCloseSidebar: () => void
-  restoredSessionContent: boolean
   openState: boolean
   onSessionSwitch: (sessionId: string) => Promise<void>
   onSessionHover: (sessionId: string) => Promise<void>
@@ -26,23 +26,28 @@ export function ChatHistory({
   userId,
   currentSessionId,
   onCloseSidebar,
-  restoredSessionContent,
   openState,
   onSessionSwitch,
   onSessionHover,
 }: ChatHistoryProps) {
   const [sessions, setSessions] = useState<ChatSession[]>([])
+  const [isLoading, setIsLoading] = useState(false)
   const _router = useRouter()
 
   const fetchSessions = async () => {
     if (userId) {
-      const userSessions = await getUserSessions(userId)
-      // Sort sessions by createdAt in descending order (newest first)
-      const sortedSessions = [...userSessions].sort(
-        (a, b) =>
-          new Date(b.createdat).getTime() - new Date(a.createdat).getTime()
-      )
-      setSessions(sortedSessions)
+      setIsLoading(true)
+      try {
+        const userSessions = await getUserSessions(userId)
+        // Sort sessions by createdAt in descending order (newest first)
+        const sortedSessions = [...userSessions].sort(
+          (a, b) =>
+            new Date(b.createdat).getTime() - new Date(a.createdat).getTime()
+        )
+        setSessions(sortedSessions)
+      } finally {
+        setIsLoading(false)
+      }
     }
   }
 
@@ -89,10 +94,6 @@ export function ChatHistory({
     onCloseSidebar()
   }
 
-  if (!restoredSessionContent || sessions.length === 0) {
-    return <div className="flex h-full items-center justify-center" />
-  }
-
   return (
     <div className="flex h-full flex-col overflow-hidden rounded-lg border-[1px] border-transparent bg-gradient-to-b from-neutral-50 to-neutral-100 dark:border-neutral-800 dark:from-neutral-900 dark:to-neutral-950">
       <div className="flex items-center justify-between border-neutral-200 border-b bg-white/80 px-4 py-3 backdrop-blur-sm dark:border-neutral-800 dark:bg-neutral-900/80">
@@ -120,7 +121,11 @@ export function ChatHistory({
       </div>
 
       <div className="flex-1 overflow-y-auto p-3">
-        {sessions.length === 0 ? (
+        {isLoading ? (
+          <div className="flex h-full items-center justify-center">
+            <Loader visible={true} />
+          </div>
+        ) : sessions.length === 0 ? (
           <div className="flex h-full flex-col items-center justify-center gap-3 p-4">
             <div className="rounded-full bg-neutral-200 p-3 dark:bg-neutral-700">
               <PlusIcon className="size-6 text-neutral-500 dark:text-neutral-300" />
