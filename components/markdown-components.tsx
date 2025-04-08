@@ -209,4 +209,61 @@ export const markdownComponents: Partial<Components> = {
       </h6>
     )
   },
+  // Table components for proper table rendering
+  table: ({ children, ...props }) => {
+    return (
+      <div className="my-4 w-full overflow-x-auto">
+        <table className="w-full border-collapse text-sm" {...props}>
+          {children}
+        </table>
+      </div>
+    )
+  },
+  thead: ({ children, ...props }) => {
+    return (
+      <thead className="bg-neutral-100 dark:bg-neutral-800" {...props}>
+        {children}
+      </thead>
+    )
+  },
+  tbody: ({ children, ...props }) => {
+    return (
+      <tbody
+        className="divide-y divide-neutral-200 dark:divide-neutral-700"
+        {...props}
+      >
+        {children}
+      </tbody>
+    )
+  },
+  tr: ({ children, ...props }) => {
+    return (
+      <tr
+        className="border-neutral-200 border-b dark:border-neutral-700"
+        {...props}
+      >
+        {children}
+      </tr>
+    )
+  },
+  th: ({ children, ...props }) => {
+    return (
+      <th
+        className="px-3 py-2 text-left font-medium text-neutral-700 dark:text-neutral-300"
+        {...props}
+      >
+        {children}
+      </th>
+    )
+  },
+  td: ({ children, ...props }) => {
+    return (
+      <td
+        className="px-3 py-2 font-light text-neutral-600 dark:text-neutral-400"
+        {...props}
+      >
+        {children}
+      </td>
+    )
+  },
 }
