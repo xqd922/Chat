@@ -3,6 +3,8 @@
 import { cn } from '@/lib/utils'
 import { memo, useEffect, useRef, useState } from 'react'
 import { codeToHtml } from 'shiki'
+import {useChat} from "@ai-sdk/react";
+import {useSearchParams} from "next/navigation";
 
 export const CodeBlock = ({
   children,
@@ -57,7 +59,20 @@ const CodeBlockCodeBase = ({ code, language }: CodeBlockCodeProps) => {
     '[&_code]:block [&_code]:overflow-x-auto [&_code]:break-all [&_code]:whitespace-pre-wrap'
   )
 
+  const searchParams = useSearchParams()
+  const sessionId = searchParams.get('session')
+  const chatId = sessionId || 'primary'
+
+  const { status } = useChat({
+    id: chatId,
+  })
+
   useEffect(() => {
+    if (status !== "ready") {
+      setIsProcessing(false)
+      return
+    }
+
     // Cancel any ongoing highlight operation
     if (abortControllerRef.current) {
       abortControllerRef.current.abort()
