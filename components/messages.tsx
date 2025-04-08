@@ -742,7 +742,9 @@ export function Messages({
 
   return (
     <div
-      className={cn("relative w-full flex-col items-center gap-4 pb-36")}
+      className={cn('relative w-full flex-col items-center gap-4 pb-36', {
+        'pb-48': status !== 'ready',
+      })}
       ref={messagesRef}
     >
       {messages.map((message, messageIndex) => (
