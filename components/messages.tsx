@@ -127,7 +127,7 @@ export function ReasoningMessagePart({
             text="Reasoning"
             disabled={false}
             speed={2}
-            className="w-full font-light text-sm"
+            className="font-light text-sm"
           />
         ) : (
           <p className="font-light text-[#54545494] text-sm transition-colors hover:text-black/80 dark:text-[#b5b5b5a4] dark:hover:text-white/80">
