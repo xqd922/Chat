@@ -51,10 +51,10 @@ export function ChatHistory({
 
   // Update to refresh sessions whenever userId or currentSessionId changes
   useEffect(() => {
-    if (openState) {
+    
       fetchSessions()
-    }
-  }, [userId, openState])
+    
+  }, [userId])
 
   const handleNewChat = async () => {
     if (!userId) return
