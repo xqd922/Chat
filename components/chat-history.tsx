@@ -62,6 +62,7 @@ export function ChatHistory({
     const newSession = await createChatSession(userId)
     await onSessionSwitch(newSession.id)
     onCloseSidebar()
+    await fetchSessions()
   }
 
   const handleDeleteChat = async (e: React.MouseEvent, sessionId: string) => {
