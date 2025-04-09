@@ -33,7 +33,6 @@ export function Chat() {
   const [sidebarOpen, setSidebarOpen] = useState(false)
   const [initialRedirectDone, setInitialRedirectDone] = useState(false)
   const [isSwitchingSession, setIsSwitchingSession] = useState(false)
-  const [sessionsPreloaded, setSessionsPreloaded] = useState(false)
 
   // Add a ref to the sidebar
   const sidebarRef = useRef<HTMLDivElement>(null)
@@ -41,19 +40,6 @@ export function Chat() {
   const { messages, setMessages, status } = useChat({
     id: sessionId || 'primary',
   })
-
-  // Preload sessions in background for smoother sidebar opening
-  useEffect(() => {
-    const preloadSessions = async () => {
-      if (isSignedIn && user && !sessionsPreloaded) {
-        console.log('Preloading sessions data in background')
-        await getUserSessions(user.id)
-        setSessionsPreloaded(true)
-      }
-    }
-
-    preloadSessions()
-  }, [isSignedIn, user, sessionsPreloaded])
 
   // Close sidebar when clicking outside of it
   useEffect(() => {
