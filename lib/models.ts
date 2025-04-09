@@ -16,19 +16,14 @@ const MODEL_GPT4O = 'gpt-4o'
 const MODEL_LLAMA = 'llama-3.3-70b-specdec'
 const MODEL_QWEN = 'qwen-qwq-32b'
 const MODEL_QUASAR = 'openrouter/quasar-alpha'
-const MODEL_DEEPSEEK_R1 = 'deepseek-r1-250120'
-const MODEL_DEEPSEEK_V3 = 'deepseek-v3-250324'
+const MODEL_DEEPSEEK_R1 = 'DeepSeek-R1'
+const MODEL_DEEPSEEK_V3 = 'DeepSeek-V3-0324'
 const MODEL_GEMINI_2 = 'gemini-2.0-flash'
 
 const copilot = createOpenAI({
   apiKey: process.env.COPILOT_API_KEY,
   baseURL: process.env.COPILOT_API_URL,
   compatibility: 'compatible',
-})
-
-const ark = createDeepSeek({
-  apiKey: process.env.ARK_API_KEY,
-  baseURL: process.env.ARK_API_URL,
 })
 
 const groq = createGroq({
@@ -41,6 +36,11 @@ const openrouter = createOpenRouter({
 
 const google = createGoogleGenerativeAI({
   apiKey: process.env.GOOGLE_API_KEY,
+})
+
+const githubDeepseek = createDeepSeek({
+  apiKey: process.env.GITHUB_API_KEY,
+  baseURL: process.env.GITHUB_API_URL,
 })
 
 // custom provider with different model settings:
@@ -77,13 +77,13 @@ export const myProvider = customProvider({
       middleware: extractReasoningMiddleware({
         tagName: 'think',
       }),
-      model: ark(MODEL_DEEPSEEK_R1),
+      model: githubDeepseek(MODEL_DEEPSEEK_R1),
     }),
     [MODEL_DEEPSEEK_V3]: wrapLanguageModel({
       middleware: defaultSettingsMiddleware({
         settings: {},
       }),
-      model: ark(MODEL_DEEPSEEK_V3),
+      model: githubDeepseek(MODEL_DEEPSEEK_V3),
     }),
     [MODEL_GEMINI_2]: wrapLanguageModel({
       middleware: defaultSettingsMiddleware({
