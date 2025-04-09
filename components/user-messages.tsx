@@ -79,7 +79,7 @@ export default function UserMessages({ messages }: UserMessagesProps) {
       }
     }
     saveUserMessages()
-  }, [status])
+  }, [status, messages, sessionId, isSignedIn, user])
 
   return (
     <>
