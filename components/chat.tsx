@@ -4,7 +4,6 @@ import {
   createChatSession,
   getChatSession,
   getUserSessions,
-  saveMessages,
 } from '@/lib/message-storage'
 import { sessionCache } from '@/lib/session-cache'
 import { supabase } from '@/lib/supabase-client'
@@ -280,7 +279,6 @@ export function Chat() {
             userId={user?.id || ''}
             currentSessionId={sessionId || ''}
             onCloseSidebar={() => setSidebarOpen(false)}
-            openState={sidebarOpen}
             onSessionSwitch={handleSessionSwitch}
             onSessionHover={preloadNextSession}
           />

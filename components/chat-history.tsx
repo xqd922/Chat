@@ -8,16 +8,12 @@ import {
 import type { ChatSession } from '@/lib/types'
 import { ArrowLeftIcon, PlusIcon, TrashIcon } from '@heroicons/react/24/outline'
 import { AnimatePresence, motion } from 'framer-motion'
-import Link from 'next/link'
-import { useRouter } from 'next/navigation'
 import { useEffect, useState } from 'react'
-import { Loader } from './loader'
 
 interface ChatHistoryProps {
   userId: string
   currentSessionId: string
   onCloseSidebar: () => void
-  openState: boolean
   onSessionSwitch: (sessionId: string) => Promise<void>
   onSessionHover: (sessionId: string) => Promise<void>
 }
@@ -26,12 +22,10 @@ export function ChatHistory({
   userId,
   currentSessionId,
   onCloseSidebar,
-  openState,
   onSessionSwitch,
   onSessionHover,
 }: ChatHistoryProps) {
   const [sessions, setSessions] = useState<ChatSession[]>([])
-  const _router = useRouter()
 
   const fetchSessions = async () => {
     if (userId) {
@@ -44,16 +38,13 @@ export function ChatHistory({
         )
         setSessions(sortedSessions)
       } finally {
-        
       }
     }
   }
 
   // Update to refresh sessions whenever userId or currentSessionId changes
   useEffect(() => {
-    
-      fetchSessions()
-    
+    fetchSessions()
   }, [userId])
 
   const handleNewChat = async () => {
