@@ -32,7 +32,6 @@ export function Chat() {
   )
   const [sidebarOpen, setSidebarOpen] = useState(false)
   const [initialRedirectDone, setInitialRedirectDone] = useState(false)
-  const [restoredSessionContent, setRestoredSessionContent] = useState(false)
   const [isSwitchingSession, setIsSwitchingSession] = useState(false)
   const [sessionsPreloaded, setSessionsPreloaded] = useState(false)
 
@@ -226,9 +225,6 @@ export function Chat() {
         if (cachedSession) {
           console.log('Using cached session data for:', sessionId)
           setMessages(cachedSession.messages)
-          if (!restoredSessionContent) {
-            setRestoredSessionContent(true)
-          }
           return
         }
 
@@ -238,23 +234,12 @@ export function Chat() {
           console.log(`Loading messages for session ${sessionId}`)
           setMessages(session.messages)
           sessionCache.set(sessionId, session)
-          if (!restoredSessionContent) {
-            setRestoredSessionContent(true)
-          }
         }
       }
     }
 
     loadSession()
-  }, [isSignedIn, user, sessionId, setMessages, restoredSessionContent])
-
-  if (!restoredSessionContent && user) {
-    return (
-      <div className="flex h-dvh w-full flex-col items-center justify-center">
-        <Loader visible={true} />
-      </div>
-    )
-  }
+  }, [isSignedIn, user, sessionId, setMessages])
 
   return (
     <div className="flex min-h-dvh w-full">
