@@ -1,8 +1,6 @@
 'use client'
 
 import { cn } from '@/lib/utils'
-import { useChat } from '@ai-sdk/react'
-import { useSearchParams } from 'next/navigation'
 import { memo, useEffect, useRef, useState } from 'react'
 import { codeToHtml } from 'shiki'
 

@@ -5,6 +5,7 @@ import {
   getChatSession,
   getUserSessions,
 } from '@/lib/message-storage'
+import { UserSession } from '@/lib/nusq'
 import { sessionCache } from '@/lib/session-cache'
 import { supabase } from '@/lib/supabase-client'
 import { cn } from '@/lib/utils'
@@ -16,7 +17,7 @@ import {
   UserButton,
   useUser,
 } from '@clerk/nextjs'
-import { useRouter, useSearchParams } from 'next/navigation'
+import { parseAsString, useQueryState } from 'nuqs'
 import { useEffect, useRef, useState } from 'react'
 import { ChatHistory } from './chat-history'
 import { Loader } from './loader'
@@ -25,9 +26,10 @@ import UserMessages from './user-messages'
 
 export function Chat() {
   const { user, isSignedIn, isLoaded } = useUser()
-  const router = useRouter()
-  const searchParams = useSearchParams()
-  const sessionId = searchParams.get('session')
+  const [sessionId, setSessionId] = useQueryState<string>(
+    UserSession,
+    parseAsString
+  )
   const [sidebarOpen, setSidebarOpen] = useState(false)
   const [initialRedirectDone, setInitialRedirectDone] = useState(false)
   const [restoredSessionContent, setRestoredSessionContent] = useState(false)
@@ -163,7 +165,7 @@ export function Chat() {
       }
 
       // 更新 URL
-      router.replace(`/?session=${newSessionId}`)
+      setSessionId(newSessionId)
     } catch (error) {
       console.error('Failed to switch session:', error)
     } finally {
@@ -198,12 +200,12 @@ export function Chat() {
             `Found ${userSessions.length} sessions. Redirecting to most recent: ${sortedSessions[0].id}`
           )
           setInitialRedirectDone(true)
-          router.replace(`/?session=${sortedSessions[0].id}`)
+          setSessionId(sortedSessions[0].id)
         } else {
           console.log('No existing sessions found, creating new session')
           const newSession = await createChatSession(user.id)
           setInitialRedirectDone(true)
-          router.replace(`/?session=${newSession.id}`)
+          setSessionId(newSession.id)
         }
       } else {
         setInitialRedirectDone(true)
@@ -213,7 +215,7 @@ export function Chat() {
     if (isLoaded) {
       handleInitialSession()
     }
-  }, [isLoaded, isSignedIn, user, sessionId, router, initialRedirectDone])
+  }, [isLoaded, isSignedIn, user, sessionId, initialRedirectDone])
 
   // Load session messages when user or sessionId changes
   useEffect(() => {

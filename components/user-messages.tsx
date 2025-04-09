@@ -4,12 +4,17 @@ import {
   IsReasoningEnabled,
   IsSearchEnabled,
   SelectedModelId,
+  UserSession,
 } from '@/lib/nusq'
 import { useChat } from '@ai-sdk/react'
 import { useUser } from '@clerk/nextjs'
 import type { UIMessage } from 'ai'
-import { useSearchParams } from 'next/navigation'
-import { parseAsBoolean, parseAsStringLiteral, useQueryState } from 'nuqs'
+import {
+  parseAsBoolean,
+  parseAsString,
+  parseAsStringLiteral,
+  useQueryState,
+} from 'nuqs'
 import { useEffect } from 'react'
 import { toast } from 'sonner'
 import { Messages } from './messages'
@@ -19,8 +24,8 @@ interface UserMessagesProps {
 }
 
 export default function UserMessages({ messages }: UserMessagesProps) {
-  const searchParams = useSearchParams()
-  const sessionId = searchParams.get('session')
+  const [sessionId] = useQueryState<string>(UserSession, parseAsString)
+
   const { user, isSignedIn } = useUser()
 
   const [selectedModelId] = useQueryState<modelID>(
