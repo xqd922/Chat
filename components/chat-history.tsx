@@ -48,9 +48,10 @@ export function ChatHistory({
   const handleNewChat = async () => {
     if (!userId) return
 
+    onCloseSidebar()
+
     const newSession = await createChatSession(userId)
     await onSessionSwitch(newSession.id)
-    onCloseSidebar()
     await fetchSessions()
   }
 
