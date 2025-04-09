@@ -6,7 +6,6 @@ import {
   getUserSessions,
 } from '@/lib/message-storage'
 import { UserSession } from '@/lib/nusq'
-import { sessionCache } from '@/lib/session-cache'
 import { supabase } from '@/lib/supabase-client'
 import { cn } from '@/lib/utils'
 import { useChat } from '@ai-sdk/react'
@@ -94,8 +93,6 @@ export function Chat() {
             if (session && status === 'ready') {
               console.log('Updating messages from real-time change')
               setMessages(session.messages)
-              // 更新缓存
-              sessionCache.set(sessionId, session)
             }
           }
         }
@@ -109,25 +106,6 @@ export function Chat() {
     }
   }, [isSignedIn, user, sessionId, setMessages])
 
-  // 预加载下一个会话
-  const preloadNextSession = async (nextId: string) => {
-    if (!user || !nextId) return
-
-    // 检查缓存
-    const cachedSession = sessionCache.get(nextId)
-    if (cachedSession) {
-      console.log('Using cached session data for:', nextId)
-      return
-    }
-
-    // 预加载会话数据
-    console.log('Preloading session data for:', nextId)
-    const session = await getChatSession(user.id, nextId)
-    if (session) {
-      sessionCache.set(nextId, session)
-    }
-  }
-
   // 处理会话切换
   const handleSessionSwitch = async (newSessionId: string) => {
     if (!user || newSessionId === sessionId) return
@@ -135,18 +113,10 @@ export function Chat() {
     setIsSwitchingSession(true)
 
     try {
-      // 检查缓存
-      const cachedSession = sessionCache.get(newSessionId)
-      if (cachedSession) {
-        console.log('Using cached session data for:', newSessionId)
-        setMessages(cachedSession.messages)
-      } else {
-        // 获取新会话数据
-        const session = await getChatSession(user.id, newSessionId)
-        if (session) {
-          setMessages(session.messages)
-          sessionCache.set(newSessionId, session)
-        }
+      // 获取新会话数据
+      const session = await getChatSession(user.id, newSessionId)
+      if (session) {
+        setMessages(session.messages)
       }
 
       // 更新 URL
@@ -206,20 +176,11 @@ export function Chat() {
   useEffect(() => {
     const loadSession = async () => {
       if (isSignedIn && user && sessionId) {
-        // 检查缓存
-        const cachedSession = sessionCache.get(sessionId)
-        if (cachedSession) {
-          console.log('Using cached session data for:', sessionId)
-          setMessages(cachedSession.messages)
-          return
-        }
-
         // 获取会话数据
         const session = await getChatSession(user.id, sessionId)
         if (session) {
           console.log(`Loading messages for session ${sessionId}`)
           setMessages(session.messages)
-          sessionCache.set(sessionId, session)
         }
       }
     }
@@ -253,7 +214,6 @@ export function Chat() {
             currentSessionId={sessionId || ''}
             onCloseSidebar={() => setSidebarOpen(false)}
             onSessionSwitch={handleSessionSwitch}
-            onSessionHover={preloadNextSession}
           />
         </div>
       )}

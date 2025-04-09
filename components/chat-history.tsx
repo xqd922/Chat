@@ -15,7 +15,6 @@ interface ChatHistoryProps {
   currentSessionId: string
   onCloseSidebar: () => void
   onSessionSwitch: (sessionId: string) => Promise<void>
-  onSessionHover: (sessionId: string) => Promise<void>
 }
 
 export function ChatHistory({
@@ -23,7 +22,6 @@ export function ChatHistory({
   currentSessionId,
   onCloseSidebar,
   onSessionSwitch,
-  onSessionHover,
 }: ChatHistoryProps) {
   const [sessions, setSessions] = useState<ChatSession[]>([])
 
@@ -131,10 +129,7 @@ export function ChatHistory({
           <ul className="flex flex-col gap-1">
             <AnimatePresence initial={false}>
               {sessions.map((session) => (
-                <div
-                  key={session.id}
-                  onMouseEnter={() => onSessionHover(session.id)}
-                >
+                <div key={session.id}>
                   <motion.li
                     initial={{ opacity: 0, height: 0, filter: 'blur(4px)' }}
                     animate={{ opacity: 1, height: 'auto', filter: 'blur(0)' }}
