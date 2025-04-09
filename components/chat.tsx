@@ -127,7 +127,7 @@ export function Chat() {
       // 添加短暂延迟以确保过渡动画完成
       setTimeout(() => {
         setIsSwitchingSession(false)
-      }, 300)
+      }, 100)
     }
   }
 
