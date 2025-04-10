@@ -6,9 +6,8 @@ import {
   getUserSessions,
 } from '@/lib/message-storage'
 import { UserSession } from '@/lib/nusq'
-import { supabase } from '@/lib/supabase-client'
 import { cn } from '@/lib/utils'
-import { useChat } from '@ai-sdk/react'
+import { type Message, useChat } from '@ai-sdk/react'
 import {
   SignInButton,
   SignedIn,
@@ -19,7 +18,6 @@ import {
 import { parseAsString, useQueryState } from 'nuqs'
 import { useEffect, useRef, useState } from 'react'
 import { ChatHistory } from './chat-history'
-import { Loader } from './loader'
 import UserControl from './user-control'
 import UserMessages from './user-messages'
 
@@ -32,12 +30,25 @@ export function Chat() {
   const [sidebarOpen, setSidebarOpen] = useState(false)
   const [initialRedirectDone, setInitialRedirectDone] = useState(false)
   const [isMobile, setIsMobile] = useState(false)
+  // Add a cache to store loaded sessions
+  const [sessionsCache, setSessionsCache] = useState<Record<string, Message[]>>(
+    {}
+  )
 
   // Add a ref to the sidebar
   const sidebarRef = useRef<HTMLDivElement>(null)
 
   const { messages, setMessages } = useChat({
     id: sessionId || 'primary',
+    onFinish: (message) => {
+      // Update the cache when a new message is generated
+      if (sessionId) {
+        setSessionsCache((prevCache) => ({
+          ...prevCache,
+          [sessionId]: [...(prevCache[sessionId] || []), message],
+        }))
+      }
+    },
   })
 
   // Check if the device is mobile
@@ -135,11 +146,22 @@ export function Chat() {
   useEffect(() => {
     const loadSession = async () => {
       if (isSignedIn && user && sessionId) {
-        // 获取会话数据
-        const session = await getChatSession(user.id, sessionId)
-        if (session) {
-          console.log(`Loading messages for session ${sessionId}`)
-          setMessages(session.messages)
+        // Check if session is already in cache
+        if (sessionsCache[sessionId]) {
+          console.log(`Loading messages for session ${sessionId} from cache`)
+          setMessages(sessionsCache[sessionId])
+        } else {
+          // 获取会话数据
+          const session = await getChatSession(user.id, sessionId)
+          if (session) {
+            console.log(`Loading messages for session ${sessionId}`)
+            setMessages(session.messages)
+            // Update cache
+            setSessionsCache((prevCache) => ({
+              ...prevCache,
+              [sessionId]: session.messages,
+            }))
+          }
         }
       }
     }
