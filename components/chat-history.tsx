@@ -73,6 +73,7 @@ export function ChatHistory({
 
     // Navigate to the first session if available
     if (sortedSessions.length === 1) {
+      onCloseSidebar()
       await onSessionSwitch(sortedSessions[0].id)
     }
   }
