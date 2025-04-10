@@ -72,7 +72,7 @@ export function ChatHistory({
     setSessions(sortedSessions)
 
     // Navigate to the first session if available
-    if (sortedSessions.length > 0) {
+    if (sortedSessions.length === 1) {
       await onSessionSwitch(sortedSessions[0].id)
     }
   }
