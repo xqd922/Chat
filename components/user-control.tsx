@@ -10,7 +10,7 @@ import {
 import { useChat } from '@ai-sdk/react'
 import { GlobeAltIcon, LightBulbIcon } from '@heroicons/react/24/solid'
 import { parseAsBoolean, parseAsStringLiteral, useQueryState } from 'nuqs'
-import { memo, useCallback, useMemo, useState } from 'react'
+import { memo, useCallback, useEffect, useMemo, useState } from 'react'
 import { toast } from 'sonner'
 import { Input } from './input'
 
@@ -30,6 +30,7 @@ interface UserControlProps {
 const UserControl = memo(function UserControl({ sessionId }: UserControlProps) {
   const { isSignedIn } = useUser()
   const [input, setInput] = useState<string>('')
+  const [isMobile, setIsMobile] = useState(false)
 
   // Use a consistent chat ID across components
   const chatId = sessionId || 'primary'
@@ -46,6 +47,22 @@ const UserControl = memo(function UserControl({ sessionId }: UserControlProps) {
     IsSearchEnabled,
     parseAsBoolean.withDefault(false)
   )
+
+  // Check if the device is mobile
+  useEffect(() => {
+    const checkIsMobile = () => {
+      setIsMobile(window.innerWidth < 1024) // 1024px breakpoint for lg
+    }
+
+    // Initial check
+    checkIsMobile()
+
+    // Add resize listener
+    window.addEventListener('resize', checkIsMobile)
+
+    // Cleanup
+    return () => window.removeEventListener('resize', checkIsMobile)
+  }, [])
 
   const { append, status, stop, setData } = useChat({
     id: chatId,
@@ -120,7 +137,12 @@ const UserControl = memo(function UserControl({ sessionId }: UserControlProps) {
   ])
 
   return (
-    <div className="fixed right-0 bottom-0 left-0 z-10 flex w-full flex-col items-center justify-center gap-4 px-4 py-2">
+    <div
+      className={cn(
+        'fixed right-0 bottom-0 z-10 flex w-full flex-col items-center justify-center gap-4 px-4 py-2',
+        isSignedIn && !isMobile ? 'lg:left-32' : 'left-0'
+      )}
+    >
       <div className="relative mx-auto flex w-full max-w-3xl flex-col gap-1 rounded-2xl border-[1px] border-neutral-200/60 bg-neutral-100 px-2 py-3 shadow-lg shadow-neutral-100 dark:border-neutral-700 dark:bg-neutral-800 dark:shadow-none">
         <Input
           input={input}

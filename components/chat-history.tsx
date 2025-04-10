@@ -15,6 +15,7 @@ interface ChatHistoryProps {
   currentSessionId: string
   onCloseSidebar: () => void
   onSessionSwitch: (sessionId: string) => Promise<void>
+  isMobile?: boolean
 }
 
 export function ChatHistory({
@@ -22,6 +23,7 @@ export function ChatHistory({
   currentSessionId,
   onCloseSidebar,
   onSessionSwitch,
+  isMobile = false,
 }: ChatHistoryProps) {
   const [sessions, setSessions] = useState<ChatSession[]>([])
 
@@ -48,7 +50,10 @@ export function ChatHistory({
   const handleNewChat = async () => {
     if (!userId) return
 
-    onCloseSidebar()
+    // Close sidebar only on mobile
+    if (isMobile) {
+      onCloseSidebar()
+    }
 
     const newSession = await createChatSession(userId)
     await onSessionSwitch(newSession.id)
@@ -73,14 +78,21 @@ export function ChatHistory({
 
     // Navigate to the first session if available
     if (sortedSessions.length === 1) {
-      onCloseSidebar()
+      if (isMobile) {
+        onCloseSidebar()
+      }
       await onSessionSwitch(sortedSessions[0].id)
     }
   }
 
   const handleSessionClick = async (e: React.MouseEvent, sessionId: string) => {
     e.preventDefault()
-    onCloseSidebar()
+
+    // Close sidebar only on mobile
+    if (isMobile) {
+      onCloseSidebar()
+    }
+
     await onSessionSwitch(sessionId)
   }
 
@@ -99,14 +111,16 @@ export function ChatHistory({
           >
             <PlusIcon className="size-5" />
           </button>
-          <button
-            type="button"
-            className="rounded-full p-1.5 text-neutral-600 transition-colors hover:bg-neutral-200 hover:text-neutral-900 dark:text-neutral-400 dark:hover:bg-neutral-700 dark:hover:text-neutral-100"
-            onClick={onCloseSidebar}
-            aria-label="Close Sidebar"
-          >
-            <ArrowLeftIcon className="size-5" />
-          </button>
+          {isMobile && (
+            <button
+              type="button"
+              className="rounded-full p-1.5 text-neutral-600 transition-colors hover:bg-neutral-200 hover:text-neutral-900 dark:text-neutral-400 dark:hover:bg-neutral-700 dark:hover:text-neutral-100"
+              onClick={onCloseSidebar}
+              aria-label="Close Sidebar"
+            >
+              <ArrowLeftIcon className="size-5" />
+            </button>
+          )}
         </div>
       </div>
 

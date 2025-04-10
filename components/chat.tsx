@@ -31,6 +31,7 @@ export function Chat() {
   )
   const [sidebarOpen, setSidebarOpen] = useState(false)
   const [initialRedirectDone, setInitialRedirectDone] = useState(false)
+  const [isMobile, setIsMobile] = useState(false)
 
   // Add a ref to the sidebar
   const sidebarRef = useRef<HTMLDivElement>(null)
@@ -39,10 +40,27 @@ export function Chat() {
     id: sessionId || 'primary',
   })
 
-  // Close sidebar when clicking outside of it
+  // Check if the device is mobile
+  useEffect(() => {
+    const checkIsMobile = () => {
+      setIsMobile(window.innerWidth < 1024) // 1024px breakpoint for lg
+    }
+
+    // Initial check
+    checkIsMobile()
+
+    // Add resize listener
+    window.addEventListener('resize', checkIsMobile)
+
+    // Cleanup
+    return () => window.removeEventListener('resize', checkIsMobile)
+  }, [])
+
+  // Close sidebar when clicking outside of it on mobile devices
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
       if (
+        isMobile &&
         sidebarOpen &&
         sidebarRef.current &&
         !sidebarRef.current.contains(event.target as Node)
@@ -51,15 +69,15 @@ export function Chat() {
       }
     }
 
-    // Only add the event listener if the sidebar is open
-    if (sidebarOpen) {
+    // Only add the event listener if the sidebar is open on mobile
+    if (isMobile && sidebarOpen) {
       document.addEventListener('mousedown', handleClickOutside)
     }
 
     return () => {
       document.removeEventListener('mousedown', handleClickOutside)
     }
-  }, [sidebarOpen])
+  }, [sidebarOpen, isMobile])
 
   // Log current chat session
   useEffect(() => {
@@ -103,7 +121,7 @@ export function Chat() {
       console.log('Cleaning up Supabase subscription')
       supaSubscription.unsubscribe()
     }
-  }, [isSignedIn, user, sessionId, setMessages])
+  }, [isSignedIn, user, sessionId, setMessages, status])
 
   // 处理会话切换
   const handleSessionSwitch = async (newSessionId: string) => {
@@ -150,7 +168,7 @@ export function Chat() {
     if (isLoaded) {
       handleInitialSession()
     }
-  }, [isLoaded, isSignedIn, user, sessionId, initialRedirectDone])
+  }, [isLoaded, isSignedIn, user, sessionId, initialRedirectDone, setSessionId])
 
   // Load session messages when user or sessionId changes
   useEffect(() => {
@@ -170,15 +188,15 @@ export function Chat() {
 
   return (
     <div className="flex min-h-dvh w-full">
-      {/* Overlay for both mobile and desktop when sidebar is open */}
+      {/* Overlay for mobile when sidebar is open */}
       <div
         className={cn(
-          'fixed inset-0 z-30 bg-black/20 backdrop-blur-sm transition-opacity duration-300 ease-in-out',
-          isSignedIn && sidebarOpen
+          'fixed inset-0 z-30 bg-black/20 backdrop-blur-sm transition-opacity duration-300 ease-in-out lg:hidden',
+          isSignedIn && sidebarOpen && isMobile
             ? 'opacity-100'
             : 'pointer-events-none opacity-0'
         )}
-        aria-hidden={!sidebarOpen}
+        aria-hidden={!sidebarOpen || !isMobile}
       />
 
       {isSignedIn && (
@@ -186,25 +204,39 @@ export function Chat() {
           ref={sidebarRef}
           className={cn(
             'fixed top-0 bottom-0 left-0 z-40 flex w-64 flex-col bg-transparent p-2 transition-transform duration-300 ease-in-out',
-            sidebarOpen ? 'translate-x-0' : '-translate-x-full'
+            // Mobile behavior - slide in and out
+            isMobile
+              ? sidebarOpen
+                ? 'translate-x-0'
+                : '-translate-x-full'
+              : '',
+            // Desktop behavior - always visible with content pushed over
+            !isMobile ? 'translate-x-0' : ''
           )}
         >
           <ChatHistory
             userId={user?.id || ''}
             currentSessionId={sessionId || ''}
-            onCloseSidebar={() => setSidebarOpen(false)}
+            onCloseSidebar={() => isMobile && setSidebarOpen(false)}
             onSessionSwitch={handleSessionSwitch}
+            isMobile={isMobile}
           />
         </div>
       )}
 
-      <div className="flex flex-1 flex-col items-center">
+      <div
+        className={cn(
+          'flex flex-1 flex-col items-center transition-all duration-300',
+          isSignedIn && !isMobile ? 'ml-64' : 'ml-0'
+        )}
+      >
         <header className="fixed top-0 right-0 z-10 flex w-full items-center justify-between p-4">
-          {isSignedIn && (
+          {isSignedIn && isMobile && (
             <button
               type="button"
               className="rounded-md bg-neutral-50 p-2 text-neutral-500 backdrop-blur-sm transition-colors hover:bg-neutral-100 dark:bg-neutral-800/80 dark:hover:bg-neutral-700"
               onClick={() => setSidebarOpen(!sidebarOpen)}
+              aria-label="Toggle sidebar"
             >
               <svg
                 width="16"
