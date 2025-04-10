@@ -1,7 +1,9 @@
+import { getChatSession, saveMessages } from '@/lib/message-storage'
 import { type modelID, myProvider } from '@/lib/models'
 import { auth } from '@clerk/nextjs/server'
 import {
   type Message,
+  appendResponseMessages,
   createDataStreamResponse,
   smoothStream,
   streamText,
@@ -44,24 +46,37 @@ function getIconUrl(urlPath: string) {
 }
 
 export async function POST(request: NextRequest) {
-  await auth.protect()
+  const { userId } = await auth()
+
+  if (!userId) {
+    return new Response('Unauthorized', { status: 401 })
+  }
 
   const {
     messages,
     selectedModelId,
     isSearchEnabled,
+    sessionId,
   }: {
     messages: Array<Message>
     selectedModelId: modelID
+    sessionId: string
     isReasoningEnabled: boolean
     isSearchEnabled: boolean
   } = await request.json()
+
+  // 获取当前用户对话，将其存储在会话中
+  const session = await getChatSession(userId, sessionId)
+  if (!session) {
+    return new Response('Session not found', { status: 404 })
+  }
 
   return createDataStreamResponse({
     execute: async (dataStream) => {
       // Default system prompt
       let systemPrompt = 'you are a friendly assistant.'
       let searchResults = []
+      let searchAnnotation = {}
 
       if (isSearchEnabled) {
         dataStream.writeData({
@@ -82,7 +97,7 @@ export async function POST(request: NextRequest) {
         searchResults = await fetchTavilySearch(userQuery)
 
         // Create annotation from search results
-        const searchAnnotation = {
+        searchAnnotation = {
           type: 'search_results',
           title: 'Search Results',
           results: searchResults.map(
@@ -124,6 +139,23 @@ Please respond in the same language as the user's question.`
           delayInMs: 20, // optional: defaults to 10ms
           chunking: 'line', // optional: defaults to 'word'
         }),
+        onFinish: async ({ response }) => {
+          const userMessage = messages[messages.length - 1]
+          const [, assistantMessage] = appendResponseMessages({
+            messages: [userMessage],
+            responseMessages: response.messages,
+          })
+
+          if (isSearchEnabled) {
+            assistantMessage.annotations = [searchAnnotation]
+          }
+
+          // 添加到session消息中
+          session.messages.push(userMessage)
+          session.messages.push(assistantMessage)
+          // Save the updated session
+          await saveMessages(userId, sessionId, session.messages)
+        },
       })
       result.mergeIntoDataStream(dataStream, {
         sendReasoning: true,

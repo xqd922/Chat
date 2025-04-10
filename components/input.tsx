@@ -52,6 +52,7 @@ export const Input = memo(function Input({
       selectedModelId: selectedModelId,
       isReasoningEnabled: isReasoningEnabled,
       isSearchEnabled: isSearchEnabled,
+      sessionId: sessionId,
     },
     onError: () => {
       toast.error('An error occurred, please try again!')

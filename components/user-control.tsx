@@ -70,6 +70,7 @@ const UserControl = memo(function UserControl({ sessionId }: UserControlProps) {
       selectedModelId: selectedModelId,
       isReasoningEnabled: isReasoningEnabled,
       isSearchEnabled: isSearchEnabled,
+      sessionId: sessionId,
     },
     onError: () => {
       toast.error('An error occurred, please try again!')
