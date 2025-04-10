@@ -18,7 +18,6 @@ const MODEL_QUASAR = 'openrouter/quasar-alpha'
 const MODEL_DEEPSEEK_R1 = 'DeepSeek-R1'
 const MODEL_DEEPSEEK_V3 = 'DeepSeek-V3-0324'
 const MODEL_GEMINI_2 = 'gemini-2.0-flash'
-const MODEL_GEMINI_PRO = 'google/gemini-2.5-pro-exp-03-25:free'
 
 const copilot = createOpenAI({
   apiKey: process.env.COPILOT_API_KEY,
@@ -67,12 +66,6 @@ export const myProvider = customProvider({
       }),
       model: openrouter(MODEL_QUASAR),
     }),
-    [MODEL_GEMINI_PRO]: wrapLanguageModel({
-      middleware: defaultSettingsMiddleware({
-        settings: {},
-      }),
-      model: openrouter(MODEL_GEMINI_PRO),
-    }),
     [MODEL_DEEPSEEK_R1]: wrapLanguageModel({
       middleware: extractReasoningMiddleware({
         tagName: 'think',
@@ -98,14 +91,13 @@ export type modelID = Parameters<(typeof myProvider)['languageModel']>['0']
 export const ModelList = [
   MODEL_GPT4O,
   MODEL_QWEN,
-  MODEL_GEMINI_PRO,
   MODEL_QUASAR,
   MODEL_DEEPSEEK_R1,
   MODEL_DEEPSEEK_V3,
   MODEL_GEMINI_2,
 ] as const
 
-export const ReasoningModelList = [MODEL_QWEN, MODEL_DEEPSEEK_R1,MODEL_GEMINI_PRO]
+export const ReasoningModelList = [MODEL_QWEN, MODEL_DEEPSEEK_R1]
 
 export const DefaultModelID = MODEL_QWEN
 
@@ -114,7 +106,6 @@ export const models: Record<modelID, string> = {
   [MODEL_DEEPSEEK_V3]: 'DeepSeek V3',
   [MODEL_GPT4O]: 'GPT-4o',
   [MODEL_QWEN]: 'Qwen-QWQ-32B',
-  [MODEL_GEMINI_PRO]: 'Gemini 2.5 Pro',
   [MODEL_QUASAR]: 'Quasar Alpha',
   [MODEL_GEMINI_2]: 'Gemini 2.0 Flash',
 }
