@@ -147,9 +147,11 @@ export function ChatHistory({
                       {session.title}
                     </span>
                     <button
-                      disabled={sessions.length <= 1}
+                      disabled={
+                        sessions.length <= 1 || session.id === currentSessionId
+                      }
                       type="button"
-                      className="group rounded-full p-1.5 opacity-70 transition-opacity duration-150 hover:opacity-100 disabled:opacity-0"
+                      className="group rounded-full p-1.5 opacity-70 transition-opacity duration-150 hover:opacity-100 disabled:cursor-not-allowed disabled:opacity-25"
                       onClick={(e) => handleDeleteChat(e, session.id)}
                       aria-label="Delete chat"
                     >
