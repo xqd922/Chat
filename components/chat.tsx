@@ -184,7 +184,7 @@ export function Chat() {
     }
 
     loadSession()
-  }, [isSignedIn, user, sessionId, setMessages])
+  }, [isSignedIn, user, sessionId])
 
   return (
     <div className="flex min-h-dvh w-full">
