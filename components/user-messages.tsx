@@ -14,13 +14,18 @@ import {
   useQueryState,
 } from 'nuqs'
 import { toast } from 'sonner'
+import { Loader } from './loader'
 import { Messages } from './messages'
 
 interface UserMessagesProps {
   messages: UIMessage[]
+  isLoading: boolean
 }
 
-export default function UserMessages({ messages }: UserMessagesProps) {
+export default function UserMessages({
+  messages,
+  isLoading,
+}: UserMessagesProps) {
   const [sessionId] = useQueryState<string>(UserSession, parseAsString)
 
   const [selectedModelId] = useQueryState<modelID>(
@@ -63,7 +68,9 @@ export default function UserMessages({ messages }: UserMessagesProps) {
 
   return (
     <>
-      {messages.length > 0 ? (
+      {isLoading ? (
+        <Loader visible={isLoading} />
+      ) : messages.length > 0 ? (
         <Messages
           messages={messages}
           status={status}

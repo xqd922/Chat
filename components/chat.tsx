@@ -34,6 +34,7 @@ export function Chat() {
   const [sessionsCache, setSessionsCache] = useState<Record<string, Message[]>>(
     {}
   )
+  const [isLoading, setIsLoading] = useState(false)
 
   // Add a ref to the sidebar
   const sidebarRef = useRef<HTMLDivElement>(null)
@@ -151,6 +152,7 @@ export function Chat() {
           console.log(`Loading messages for session ${sessionId} from cache`)
           setMessages(sessionsCache[sessionId])
         } else {
+          setIsLoading(true)
           // 获取会话数据
           const session = await getChatSession(user.id, sessionId)
           if (session) {
@@ -162,6 +164,7 @@ export function Chat() {
               [sessionId]: session.messages,
             }))
           }
+          setIsLoading(false)
         }
       }
     }
@@ -260,7 +263,7 @@ export function Chat() {
             }
           )}
         >
-          <UserMessages messages={messages} />
+          <UserMessages messages={messages} isLoading={isLoading} />
           <UserControl sessionId={sessionId || ''} />
         </div>
       </div>
