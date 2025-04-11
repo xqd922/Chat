@@ -6,6 +6,7 @@ import {
   getUserSessions,
 } from '@/lib/message-storage'
 import { UserSession } from '@/lib/nusq'
+import { supabase } from '@/lib/supabase-client'
 import { cn } from '@/lib/utils'
 import { type Message, useChat } from '@ai-sdk/react'
 import {
@@ -41,15 +42,6 @@ export function Chat() {
 
   const { messages, setMessages } = useChat({
     id: sessionId || 'primary',
-    onFinish: (message) => {
-      // Update the cache when a new message is generated
-      if (sessionId) {
-        setSessionsCache((prevCache) => ({
-          ...prevCache,
-          [sessionId]: [...(prevCache[sessionId] || []), message],
-        }))
-      }
-    },
   })
 
   // Check if the device is mobile
@@ -171,6 +163,45 @@ export function Chat() {
 
     loadSession()
   }, [isSignedIn, user, sessionId])
+
+  // Set up real-time subscription to Supabase changes
+  useEffect(() => {
+    if (!isSignedIn || !user || !sessionId) return
+
+    // Create subscription for the current session
+    const supaSubscription = supabase
+      .channel(`session-${sessionId}`)
+      .on(
+        'postgres_changes',
+        {
+          event: 'UPDATE',
+          schema: 'public',
+          table: 'chat_sessions',
+          filter: `id=eq.${sessionId}`,
+        },
+        async (payload) => {
+          console.log('Received real-time update for session:', sessionId)
+          // Only update if we're not the source of this change
+          // This prevents update loops when our own component saves changes
+          if (payload.new && payload.new.updatedat !== payload.old.updatedat) {
+            // Fetch the latest session data
+            setSessionsCache((prevCache) => ({
+              ...prevCache,
+              [sessionId]: payload.new.messages,
+            }))
+            // Update messages in the chat
+            // setMessages(payload.new.messages)
+          }
+        }
+      )
+      .subscribe()
+
+    // Clean up subscription when component unmounts or session changes
+    return () => {
+      console.log('Cleaning up Supabase subscription')
+      supaSubscription.unsubscribe()
+    }
+  }, [isSignedIn, user, sessionId, setMessages])
 
   return (
     <div className="flex min-h-dvh w-full">
