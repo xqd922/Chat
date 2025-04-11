@@ -190,7 +190,7 @@ export function Chat() {
               [sessionId]: payload.new.messages,
             }))
             // Update messages in the chat
-            // setMessages(payload.new.messages)
+            setMessages(payload.new.messages)
           }
         }
       )
