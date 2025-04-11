@@ -9,6 +9,7 @@ import type { ChatSession } from '@/lib/types'
 import { ArrowLeftIcon, PlusIcon, TrashIcon } from '@heroicons/react/24/outline'
 import { AnimatePresence, motion } from 'framer-motion'
 import { useEffect, useState } from 'react'
+import { Loader } from './loader'
 
 interface ChatHistoryProps {
   userId: string
@@ -26,6 +27,7 @@ export function ChatHistory({
   isMobile = false,
 }: ChatHistoryProps) {
   const [sessions, setSessions] = useState<ChatSession[]>([])
+  const [isDeleting, setIsDeleting] = useState('')
 
   const fetchSessions = async () => {
     if (userId) {
@@ -60,7 +62,12 @@ export function ChatHistory({
     await fetchSessions()
   }
 
-  const handleDeleteChat = async (e: React.MouseEvent, sessionId: string) => {
+  const handleDeleteChat = async (
+    e: React.MouseEvent,
+    sessionId: string,
+    index: number
+  ) => {
+    setIsDeleting(sessionId)
     e.preventDefault()
     e.stopPropagation()
     if (!userId) return
@@ -77,12 +84,18 @@ export function ChatHistory({
     setSessions(sortedSessions)
 
     // Navigate to the first session if available
-    if (sortedSessions.length === 1) {
+    if (
+      sortedSessions.length === 1 ||
+      index === 0 ||
+      sessionId === currentSessionId
+    ) {
       if (isMobile) {
         onCloseSidebar()
       }
       await onSessionSwitch(sortedSessions[0].id)
     }
+
+    setIsDeleting('')
   }
 
   const handleSessionClick = async (e: React.MouseEvent, sessionId: string) => {
@@ -138,13 +151,13 @@ export function ChatHistory({
             {sessions.map((session, index) => (
               <motion.li
                 key={session.id}
-                initial={{ opacity: 0, scale: 0.96 }}
-                animate={{ opacity: 1, scale: 1 }}
-                exit={{ opacity: 0, scale: 0.96 }}
+                initial={{ opacity: 0, scale: 0.96, filter: 'blur(4px)' }}
+                animate={{ opacity: 1, scale: 1, filter: 'blur(0px)' }}
+                exit={{ opacity: 0, scale: 0.96, filter: 'blur(4px)' }}
                 transition={{
-                  duration: 0.15,
+                  duration: 0.2,
                   layout: {
-                    duration: 0.15,
+                    duration: 0.2,
                     ease: 'easeOut',
                   },
                 }}
@@ -165,15 +178,17 @@ export function ChatHistory({
                     {session.title}
                   </span>
                   <button
-                    disabled={
-                      sessions.length <= 1 || session.id === currentSessionId
-                    }
+                    disabled={sessions.length <= 1}
                     type="button"
                     className="group rounded-full p-1.5 opacity-70 transition-opacity duration-150 hover:opacity-100 disabled:cursor-not-allowed disabled:opacity-25"
-                    onClick={(e) => handleDeleteChat(e, session.id)}
+                    onClick={(e) => handleDeleteChat(e, session.id, index)}
                     aria-label="Delete chat"
                   >
-                    <TrashIcon className="h-4 w-4 text-neutral-400 transition-colors duration-150 group-hover:text-red-600 dark:text-neutral-500 dark:group-hover:text-red-400" />
+                    {isDeleting === session.id ? (
+                      <Loader visible={true} />
+                    ) : (
+                      <TrashIcon className="h-4 w-4 text-neutral-400 transition-colors duration-150 group-hover:text-red-600 dark:text-neutral-500 dark:group-hover:text-red-400" />
+                    )}
                   </button>
                 </div>
                 <div className="px-4 pb-3 text-neutral-500 text-xs dark:text-neutral-400">
