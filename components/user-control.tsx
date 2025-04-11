@@ -123,6 +123,13 @@ const UserControl = memo(function UserControl({ sessionId }: UserControlProps) {
         content: input,
         createdAt: new Date(),
       })
+      // Ensure we scroll to the very bottom by using a small delay
+      setTimeout(() => {
+        window.scrollTo({
+          top: document.documentElement.scrollHeight,
+          behavior: 'auto',
+        })
+      }, 100)
     }
 
     setInput('')

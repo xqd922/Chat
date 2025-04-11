@@ -1,20 +1,15 @@
 'use client'
 
 import { MemoizedReactMarkdown } from '@/components/markdown'
+import { UserSession } from '@/lib/nusq'
 import { cn } from '@/lib/utils'
 import type { UseChatHelpers } from '@ai-sdk/react'
 import { ArrowPathIcon, ClipboardIcon } from '@heroicons/react/24/outline'
 import { ArrowDownIcon } from '@heroicons/react/24/solid'
 import type { UIMessage } from 'ai'
 import { AnimatePresence, motion } from 'framer-motion'
-import {
-  memo,
-  useEffect,
-  useLayoutEffect,
-  useMemo,
-  useRef,
-  useState,
-} from 'react'
+import { parseAsString, useQueryState } from 'nuqs'
+import { memo, useEffect, useMemo, useRef, useState } from 'react'
 import type React from 'react'
 import rehypeExternalLinks from 'rehype-external-links'
 import remarkGfm from 'remark-gfm'
@@ -590,6 +585,7 @@ export function Messages({
   setMessages,
 }: MessagesProps) {
   const messagesRef = useRef<HTMLDivElement>(null)
+  const [sessionId] = useQueryState<string>(UserSession, parseAsString)
   const [showScrollButton, setShowScrollButton] = useState(false)
   const [scrollButtonPosition, setScrollButtonPosition] = useState({
     left: 0,
@@ -597,11 +593,6 @@ export function Messages({
   })
   const bottomAnchorRef = useRef<HTMLDivElement>(null)
 
-  // Use a ref to track the current message ID to detect session changes
-  const previousMessagesRef = useRef<string>('')
-  const prevMessagesLengthRef = useRef<number>(0)
-
-  // Use layout effect to scroll before browser paint
   const scrollToBottomImmediately = () => {
     if (bottomAnchorRef.current) {
       bottomAnchorRef.current.scrollIntoView({ behavior: 'auto' })
@@ -612,6 +603,13 @@ export function Messages({
       })
     }
   }
+
+  // Initial render handling
+  useEffect(() => {
+    scrollToBottomImmediately()
+    // Only run once on mount
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [sessionId])
 
   // Calculate position for the scroll button based on window size
   useEffect(() => {
@@ -696,7 +694,6 @@ export function Messages({
     () => messages.findLastIndex((msg) => msg.role === 'assistant'),
     [messages]
   )
-
 
   return (
     <div
