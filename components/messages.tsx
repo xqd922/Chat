@@ -697,10 +697,6 @@ export function Messages({
     [messages]
   )
 
-  // If it's the initial render, we can optionally show a minimal placeholder or loading state
-  if (!initialRenderComplete) {
-    return <div className="w-full" ref={messagesRef} />
-  }
 
   return (
     <div
