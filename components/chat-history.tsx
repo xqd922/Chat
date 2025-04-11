@@ -97,7 +97,7 @@ export function ChatHistory({
   }
 
   return (
-    <div className="flex h-full flex-col overflow-hidden rounded-lg border-[1px] border-transparent bg-gradient-to-b from-neutral-50 to-neutral-100 dark:border-neutral-800 dark:from-neutral-900 dark:to-neutral-950">
+    <div className="flex h-full flex-col overflow-hidden rounded-lg border-[1px] border-transparent bg-gradient-to-b from-neutral-50 to-neutral-100 md:border-neutral-200 dark:border-neutral-800 dark:from-neutral-900 dark:to-neutral-950">
       <div className="flex items-center justify-between border-neutral-200 border-b bg-white/80 px-4 py-3 backdrop-blur-sm dark:border-neutral-800 dark:bg-neutral-900/80">
         <h2 className="font-medium font-serif text-lg text-neutral-800 dark:text-neutral-200">
           Chat History
@@ -128,41 +128,40 @@ export function ChatHistory({
         <ul className="flex flex-col gap-1">
           <AnimatePresence initial={false}>
             {sessions.map((session) => (
-              <div key={session.id}>
-                <motion.li
-                  initial={{ opacity: 0, height: 0, filter: 'blur(4px)' }}
-                  animate={{ opacity: 1, height: 'auto', filter: 'blur(0)' }}
-                  exit={{ opacity: 0, height: 'auto', filter: 'blur(4px)' }}
-                  transition={{ duration: 0.3 }}
-                  layout
-                  onClick={(e) => handleSessionClick(e, session.id)}
-                  className={`cursor-pointer rounded-lg ${
-                    session.id === currentSessionId
-                      ? 'bg-white shadow-sm ring-1 ring-neutral-200 dark:bg-neutral-800 dark:ring-neutral-700'
-                      : 'hover:bg-white dark:hover:bg-neutral-800/50'
-                  } transition-[background-color,box-shadow] duration-150 ease-in-out `}
-                >
-                  <div className="flex h-[50px] items-center justify-between px-4">
-                    <span className="line-clamp-1 max-w-[75%] font-medium font-serif text-neutral-800 dark:text-neutral-200">
-                      {session.title}
-                    </span>
-                    <button
-                      disabled={
-                        sessions.length <= 1 || session.id === currentSessionId
-                      }
-                      type="button"
-                      className="group rounded-full p-1.5 opacity-70 transition-opacity duration-150 hover:opacity-100 disabled:cursor-not-allowed disabled:opacity-25"
-                      onClick={(e) => handleDeleteChat(e, session.id)}
-                      aria-label="Delete chat"
-                    >
-                      <TrashIcon className="h-4 w-4 text-neutral-400 transition-colors duration-150 group-hover:text-red-600 dark:text-neutral-500 dark:group-hover:text-red-400" />
-                    </button>
-                  </div>
-                  <div className="px-4 pb-3 text-neutral-500 text-xs dark:text-neutral-400">
-                    {new Date(session.createdat).toLocaleString()}
-                  </div>
-                </motion.li>
-              </div>
+              <motion.li
+                key={session.id}
+                initial={{ opacity: 0, height: 'auto', filter: 'blur(4px)' }}
+                animate={{ opacity: 1, height: 'auto', filter: 'blur(0)' }}
+                exit={{ opacity: 0, height: 'auto', filter: 'blur(4px)' }}
+                transition={{ duration: 0.3 }}
+                layout
+                onClick={(e) => handleSessionClick(e, session.id)}
+                className={`cursor-pointer rounded-lg ${
+                  session.id === currentSessionId
+                    ? 'bg-white shadow-sm ring-1 ring-neutral-200 dark:bg-neutral-800 dark:ring-neutral-700'
+                    : 'hover:bg-white dark:hover:bg-neutral-800/50'
+                } transition-[background-color,box-shadow] duration-150 ease-in-out `}
+              >
+                <div className="flex h-[50px] items-center justify-between px-4">
+                  <span className="line-clamp-1 max-w-[75%] font-medium font-serif text-neutral-800 dark:text-neutral-200">
+                    {session.title}
+                  </span>
+                  <button
+                    disabled={
+                      sessions.length <= 1 || session.id === currentSessionId
+                    }
+                    type="button"
+                    className="group rounded-full p-1.5 opacity-70 transition-opacity duration-150 hover:opacity-100 disabled:cursor-not-allowed disabled:opacity-25"
+                    onClick={(e) => handleDeleteChat(e, session.id)}
+                    aria-label="Delete chat"
+                  >
+                    <TrashIcon className="h-4 w-4 text-neutral-400 transition-colors duration-150 group-hover:text-red-600 dark:text-neutral-500 dark:group-hover:text-red-400" />
+                  </button>
+                </div>
+                <div className="px-4 pb-3 text-neutral-500 text-xs dark:text-neutral-400">
+                  {new Date(session.createdat).toLocaleString()}
+                </div>
+              </motion.li>
             ))}
           </AnimatePresence>
         </ul>
