@@ -595,7 +595,6 @@ export function Messages({
     left: 0,
     width: 0,
   })
-  const [initialRenderComplete, setInitialRenderComplete] = useState(false)
   const bottomAnchorRef = useRef<HTMLDivElement>(null)
 
   // Use a ref to track the current message ID to detect session changes
@@ -613,43 +612,6 @@ export function Messages({
       })
     }
   }
-
-  // Initial render handling
-  useEffect(() => {
-    setInitialRenderComplete(true)
-    scrollToBottomImmediately()
-    // Only run once on mount
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [])
-
-  // Reset scroll button state and scroll to bottom when switching between sessions
-  useLayoutEffect(() => {
-    if (!initialRenderComplete) return
-
-    // Create a message ID signature to identify the session
-    const currentMessagesSignature = messages.map((m) => m.id).join('-')
-
-    // Check if the messages have changed significantly (session switch)
-    if (
-      previousMessagesRef.current &&
-      previousMessagesRef.current !== currentMessagesSignature &&
-      messages.length > 0
-    ) {
-      // Reset scroll button state
-      setShowScrollButton(false)
-
-      // Immediately scroll to bottom without animation
-      scrollToBottomImmediately()
-    }
-    // Also scroll to bottom when first message appears in a new conversation
-    else if (prevMessagesLengthRef.current === 0 && messages.length > 0) {
-      scrollToBottomImmediately()
-    }
-
-    // Update the refs with current messages signature and length
-    previousMessagesRef.current = currentMessagesSignature
-    prevMessagesLengthRef.current = messages.length
-  }, [messages, initialRenderComplete])
 
   // Calculate position for the scroll button based on window size
   useEffect(() => {
