@@ -71,23 +71,57 @@ export function ChatHistory({
         async (payload) => {
           console.log('Real-time update for sessions:', payload.eventType)
 
-          // Refresh the sessions list to get the latest data
-          await fetchSessions()
+          switch (payload.eventType) {
+            case 'DELETE': {
+              // Handle session deletion
+              const deletedSessionId = payload.old.id
 
-          if (payload.eventType === 'DELETE') {
-            // Handle session deletion
-            const deletedSessionId = payload.old.id
-
-            if (deletedSessionId === currentSessionId) {
-              // If the deleted session is the current one, switch to the first available session
-              const remainingSessions = sessions.filter(
+              const filterSessions = sessions.filter(
                 (session) => session.id !== deletedSessionId
               )
-              if (remainingSessions.length > 0) {
-                await onSessionSwitch(remainingSessions[0].id)
-              } else {
-                await onSessionSwitch('')
+              setSessions(filterSessions)
+              if (deletedSessionId === currentSessionId) {
+                // If the deleted session is the current one, switch to the first available session
+                const remainingSessions = sessions.filter(
+                  (session) => session.id !== deletedSessionId
+                )
+                if (remainingSessions.length > 0) {
+                  await onSessionSwitch(remainingSessions[0].id)
+                } else {
+                  await onSessionSwitch('')
+                }
               }
+              break
+            }
+            case 'INSERT': {
+              // Handle new session creation
+              const newSession = payload.new as ChatSession
+              setSessions((prevSessions) => {
+                const updatedSessions = [...prevSessions, newSession]
+                // Sort sessions by createdAt in descending order
+                return updatedSessions.sort(
+                  (a, b) =>
+                    new Date(b.createdat).getTime() -
+                    new Date(a.createdat).getTime()
+                )
+              })
+              break
+            }
+            case 'UPDATE': {
+              // Handle session update
+              const updatedSession = payload.new as ChatSession
+              setSessions((prevSessions) => {
+                const updatedSessions = prevSessions.map((session) =>
+                  session.id === updatedSession.id ? updatedSession : session
+                )
+                // Sort sessions by createdAt in descending order
+                return updatedSessions.sort(
+                  (a, b) =>
+                    new Date(b.createdat).getTime() -
+                    new Date(a.createdat).getTime()
+                )
+              })
+              break
             }
           }
         }
@@ -113,7 +147,6 @@ export function ChatHistory({
 
     const newSession = await createChatSession(userId)
     await onSessionSwitch(newSession.id)
-    await fetchSessions()
     setIsAdding(false)
   }
 
@@ -129,8 +162,9 @@ export function ChatHistory({
 
     await deleteChatSession(userId, sessionId)
 
-    // Refresh sessions list
-    const userSessions = await getUserSessions(userId)
+    // 本地删除session
+    const userSessions = sessions.filter((session) => session.id !== sessionId)
+
     // Sort sessions by createdAt in descending order
     const sortedSessions = [...userSessions].sort(
       (a, b) =>

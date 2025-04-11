@@ -101,19 +101,16 @@ export function Chat() {
     const handleInitialSession = async () => {
       // Only proceed if all conditions are met
       if (!isLoaded || !isSignedIn || !user) return
-
-      console.log('Checking for existing sessions...')
-      const userSessions = await getUserSessions(user.id)
-
       // Only redirect if we don't have a session ID in the URL
       if (!sessionId) {
+        console.log('Checking for existing sessions...')
+        const userSessions = await getUserSessions(user.id)
         if (userSessions.length > 0) {
           // Sort sessions by createdAt in descending order (newest first)
           const sortedSessions = [...userSessions].sort(
             (a, b) =>
               new Date(b.createdat).getTime() - new Date(a.createdat).getTime()
           )
-
           console.log(
             `Found ${userSessions.length} sessions. Redirecting to most recent: ${sortedSessions[0].id}`
           )

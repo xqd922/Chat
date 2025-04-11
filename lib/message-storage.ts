@@ -5,14 +5,13 @@ import type { ChatSession } from './types'
 
 const TABLE_NAME = 'chat_sessions'
 
-// Get all chat sessions for a user with caching
 export const getUserSessions = async (
   userId: string
 ): Promise<ChatSession[]> => {
   try {
     const { data, error } = await supabase
       .from(TABLE_NAME)
-      .select('*')
+      .select('id, userid,title, createdat, updatedat')
       .eq('userid', userId)
       .order('updatedat', { ascending: false })
 
@@ -24,7 +23,7 @@ export const getUserSessions = async (
     // Make sure messages is always an array
     const sessions = (data || []).map((session) => ({
       ...session,
-      messages: Array.isArray(session.messages) ? session.messages : [],
+      messages: [],
     }))
 
     return sessions
