@@ -68,7 +68,7 @@ const CodeBlockCodeBase = ({ code, language }: CodeBlockCodeProps) => {
       clearTimeout(debounceTimerRef.current)
     }
 
-    const debounceTime = 1000
+    const debounceTime = 0
 
     // 只在实际开始处理时设置状态
     const processId = setTimeout(() => {
