@@ -125,22 +125,40 @@ export function ChatHistory({
       </div>
 
       <div className="flex-1 overflow-y-auto p-3">
-        <ul className="flex flex-col gap-1">
+        <motion.ul
+          className="flex flex-col gap-1"
+          layout
+          layoutRoot
+          transition={{
+            duration: 0.2,
+            ease: 'easeOut',
+          }}
+        >
           <AnimatePresence initial={false}>
-            {sessions.map((session) => (
+            {sessions.map((session, index) => (
               <motion.li
                 key={session.id}
-                initial={{ opacity: 0, height: 'auto', filter: 'blur(4px)' }}
-                animate={{ opacity: 1, height: 'auto', filter: 'blur(0)' }}
-                exit={{ opacity: 0, height: 'auto', filter: 'blur(4px)' }}
-                transition={{ duration: 0.3 }}
+                initial={{ opacity: 0, scale: 0.96 }}
+                animate={{ opacity: 1, scale: 1 }}
+                exit={{ opacity: 0, scale: 0.96 }}
+                transition={{
+                  duration: 0.15,
+                  layout: {
+                    duration: 0.15,
+                    ease: 'easeOut',
+                  },
+                }}
                 layout
-                onClick={(e) => handleSessionClick(e, session.id)}
                 className={`cursor-pointer rounded-lg ${
                   session.id === currentSessionId
                     ? 'bg-white shadow-sm ring-1 ring-neutral-200 dark:bg-neutral-800 dark:ring-neutral-700'
                     : 'hover:bg-white dark:hover:bg-neutral-800/50'
-                } transition-[background-color,box-shadow] duration-150 ease-in-out `}
+                } transition-[background-color,box-shadow] duration-150 ease-in-out`}
+                onClick={(e) => handleSessionClick(e, session.id)}
+                style={{
+                  zIndex: sessions.length - index,
+                  position: 'relative',
+                }}
               >
                 <div className="flex h-[50px] items-center justify-between px-4">
                   <span className="line-clamp-1 max-w-[75%] font-medium font-serif text-neutral-800 dark:text-neutral-200">
@@ -164,7 +182,7 @@ export function ChatHistory({
               </motion.li>
             ))}
           </AnimatePresence>
-        </ul>
+        </motion.ul>
       </div>
     </div>
   )
