@@ -29,6 +29,7 @@ export function ChatHistory({
 }: ChatHistoryProps) {
   const [sessions, setSessions] = useState<ChatSession[]>([])
   const [isDeleting, setIsDeleting] = useState('')
+  const [isAdding, setIsAdding] = useState(false)
 
   const fetchSessions = async () => {
     if (userId) {
@@ -103,6 +104,8 @@ export function ChatHistory({
   const handleNewChat = async () => {
     if (!userId) return
 
+    setIsAdding(true)
+
     // Close sidebar only on mobile
     if (isMobile) {
       onCloseSidebar()
@@ -111,6 +114,7 @@ export function ChatHistory({
     const newSession = await createChatSession(userId)
     await onSessionSwitch(newSession.id)
     await fetchSessions()
+    setIsAdding(false)
   }
 
   const handleDeleteChat = async (
@@ -168,12 +172,19 @@ export function ChatHistory({
         </h2>
         <div className="flex gap-0.5">
           <button
+            disabled={isAdding}
             type="button"
-            className="rounded-full p-1.5 text-neutral-600 transition-colors hover:bg-neutral-200 hover:text-neutral-900 dark:text-neutral-400 dark:hover:bg-neutral-700 dark:hover:text-neutral-100"
+            className="rounded-full p-1.5 text-neutral-600 transition-colors hover:bg-neutral-200 hover:text-neutral-900 disabled:hover:bg-transparent dark:text-neutral-400 dark:hover:bg-neutral-700 dark:hover:text-neutral-100"
             onClick={handleNewChat}
             aria-label="New Chat"
           >
-            <PlusIcon className="size-5" />
+            {isAdding ? (
+              <div className="flex size-5 flex-col items-center justify-center">
+                <Loader visible={true} />
+              </div>
+            ) : (
+              <PlusIcon className="size-5" />
+            )}
           </button>
           {isMobile && (
             <button
