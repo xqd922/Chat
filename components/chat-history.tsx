@@ -5,6 +5,7 @@ import {
   deleteChatSession,
   getUserSessions,
 } from '@/lib/message-storage'
+import { supabase } from '@/lib/supabase-client'
 import type { ChatSession } from '@/lib/types'
 import { ArrowLeftIcon, PlusIcon, TrashIcon } from '@heroicons/react/24/outline'
 import { AnimatePresence, motion } from 'framer-motion'
@@ -44,9 +45,42 @@ export function ChatHistory({
     }
   }
 
-  // Update to refresh sessions whenever userId or currentSessionId changes
+  // Update to refresh sessions whenever userId changes
   useEffect(() => {
     fetchSessions()
+  }, [userId])
+
+  // Set up real-time subscription to monitor changes to user's chat sessions
+  useEffect(() => {
+    if (!userId) return
+
+    console.log('Setting up real-time subscription for chat sessions')
+
+    // Create subscription for all user's chat sessions
+    const supaSubscription = supabase
+      .channel(`user-sessions-${userId}`)
+      .on(
+        'postgres_changes',
+        {
+          event: '*', // Listen for all events (INSERT, UPDATE, DELETE)
+          schema: 'public',
+          table: 'chat_sessions',
+          filter: `userid=eq.${userId}`,
+        },
+        async (payload) => {
+          console.log('Real-time update for sessions:', payload.eventType)
+
+          // Refresh the sessions list to get the latest data
+          await fetchSessions()
+        }
+      )
+      .subscribe()
+
+    // Clean up subscription when component unmounts or userId changes
+    return () => {
+      console.log('Cleaning up Supabase sessions subscription')
+      supaSubscription.unsubscribe()
+    }
   }, [userId])
 
   const handleNewChat = async () => {
