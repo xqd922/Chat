@@ -140,7 +140,7 @@ const UserControl = memo(function UserControl({ sessionId }: UserControlProps) {
   return (
     <div
       className={cn(
-        'fixed right-0 bottom-0 z-10 flex w-full flex-col items-center justify-center gap-4 px-4 py-2',
+        'fixed right-0 bottom-0 z-10 flex w-full flex-col items-center justify-center gap-4 px-4 py-2 transition-all duration-300',
         isSignedIn && !isMobile ? 'lg:left-32' : 'left-0'
       )}
     >
