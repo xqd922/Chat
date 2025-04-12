@@ -18,6 +18,7 @@ const MODEL_QUASAR = 'openrouter/quasar-alpha'
 const MODEL_DEEPSEEK_R1 = 'DeepSeek-R1'
 const MODEL_DEEPSEEK_V3 = 'DeepSeek-V3-0324'
 const MODEL_GEMINI_2 = 'gemini-2.0-flash'
+const MODEL_GEMINI_PRO = 'gemini-2.5-pro-preview-03-25'
 
 const copilot = createOpenAI({
   apiKey: process.env.COPILOT_API_KEY,
@@ -52,6 +53,12 @@ export const myProvider = customProvider({
         },
       }),
       model: copilot(MODEL_GPT4O),
+    }),
+    [MODEL_GEMINI_PRO]: wrapLanguageModel({
+      middleware: defaultSettingsMiddleware({
+        settings: {},
+      }),
+      model: copilot(MODEL_GEMINI_PRO),
     }),
     [MODEL_QWEN]: wrapLanguageModel({
       middleware: extractReasoningMiddleware({
@@ -95,9 +102,14 @@ export const ModelList = [
   MODEL_DEEPSEEK_R1,
   MODEL_DEEPSEEK_V3,
   MODEL_GEMINI_2,
+  MODEL_GEMINI_PRO,
 ] as const
 
-export const ReasoningModelList = [MODEL_QWEN, MODEL_DEEPSEEK_R1]
+export const ReasoningModelList = [
+  MODEL_QWEN,
+  MODEL_DEEPSEEK_R1,
+  MODEL_GEMINI_PRO,
+]
 
 export const DefaultModelID = MODEL_QWEN
 
@@ -108,4 +120,5 @@ export const models: Record<modelID, string> = {
   [MODEL_QWEN]: 'Qwen-QWQ-32B',
   [MODEL_QUASAR]: 'Quasar Alpha',
   [MODEL_GEMINI_2]: 'Gemini 2.0 Flash',
+  [MODEL_GEMINI_PRO]: 'Gemini 2.5 Pro Preview',
 }
