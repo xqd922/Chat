@@ -76,20 +76,26 @@ export function ChatHistory({
               // Handle session deletion
               const deletedSessionId = payload.old.id
 
-              const filterSessions = sessions.filter(
-                (session) => session.id !== deletedSessionId
-              )
-              setSessions(filterSessions)
-              if (deletedSessionId === currentSessionId) {
-                // If the deleted session is the current one, switch to the first available session
-                const remainingSessions = sessions.filter(
+              setSessions((prevSessions) => {
+                const filterSessions = prevSessions.filter(
                   (session) => session.id !== deletedSessionId
                 )
-                if (remainingSessions.length > 0) {
-                  await onSessionSwitch(remainingSessions[0].id)
-                } else {
-                  await onSessionSwitch('')
-                }
+                return filterSessions
+              })
+
+              if (deletedSessionId === currentSessionId) {
+                // If the deleted session is the current one, switch to the first available session
+                setSessions((prevSessions) => {
+                  const remainingSessions = prevSessions.filter(
+                    (session) => session.id !== deletedSessionId
+                  )
+                  if (remainingSessions.length > 0) {
+                    onSessionSwitch(remainingSessions[0].id)
+                  } else {
+                    onSessionSwitch('')
+                  }
+                  return prevSessions
+                })
               }
               break
             }
@@ -133,7 +139,7 @@ export function ChatHistory({
       console.log('Cleaning up Supabase sessions subscription')
       supaSubscription.unsubscribe()
     }
-  }, [userId, currentSessionId, sessions, onSessionSwitch])
+  }, [userId]) // Only depend on userId for subscription
 
   const handleNewChat = async () => {
     if (!userId) return
