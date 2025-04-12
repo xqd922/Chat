@@ -14,7 +14,7 @@ import { createOpenRouter } from '@openrouter/ai-sdk-provider'
 // Model ID constants
 const MODEL_GPT4O = 'gpt-4o'
 const MODEL_QWEN = 'qwen-qwq-32b'
-const MODEL_QUASAR = 'openrouter/quasar-alpha'
+const MODEL_QUASAR = 'openrouter/optimus-alpha'
 const MODEL_DEEPSEEK_R1 = 'DeepSeek-R1'
 const MODEL_DEEPSEEK_V3 = 'DeepSeek-V3-0324'
 const MODEL_GEMINI_2 = 'gemini-2.0-flash'
@@ -118,7 +118,7 @@ export const models: Record<modelID, string> = {
   [MODEL_DEEPSEEK_V3]: 'DeepSeek V3',
   [MODEL_GPT4O]: 'GPT-4o',
   [MODEL_QWEN]: 'Qwen-QWQ-32B',
-  [MODEL_QUASAR]: 'Quasar Alpha',
+  [MODEL_QUASAR]: 'Alpha',
   [MODEL_GEMINI_2]: 'Gemini 2.0 Flash',
   [MODEL_GEMINI_PRO]: 'Gemini 2.5 Pro Preview',
 }
