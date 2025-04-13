@@ -735,11 +735,11 @@ export function Messages({
               }}
             />
           ))}
-          <div className="my-8 flex items-center justify-center">
+          <motion.div className="my-10 flex items-center justify-center">
             <span className="rounded-full bg-neutral-100 px-4 py-1 text-neutral-500 text-xs dark:bg-neutral-800 dark:text-neutral-400">
               Previous conversation
             </span>
-          </div>
+          </motion.div>
         </div>
       )}
 
@@ -748,7 +748,7 @@ export function Messages({
         className={cn(
           'w-full',
           historicalMessages.length > 0
-            ? 'min-h-[72vh]'
+            ? 'min-h-[70vh]'
             : 'min-h-[calc(100vh-200px)] pt-16',
           'flex flex-col gap-4'
         )}
