@@ -127,7 +127,7 @@ const UserControl = memo(function UserControl({ sessionId }: UserControlProps) {
       setTimeout(() => {
         window.scrollTo({
           top: document.documentElement.scrollHeight,
-          behavior: 'auto',
+          behavior: 'smooth',
         })
       }, 100)
     }

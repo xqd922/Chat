@@ -452,11 +452,7 @@ const Message = memo(
 
     // Add a message ID-based key for message parts to improve rendering
     return (
-      <div
-        className={cn(
-          'flex w-full flex-col gap-4 first-of-type:mt-16 last-of-type:mb-12'
-        )}
-      >
+      <div className={cn('flex w-full flex-col gap-4')}>
         <div
           className={cn('flex flex-col gap-2', {
             'mb-3 ml-auto w-fit rounded-lg bg-neutral-100 px-2 py-1 dark:bg-neutral-700/50':
@@ -523,29 +519,32 @@ const Message = memo(
             }
           })}
         </div>
-        {message.role === 'assistant' &&
-          (!isLastAssistantMessage || status !== 'streaming') && (
-            <div className="-mt-3 -ml-0.5 flex justify-start gap-2 transition-opacity">
-              <button
-                type="button"
-                onClick={() => {
-                  navigator.clipboard.writeText(message.content)
-                }}
-                title="Copy to clipboard"
-              >
-                <ClipboardIcon className="size-4 text-neutral-500 hover:text-neutral-700 dark:hover:text-neutral-300" />
-              </button>
-              <button
-                disabled={status === 'streaming'}
-                className={'disabled:cursor-not-allowed'}
-                type="button"
-                onClick={onRegenerate}
-                title="Regenerate response"
-              >
-                <ArrowPathIcon className="size-4 text-neutral-500 hover:text-neutral-700 dark:hover:text-neutral-300" />
-              </button>
-            </div>
-          )}
+        {/* 总是保留按钮的空间，但内容可以根据条件显示，这样可以避免布局偏移 */}
+        <div className="-mt-3 -ml-0.5 flex h-6 justify-start gap-2 transition-opacity">
+          {message.role === 'assistant' &&
+            (!isLastAssistantMessage || status !== 'streaming') && (
+              <>
+                <button
+                  type="button"
+                  onClick={() => {
+                    navigator.clipboard.writeText(message.content)
+                  }}
+                  title="Copy to clipboard"
+                >
+                  <ClipboardIcon className="size-4 text-neutral-500 hover:text-neutral-700 dark:hover:text-neutral-300" />
+                </button>
+                <button
+                  disabled={status === 'streaming'}
+                  className={'disabled:cursor-not-allowed'}
+                  type="button"
+                  onClick={onRegenerate}
+                  title="Regenerate response"
+                >
+                  <ArrowPathIcon className="size-4 text-neutral-500 hover:text-neutral-700 dark:hover:text-neutral-300" />
+                </button>
+              </>
+            )}
+        </div>
       </div>
     )
   },
@@ -592,6 +591,26 @@ export function Messages({
     width: 0,
   })
   const bottomAnchorRef = useRef<HTMLDivElement>(null)
+
+  // Determine latest user-AI message pair
+  const latestMessages = useMemo(() => {
+    if (messages.length === 0) return []
+
+    // Find the last user message and corresponding AI response
+    const lastUserIndex = [...messages]
+      .reverse()
+      .findIndex((msg) => msg.role === 'user')
+    if (lastUserIndex === -1) return messages.slice(-1) // No user messages, just show last message
+
+    const startIndex = messages.length - 1 - lastUserIndex
+    return messages.slice(startIndex)
+  }, [messages])
+
+  // Historical messages are all messages except the latest pair
+  const historicalMessages = useMemo(() => {
+    if (messages.length <= latestMessages.length) return []
+    return messages.slice(0, messages.length - latestMessages.length)
+  }, [messages, latestMessages])
 
   const scrollToBottomImmediately = () => {
     if (bottomAnchorRef.current) {
@@ -702,45 +721,91 @@ export function Messages({
       })}
       ref={messagesRef}
     >
-      {messages.map((message, messageIndex) => (
-        <Message
-          key={`message-${message.id}-${messageIndex}`}
-          message={message}
-          status={status}
-          fetchStatus={fetchStatus}
-          isLastAssistantMessage={
-            message.role === 'assistant' && messageIndex === lastAssistantIndex
-          }
-          onRegenerate={() => {
-            const newMessages = messages.slice(0, messageIndex + 1)
-            setMessagesAndReload(newMessages)
-          }}
-        />
-      ))}
+      {/* Historical Message Area */}
+      {historicalMessages.length > 0 && (
+        <div className="mt-8 w-full">
+          {historicalMessages.map((message, messageIndex) => (
+            <Message
+              key={`historical-message-${message.id}-${messageIndex}`}
+              message={message}
+              status={status}
+              fetchStatus={fetchStatus}
+              isLastAssistantMessage={false}
+              onRegenerate={() => {
+                const newMessages = messages.slice(0, messageIndex + 1)
+                setMessagesAndReload(newMessages)
+              }}
+            />
+          ))}
+          <div className="my-8 flex items-center justify-center">
+            <span className="rounded-full bg-neutral-100 px-4 py-1 text-neutral-500 text-xs dark:bg-neutral-800 dark:text-neutral-400">
+              Previous conversation
+            </span>
+          </div>
+        </div>
+      )}
 
-      {fetchStatus &&
-        fetchStatus !== 'Success' &&
-        status !== 'submitted' &&
-        status !== 'ready' && (
+      {/* Latest Message Area - Full height */}
+      <div
+        className={cn(
+          'w-full',
+          historicalMessages.length > 0
+            ? 'min-h-[70vh]'
+            : 'mt-8 min-h-[calc(100vh-200px)]',
+          'flex flex-col gap-4'
+        )}
+      >
+        {latestMessages.map((message, messageIndex) => (
+          <Message
+            key={`latest-message-${message.id}-${messageIndex}`}
+            message={message}
+            status={status}
+            fetchStatus={fetchStatus}
+            isLastAssistantMessage={
+              message.role === 'assistant' &&
+              messageIndex === latestMessages.length - 1 &&
+              message.id === messages[lastAssistantIndex]?.id
+            }
+            onRegenerate={() => {
+              const originalIndex = messages.findIndex(
+                (msg) => msg.id === message.id
+              )
+              if (originalIndex !== -1) {
+                const newMessages = messages.slice(0, originalIndex + 1)
+                setMessagesAndReload(newMessages)
+              }
+            }}
+          />
+        ))}
+
+        {fetchStatus &&
+          fetchStatus !== 'Success' &&
+          status !== 'submitted' &&
+          status !== 'ready' && (
+            <ShinyText
+              text={fetchStatus}
+              disabled={false}
+              speed={2}
+              className="w-full font-light text-sm"
+            />
+          )}
+
+        {status === 'submitted' && (
           <ShinyText
-            text={fetchStatus}
+            text="Connecting..."
             disabled={false}
             speed={2}
             className="w-full font-light text-sm"
           />
         )}
 
-      {status === 'submitted' && (
-        <ShinyText
-          text="Connecting..."
-          disabled={false}
-          speed={2}
-          className="w-full font-light text-sm"
+        {/* Invisible element at bottom to serve as a scroll anchor */}
+        <div
+          ref={bottomAnchorRef}
+          data-scroll-anchor="true"
+          style={{ height: '1px', width: '100%' }}
         />
-      )}
-
-      {/* Invisible element at bottom to serve as a scroll anchor */}
-      <div ref={bottomAnchorRef} style={{ height: '1px', width: '100%' }} />
+      </div>
 
       <AnimatePresence initial={false}>
         {/* Scroll to bottom button */}

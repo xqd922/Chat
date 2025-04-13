@@ -95,7 +95,7 @@ export const Input = memo(function Input({
         setTimeout(() => {
           window.scrollTo({
             top: document.documentElement.scrollHeight,
-            behavior: 'auto',
+            behavior: 'smooth',
           })
         }, 100)
         setInput('')
