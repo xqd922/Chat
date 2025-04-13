@@ -736,8 +736,8 @@ export function Messages({
             />
           ))}
           <motion.div className="my-10 flex items-center justify-center">
-            <span className="rounded-full bg-neutral-100 px-4 py-1 text-neutral-500 text-xs dark:bg-neutral-800 dark:text-neutral-400">
-              Previous conversation
+            <span className="rounded-full bg-neutral-100 px-4 py-1 font-medium text-neutral-500 text-xs dark:bg-neutral-800 dark:text-neutral-400">
+              Previous <span className="font-normal">conversation</span>
             </span>
           </motion.div>
         </div>
