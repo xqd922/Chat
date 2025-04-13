@@ -716,14 +716,12 @@ export function Messages({
 
   return (
     <div
-      className={cn('relative w-full flex-col items-center gap-4 pb-36', {
-        'pb-48': status !== 'ready',
-      })}
+      className={cn('relative w-full flex-col items-center gap-4 pb-36')}
       ref={messagesRef}
     >
       {/* Historical Message Area */}
       {historicalMessages.length > 0 && (
-        <div className="mt-8 w-full">
+        <div className="w-full pt-16">
           {historicalMessages.map((message, messageIndex) => (
             <Message
               key={`historical-message-${message.id}-${messageIndex}`}
@@ -750,8 +748,8 @@ export function Messages({
         className={cn(
           'w-full',
           historicalMessages.length > 0
-            ? 'min-h-[70vh]'
-            : 'mt-8 min-h-[calc(100vh-200px)]',
+            ? 'min-h-[72vh]'
+            : 'min-h-[calc(100vh-200px)] pt-16',
           'flex flex-col gap-4'
         )}
       >
