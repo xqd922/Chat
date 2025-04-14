@@ -200,6 +200,19 @@ export function Chat() {
     }
   }, [isSignedIn, user, sessionId, setMessages])
 
+  const handlePrefetch = async (sessionId: string) => {
+    if (!user) return
+    if (sessionsCache[sessionId]) return
+    const session = await getChatSession(user.id, sessionId)
+    if (session) {
+      // Update cache
+      setSessionsCache((prevCache) => ({
+        ...prevCache,
+        [sessionId]: session.messages,
+      }))
+    }
+  }
+
   return (
     <div className="flex min-h-dvh w-full">
       {/* Overlay for mobile when sidebar is open */}
@@ -234,6 +247,7 @@ export function Chat() {
             onCloseSidebar={() => isMobile && setSidebarOpen(false)}
             onSessionSwitch={handleSessionSwitch}
             isMobile={isMobile}
+            onHoverPrefetch={handlePrefetch}
           />
         </div>
       )}

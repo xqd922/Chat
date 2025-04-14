@@ -16,6 +16,7 @@ interface ChatHistoryProps {
   userId: string
   currentSessionId: string
   onCloseSidebar: () => void
+  onHoverPrefetch: (sessionId: string) => Promise<void>
   onSessionSwitch: (sessionId: string) => Promise<void>
   isMobile?: boolean
 }
@@ -24,6 +25,7 @@ export function ChatHistory({
   userId,
   currentSessionId,
   onCloseSidebar,
+  onHoverPrefetch,
   onSessionSwitch,
   isMobile = false,
 }: ChatHistoryProps) {
@@ -252,6 +254,11 @@ export function ChatHistory({
           <AnimatePresence initial={false}>
             {sessions.map((session, index) => (
               <motion.li
+                onMouseEnter={() => {
+                  if (onHoverPrefetch) {
+                    onHoverPrefetch(session.id)
+                  }
+                }}
                 key={session.id}
                 initial={{ opacity: 0, scale: 0.96, filter: 'blur(4px)' }}
                 animate={{ opacity: 1, scale: 1, filter: 'blur(0px)' }}
