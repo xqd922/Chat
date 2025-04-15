@@ -170,7 +170,7 @@ const UserControl = memo(function UserControl({ sessionId }: UserControlProps) {
             <p className="[text-shadow:_0_1px_0_rgb(0_0_0_/_20%)]">Search</p>
           </button>
         </div>
-        <div className="absolute right-2.5 bottom-2.5 flex flex-row gap-2">
+        <div className="absolute right-2.5 bottom-1.5 flex flex-row gap-2">
           <div className="relative flex w-fit cursor-pointer flex-row items-center gap-0.5 rounded-lg p-1.5 text-sm hover:bg-neutral-200 dark:hover:bg-neutral-700">
             <div className="flex items-center justify-center px-1 text-neutral-500 text-xs dark:text-neutral-500">
               <span className="pr-1">{models[selectedModelId]}</span>
@@ -203,7 +203,10 @@ const UserControl = memo(function UserControl({ sessionId }: UserControlProps) {
               disabled
             >
               <div className="size-4 animate-spin">
-                <svg className="size-4 text-white" viewBox="0 0 24 24">
+                <svg
+                  className="size-4 text-white dark:text-black"
+                  viewBox="0 0 24 24"
+                >
                   <circle
                     className="opacity-25"
                     cx="12"
@@ -226,7 +229,7 @@ const UserControl = memo(function UserControl({ sessionId }: UserControlProps) {
               type="submit"
               onClick={scroolToBottom}
               className={cn(
-                'mt-0.5 flex h-6 w-6 flex-row items-center justify-center rounded-full bg-neutral-900 p-1.5 text-neutral-100 transition-all hover:bg-neutral-800 dark:bg-neutral-100 dark:text-neutral-900 dark:hover:bg-neutral-300',
+                'mt-0.5 flex h-6 w-6 flex-row items-center justify-center rounded-full bg-neutral-900 p-1.5 text-neutral-100 transition-all dark:bg-neutral-100 dark:text-black ',
                 {
                   'dark:bg-neutral-200 dark:text-neutral-500':
                     isGeneratingResponse || input === '',
