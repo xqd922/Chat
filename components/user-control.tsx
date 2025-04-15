@@ -104,13 +104,10 @@ const UserControl = memo(function UserControl({ sessionId }: UserControlProps) {
 
   // Log when messages are sent
   const handleSubmit = useCallback(() => {
-    if (input === '') {
-      return
-    }
-
     if (isGeneratingResponse) {
+      console.log(`Stopping message to chat ${chatId}`)
       stop()
-    } else {
+    } else if (input.trim() !== '') {
       if (!isSignedIn) {
         toast.error('Please sign in to use this feature!')
         return
