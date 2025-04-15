@@ -14,7 +14,6 @@ import { createOpenRouter } from '@openrouter/ai-sdk-provider'
 // Model ID constants
 const MODEL_GPT4O = 'gpt-4o'
 const MODEL_QWEN = 'qwen-qwq-32b'
-const MODEL_QUASAR = 'openrouter/optimus-alpha'
 const MODEL_DEEPSEEK_R1 = 'DeepSeek-R1'
 const MODEL_DEEPSEEK_V3 = 'DeepSeek-V3-0324'
 const MODEL_GEMINI_2 = 'gemini-2.0-flash'
@@ -30,7 +29,7 @@ const groq = createGroq({
   apiKey: process.env.GROQ_API_KEY,
 })
 
-const openrouter = createOpenRouter({
+const _openrouter = createOpenRouter({
   apiKey: process.env.OPENROUTER_API_KEY,
 })
 
@@ -67,12 +66,6 @@ export const myProvider = customProvider({
       }),
       model: groq(MODEL_QWEN),
     }),
-    [MODEL_QUASAR]: wrapLanguageModel({
-      middleware: defaultSettingsMiddleware({
-        settings: {},
-      }),
-      model: openrouter(MODEL_QUASAR),
-    }),
     [MODEL_DEEPSEEK_R1]: wrapLanguageModel({
       middleware: extractReasoningMiddleware({
         tagName: 'think',
@@ -98,7 +91,6 @@ export type modelID = Parameters<(typeof myProvider)['languageModel']>['0']
 export const ModelList = [
   MODEL_GPT4O,
   MODEL_QWEN,
-  MODEL_QUASAR,
   MODEL_DEEPSEEK_R1,
   MODEL_DEEPSEEK_V3,
   MODEL_GEMINI_2,
@@ -118,7 +110,6 @@ export const models: Record<modelID, string> = {
   [MODEL_DEEPSEEK_V3]: 'DeepSeek V3',
   [MODEL_GPT4O]: 'GPT-4o',
   [MODEL_QWEN]: 'Qwen-QWQ-32B',
-  [MODEL_QUASAR]: 'Alpha',
   [MODEL_GEMINI_2]: 'Gemini 2.0 Flash',
   [MODEL_GEMINI_PRO]: 'Gemini 2.5 Pro Preview',
 }
