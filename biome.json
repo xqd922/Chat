@@ -38,6 +38,7 @@
         "useKeyWithClickEvents": "off"
       },
       "correctness": {
+        "noUnusedImports": "error",
         "noUnusedVariables": "error",
         "useArrayLiterals": "off",
         "useExhaustiveDependencies": "off"
