@@ -13,6 +13,7 @@ import { createOpenRouter } from '@openrouter/ai-sdk-provider'
 
 // Model ID constants
 const MODEL_GPT4O = 'gpt-4o'
+const MODEL_GPT4_1 = 'gpt-4.1'
 const MODEL_QWEN = 'qwen-qwq-32b'
 const MODEL_DEEPSEEK_R1 = 'DeepSeek-R1'
 const MODEL_DEEPSEEK_V3 = 'DeepSeek-V3-0324'
@@ -27,10 +28,6 @@ const copilot = createOpenAI({
 
 const groq = createGroq({
   apiKey: process.env.GROQ_API_KEY,
-})
-
-const _openrouter = createOpenRouter({
-  apiKey: process.env.OPENROUTER_API_KEY,
 })
 
 const google = createGoogleGenerativeAI({
@@ -52,6 +49,12 @@ export const myProvider = customProvider({
         },
       }),
       model: copilot(MODEL_GPT4O),
+    }),
+    [MODEL_GPT4_1]: wrapLanguageModel({
+      middleware: defaultSettingsMiddleware({
+        settings: {},
+      }),
+      model: copilot(MODEL_GPT4_1),
     }),
     [MODEL_GEMINI_PRO]: wrapLanguageModel({
       middleware: defaultSettingsMiddleware({
@@ -90,6 +93,7 @@ export const myProvider = customProvider({
 export type modelID = Parameters<(typeof myProvider)['languageModel']>['0']
 export const ModelList = [
   MODEL_GPT4O,
+  MODEL_GPT4_1,
   MODEL_QWEN,
   MODEL_DEEPSEEK_R1,
   MODEL_DEEPSEEK_V3,
@@ -109,6 +113,7 @@ export const models: Record<modelID, string> = {
   [MODEL_DEEPSEEK_R1]: 'DeepSeek R1',
   [MODEL_DEEPSEEK_V3]: 'DeepSeek V3',
   [MODEL_GPT4O]: 'GPT-4o',
+  [MODEL_GPT4_1]: 'GPT-4.1',
   [MODEL_QWEN]: 'Qwen-QWQ-32B',
   [MODEL_GEMINI_2]: 'Gemini 2.0 Flash',
   [MODEL_GEMINI_PRO]: 'Gemini 2.5 Pro Preview',
