@@ -784,7 +784,7 @@ export function Messages({
               text={fetchStatus}
               disabled={false}
               speed={2}
-              className="w-full font-light text-sm"
+              className="-mt-11 w-full font-light text-sm"
             />
           )}
 
