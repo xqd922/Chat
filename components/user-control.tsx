@@ -10,9 +10,8 @@ import {
 import { useChat } from '@ai-sdk/react'
 import { GlobeAltIcon, LightBulbIcon } from '@heroicons/react/24/solid'
 import { parseAsBoolean, parseAsStringLiteral, useQueryState } from 'nuqs'
-import { memo, useCallback, useEffect, useMemo, useState } from 'react'
+import { memo, useCallback, useEffect, useState } from 'react'
 import { toast } from 'sonner'
-import { Input } from './input'
 
 import {
   IsReasoningEnabled,
@@ -29,7 +28,6 @@ interface UserControlProps {
 
 const UserControl = memo(function UserControl({ sessionId }: UserControlProps) {
   const { isSignedIn } = useUser()
-  const [input, setInput] = useState<string>('')
   const [isMobile, setIsMobile] = useState(false)
 
   // Use a consistent chat ID across components
@@ -64,7 +62,7 @@ const UserControl = memo(function UserControl({ sessionId }: UserControlProps) {
     return () => window.removeEventListener('resize', checkIsMobile)
   }, [])
 
-  const { append, status, stop, setData } = useChat({
+  const { input, handleSubmit, handleInputChange, status, stop } = useChat({
     id: chatId,
     body: {
       selectedModelId: selectedModelId,
@@ -77,9 +75,7 @@ const UserControl = memo(function UserControl({ sessionId }: UserControlProps) {
     },
   })
 
-  const isGeneratingResponse = useMemo(() => {
-    return ['streaming', 'submitted'].includes(status)
-  }, [status])
+  const isGeneratingResponse = ['streaming', 'submitted'].includes(status)
 
   const toggleReasoning = useCallback(() => {
     setIsReasoningEnabled((prev) => !prev)
@@ -102,44 +98,15 @@ const UserControl = memo(function UserControl({ sessionId }: UserControlProps) {
     [setSelectedModelId, setIsReasoningEnabled]
   )
 
-  // Log when messages are sent
-  const handleSubmit = useCallback(() => {
-    if (isGeneratingResponse) {
-      console.log(`Stopping message to chat ${chatId}`)
-      stop()
-    } else if (input.trim() !== '') {
-      if (!isSignedIn) {
-        toast.error('Please sign in to use this feature!')
-        return
-      }
-
-      setData(undefined)
-      console.log(`Sending message to chat ${chatId}: ${input}`)
-      append({
-        role: 'user',
-        content: input,
-        createdAt: new Date(),
+  const scroolToBottom = () => {
+    // Ensure we scroll to the very bottom by using a small delay
+    setTimeout(() => {
+      window.scrollTo({
+        top: document.documentElement.scrollHeight,
+        behavior: 'smooth',
       })
-      // Ensure we scroll to the very bottom by using a small delay
-      setTimeout(() => {
-        window.scrollTo({
-          top: document.documentElement.scrollHeight,
-          behavior: 'smooth',
-        })
-      }, 100)
-    }
-
-    setInput('')
-  }, [
-    input,
-    isGeneratingResponse,
-    stop,
-    setData,
-    append,
-    setInput,
-    isSignedIn,
-    chatId,
-  ])
+    }, 100)
+  }
 
   return (
     <div
@@ -148,13 +115,28 @@ const UserControl = memo(function UserControl({ sessionId }: UserControlProps) {
         isSignedIn && !isMobile ? 'lg:left-32' : 'left-0'
       )}
     >
-      <div className="relative mx-auto flex w-full max-w-3xl flex-col gap-1 rounded-2xl border-[1px] border-neutral-200/60 bg-neutral-100 px-2 py-3 shadow-lg shadow-neutral-100 dark:border-neutral-700 dark:bg-neutral-800 dark:shadow-none">
-        <Input
-          input={input}
-          setInput={setInput}
-          isGeneratingResponse={isGeneratingResponse}
+      <form
+        onSubmit={handleSubmit}
+        className="relative mx-auto flex w-full max-w-3xl flex-col gap-1 rounded-2xl border-[1px] border-neutral-200/60 bg-neutral-100 px-2 py-3 shadow-lg shadow-neutral-100 dark:border-neutral-700 dark:bg-neutral-800 dark:shadow-none"
+      >
+        <textarea
+          className="mx-2 my-1 mb-12 min-h-12 w-full resize-none bg-transparent text-sm outline-none placeholder:font-light placeholder:text-neutral-300 placeholder:text-sm dark:placeholder:text-neutral-500"
+          placeholder="Send a message"
+          value={input}
+          onChange={handleInputChange}
+          onKeyDown={(e) => {
+            if (e.key === 'Enter' && !e.shiftKey) {
+              // Prevent default behavior of Enter key
+              e.preventDefault()
+              if (input.trim() && !isGeneratingResponse) {
+                // @ts-expect-error err
+                const form = e.target.closest('form')
+                if (form) form.requestSubmit()
+              }
+              scroolToBottom()
+            }
+          }}
         />
-
         <div className="absolute bottom-2.5 left-3 flex flex-col gap-1 sm:flex-row sm:items-center">
           <button
             disabled={true}
@@ -204,21 +186,37 @@ const UserControl = memo(function UserControl({ sessionId }: UserControlProps) {
             </select>
           </div>
 
-          <button
-            type="button"
-            className={cn(
-              'mt-0.5 flex size-6 flex-row items-center justify-center rounded-full bg-neutral-900 p-1.5 text-neutral-100 transition-all hover:scale-105 hover:bg-neutral-800 active:scale-95 dark:bg-neutral-100 dark:text-neutral-900 dark:hover:bg-neutral-300',
-              {
-                'dark:bg-neutral-200 dark:text-neutral-500':
-                  isGeneratingResponse || input === '',
-              }
-            )}
-            onClick={handleSubmit}
-          >
-            {isGeneratingResponse ? <StopIcon /> : <ArrowUpIcon />}
-          </button>
+          {isGeneratingResponse ? (
+            <button
+              type="button"
+              className={cn(
+                'mt-0.5 flex size-6 flex-row items-center justify-center rounded-full bg-neutral-900 p-1.5 text-neutral-100 transition-all hover:scale-105 hover:bg-neutral-800 active:scale-95 dark:bg-neutral-100 dark:text-neutral-900 dark:hover:bg-neutral-300',
+                {
+                  'dark:bg-neutral-200 dark:text-neutral-500':
+                    isGeneratingResponse || input === '',
+                }
+              )}
+              onClick={stop}
+            >
+              <StopIcon />
+            </button>
+          ) : (
+            <button
+              type="submit"
+              onClick={scroolToBottom}
+              className={cn(
+                'mt-0.5 flex size-6 flex-row items-center justify-center rounded-full bg-neutral-900 p-1.5 text-neutral-100 transition-all hover:scale-105 hover:bg-neutral-800 active:scale-95 dark:bg-neutral-100 dark:text-neutral-900 dark:hover:bg-neutral-300',
+                {
+                  'dark:bg-neutral-200 dark:text-neutral-500':
+                    isGeneratingResponse || input === '',
+                }
+              )}
+            >
+              <ArrowUpIcon />
+            </button>
+          )}
         </div>
-      </div>
+      </form>
     </div>
   )
 })
