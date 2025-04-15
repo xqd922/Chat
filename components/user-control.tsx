@@ -8,7 +8,11 @@ import {
   models,
 } from '@/lib/models'
 import { useChat } from '@ai-sdk/react'
-import { GlobeAltIcon, LightBulbIcon } from '@heroicons/react/24/solid'
+import {
+  ArrowUpIcon,
+  GlobeAltIcon,
+  LightBulbIcon,
+} from '@heroicons/react/24/solid'
 import { parseAsBoolean, parseAsStringLiteral, useQueryState } from 'nuqs'
 import { memo, useCallback, useEffect, useState } from 'react'
 import { toast } from 'sonner'
@@ -20,7 +24,7 @@ import {
 } from '@/lib/nusq'
 import { cn } from '@/lib/utils'
 import { useUser } from '@clerk/nextjs'
-import { ArrowUpIcon, ChevronDownIcon, StopIcon } from './icons'
+import { ChevronDownIcon } from './icons'
 
 interface UserControlProps {
   sessionId: string
@@ -62,7 +66,7 @@ const UserControl = memo(function UserControl({ sessionId }: UserControlProps) {
     return () => window.removeEventListener('resize', checkIsMobile)
   }, [])
 
-  const { input, handleSubmit, handleInputChange, status, stop } = useChat({
+  const { input, handleSubmit, handleInputChange, status } = useChat({
     id: chatId,
     body: {
       selectedModelId: selectedModelId,
@@ -190,29 +194,46 @@ const UserControl = memo(function UserControl({ sessionId }: UserControlProps) {
             <button
               type="button"
               className={cn(
-                'mt-0.5 flex size-6 flex-row items-center justify-center rounded-full bg-neutral-900 p-1.5 text-neutral-100 transition-all hover:scale-105 hover:bg-neutral-800 active:scale-95 dark:bg-neutral-100 dark:text-neutral-900 dark:hover:bg-neutral-300',
+                'mt-0.5 flex size-6 flex-row items-center justify-center rounded-full bg-neutral-900 px-1.5 text-neutral-100 transition-all hover:bg-neutral-800 dark:bg-neutral-100 dark:text-neutral-900 dark:hover:bg-neutral-300',
                 {
                   'dark:bg-neutral-200 dark:text-neutral-500':
                     isGeneratingResponse || input === '',
                 }
               )}
-              onClick={stop}
+              disabled
             >
-              <StopIcon />
+              <div className="size-4 animate-spin">
+                <svg className="size-4 text-white" viewBox="0 0 24 24">
+                  <circle
+                    className="opacity-25"
+                    cx="12"
+                    cy="12"
+                    r="10"
+                    stroke="currentColor"
+                    strokeWidth="4"
+                    fill="none"
+                  />
+                  <path
+                    className="opacity-75"
+                    fill="currentColor"
+                    d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
+                  />
+                </svg>
+              </div>
             </button>
           ) : (
             <button
               type="submit"
               onClick={scroolToBottom}
               className={cn(
-                'mt-0.5 flex size-6 flex-row items-center justify-center rounded-full bg-neutral-900 p-1.5 text-neutral-100 transition-all hover:scale-105 hover:bg-neutral-800 active:scale-95 dark:bg-neutral-100 dark:text-neutral-900 dark:hover:bg-neutral-300',
+                'mt-0.5 flex h-6 w-6 flex-row items-center justify-center rounded-full bg-neutral-900 p-1.5 text-neutral-100 transition-all hover:bg-neutral-800 dark:bg-neutral-100 dark:text-neutral-900 dark:hover:bg-neutral-300',
                 {
                   'dark:bg-neutral-200 dark:text-neutral-500':
                     isGeneratingResponse || input === '',
                 }
               )}
             >
-              <ArrowUpIcon />
+              <ArrowUpIcon className="h-4 w-4" />
             </button>
           )}
         </div>
