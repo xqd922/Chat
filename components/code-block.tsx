@@ -2,7 +2,6 @@
 
 import { cn } from '@/lib/utils'
 import { memo, useEffect, useRef, useState } from 'react'
-import { codeToHtml } from 'shiki'
 
 export const CodeBlock = ({
   children,
@@ -47,6 +46,7 @@ interface CodeBlockCodeProps {
 const CodeBlockCodeBase = ({ code, language }: CodeBlockCodeProps) => {
   const [highlightedHtml, setHighlightedHtml] = useState<string | null>(null)
   const [isProcessing, setIsProcessing] = useState(false)
+  const [isShikiLoading, setIsShikiLoading] = useState(false)
   const abortControllerRef = useRef<AbortController | null>(null)
   const debounceTimerRef = useRef<NodeJS.Timeout | null>(null)
 
@@ -85,6 +85,11 @@ const CodeBlockCodeBase = ({ code, language }: CodeBlockCodeProps) => {
           const abortableHighlight = async () => {
             if (signal.aborted) return null
 
+            // 懒加载 shiki 的 codeToHtml 函数
+            setIsShikiLoading(true)
+            const { codeToHtml } = await import('shiki')
+            setIsShikiLoading(false)
+
             return await codeToHtml(code, {
               lang: language || 'plaintext', // 确保始终有语言值
               themes: {
@@ -104,6 +109,7 @@ const CodeBlockCodeBase = ({ code, language }: CodeBlockCodeProps) => {
           console.error('Error highlighting code:', error)
         } finally {
           setIsProcessing(false)
+          setIsShikiLoading(false)
         }
       }
 
@@ -152,7 +158,7 @@ const CodeBlockCodeBase = ({ code, language }: CodeBlockCodeProps) => {
           className="block overflow-x-auto"
           style={{ wordBreak: 'break-word' }}
         >
-          {code}
+          {isShikiLoading ? '正在加载语法高亮...' : code}
         </code>
       </pre>
     </div>

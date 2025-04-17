@@ -1,7 +1,7 @@
 'use client'
 
 import { CheckIcon, ClipboardIcon } from '@heroicons/react/24/outline'
-import { AnimatePresence, motion } from 'framer-motion'
+import { AnimatePresence, m as motion } from 'framer-motion'
 import { useState } from 'react'
 
 type ButtonCopyProps = {

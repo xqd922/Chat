@@ -5,7 +5,7 @@ import { cn } from '@/lib/utils'
 import type { UseChatHelpers } from '@ai-sdk/react'
 import { ArrowDownIcon } from '@heroicons/react/24/solid'
 import type { UIMessage } from 'ai'
-import { AnimatePresence, motion } from 'framer-motion'
+import { AnimatePresence, m as motion } from 'framer-motion'
 import { parseAsString, useQueryState } from 'nuqs'
 import { useEffect, useMemo, useRef, useState } from 'react'
 

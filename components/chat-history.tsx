@@ -8,7 +8,7 @@ import {
 import { supabase } from '@/lib/supabase-client'
 import type { ChatSession } from '@/lib/types'
 import { ArrowLeftIcon, PlusIcon, TrashIcon } from '@heroicons/react/24/outline'
-import { AnimatePresence, motion } from 'framer-motion'
+import { AnimatePresence, m as motion } from 'framer-motion'
 import { useEffect, useState } from 'react'
 import { Loader } from './loader'
 

@@ -6,6 +6,7 @@ import { NuqsAdapter } from 'nuqs/adapters/next/app'
 import { Toaster } from 'sonner'
 
 import './globals.css'
+import { MotionProvider } from '@/components/motion-provider'
 
 export const viewport: Viewport = {
   width: 'device-width',
@@ -32,8 +33,10 @@ export default function RootLayout({
         className={`${GeistSans.variable} ${GeistMono.variable} bg-white/80 dark:bg-black/80`}
       >
         <body>
-          <Toaster position="top-center" />
-          <NuqsAdapter>{children}</NuqsAdapter>
+          <MotionProvider>
+            <Toaster position="top-center" />
+            <NuqsAdapter>{children}</NuqsAdapter>
+          </MotionProvider>
         </body>
       </html>
     </ClerkProvider>

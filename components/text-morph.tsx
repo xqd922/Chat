@@ -5,7 +5,7 @@ import {
   AnimatePresence,
   type Transition,
   type Variants,
-  motion,
+  m as motion,
 } from 'framer-motion'
 import { useId, useMemo } from 'react'
 
