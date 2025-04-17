@@ -20,7 +20,7 @@ export function ThemeColorManager() {
       const themeColor =
         currentTheme === 'dark'
           ? '#0a0a0ab6' // 深色模式背景色
-          : '#ededed' // 浅色模式背景色
+          : 'rgba(255, 255, 255, 0.8)' // 浅色模式背景色
 
       document
         .querySelector('meta[name="theme-color"]')
