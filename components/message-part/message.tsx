@@ -4,7 +4,11 @@ import { ArrowPathIcon, ClipboardIcon } from '@heroicons/react/24/outline'
 import type { UIMessage } from 'ai'
 import { memo } from 'react'
 import ShinyText from '../shiny-text'
-import { type Annotation, AnnotationDisplay } from './annotation'
+import {
+  type Annotation,
+  AnnotationDisplay,
+  type BaseAnnotation,
+} from './annotation'
 import { ReasoningMessagePart } from './reasoning-message'
 import { TextMessagePart } from './text-message'
 
@@ -14,6 +18,12 @@ interface MessageProps {
   fetchStatus?: string
   isLastAssistantMessage: boolean
   onRegenerate: () => void
+}
+
+export type InfoAnnotation = {
+  type: string
+  model: string
+  waiting_time: number
 }
 
 export const Message = memo(
@@ -47,6 +57,16 @@ export const Message = memo(
       })
     }
 
+    // 提取出annotations中类型为info的内容
+    let infoAnnotation: InfoAnnotation | undefined
+    message.annotations?.flatMap((annotation) => {
+      const baseAnnotation = annotation as BaseAnnotation
+      // 过滤掉非搜索结果类型的注释
+      if (baseAnnotation.type !== 'info') {
+        return []
+      }
+      infoAnnotation = annotation as InfoAnnotation
+    })
     // Add a message ID-based key for message parts to improve rendering
     return (
       <div className={cn('flex w-full flex-col gap-4')}>
@@ -58,6 +78,10 @@ export const Message = memo(
           })}
         >
           {message.annotations?.map((annotation, index) => {
+            const baseAnnotation = annotation as BaseAnnotation
+            if (baseAnnotation.type !== 'search_results') {
+              return null
+            }
             const annotationList = annotation as Annotation
             return (
               <AnnotationDisplay
@@ -117,7 +141,7 @@ export const Message = memo(
           })}
         </div>
         {/* 总是保留按钮的空间，但内容可以根据条件显示，这样可以避免布局偏移 */}
-        <div className="-mt-3 -ml-0.5 flex h-6 justify-start gap-2 transition-opacity">
+        <div className="-mt-3 -ml-0.5 flex h-6 items-center justify-start gap-2 transition-opacity">
           {message.role === 'assistant' &&
             (!isLastAssistantMessage || status !== 'streaming') && (
               <>
@@ -139,6 +163,14 @@ export const Message = memo(
                 >
                   <ArrowPathIcon className="size-4 text-neutral-500 hover:text-neutral-700 dark:hover:text-neutral-300" />
                 </button>
+                {infoAnnotation && (
+                  <div className="mt-[1px] text-[11px] text-neutral-500 dark:text-neutral-400">
+                    <span className="font-medium">Model: </span>
+                    {infoAnnotation.model} {' | '}
+                    <span className="font-medium">Latency: </span>
+                    {infoAnnotation.waiting_time}ms
+                  </div>
+                )}
               </>
             )}
         </div>

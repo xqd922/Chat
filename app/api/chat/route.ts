@@ -131,6 +131,10 @@ Remember not to group citations at the end but list them in the corresponding pa
 Please respond in the same language as the user's question.`
         }
       }
+
+      const startTime = Date.now()
+      let elapsedTime = 0
+
       const result = streamText({
         system: systemPrompt,
         model: myProvider.languageModel(selectedModelId),
@@ -139,6 +143,11 @@ Please respond in the same language as the user's question.`
           delayInMs: 20, // optional: defaults to 10ms
           chunking: 'line', // optional: defaults to 'word'
         }),
+        onChunk: () => {
+          if (elapsedTime === 0) {
+            elapsedTime = Date.now() - startTime
+          }
+        },
         onFinish: async ({ response }) => {
           const userMessage = messages[messages.length - 1]
           const [, assistantMessage] = appendResponseMessages({
@@ -149,6 +158,18 @@ Please respond in the same language as the user's question.`
           if (isSearchEnabled) {
             assistantMessage.annotations = [searchAnnotation]
           }
+
+          const infoAnnotation = {
+            type: 'info',
+            model: selectedModelId,
+            waiting_time: elapsedTime,
+          }
+
+          assistantMessage.annotations = [
+            ...(assistantMessage.annotations || []),
+            infoAnnotation,
+          ]
+          dataStream.writeMessageAnnotation(infoAnnotation)
 
           // 添加到session消息中
           session.messages.push(userMessage)

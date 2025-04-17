@@ -2,6 +2,10 @@ import { AnimatePresence, m as motion } from 'framer-motion'
 import { useEffect, useRef, useState } from 'react'
 import { type AvatarData, AvatarGroup } from '../avatar-group'
 
+export type BaseAnnotation = {
+  type: string
+}
+
 export type Annotation = {
   type: string
   title: string
