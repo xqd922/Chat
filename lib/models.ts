@@ -115,7 +115,7 @@ export const ReasoningModelList = [
   MODEL_GPT_O4,
 ]
 
-export const DefaultModelID = MODEL_GPT4_1
+export const DefaultModelID = MODEL_GEMINI_2
 
 export const models: Record<modelID, string> = {
   [MODEL_DEEPSEEK_R1]: 'DeepSeek R1',
