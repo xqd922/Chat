@@ -62,7 +62,10 @@ export default function UserMessages({
     data && data.length > 0
       ? typeof data[data.length - 1] === 'object' &&
         data[data.length - 1] !== null
-        ? (data[data.length - 1] as { status?: string })?.status || undefined
+        ? (data[data.length - 1] as { status?: string; type?: string })
+            ?.type === 'fetch'
+          ? (data[data.length - 1] as { status?: string })?.status || undefined
+          : undefined
         : undefined
       : undefined
 
