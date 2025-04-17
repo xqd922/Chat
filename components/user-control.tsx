@@ -30,6 +30,16 @@ interface UserControlProps {
   sessionId: string
 }
 
+export const scroolToBottom = () => {
+  // Ensure we scroll to the very bottom by using a small delay
+  setTimeout(() => {
+    window.scrollTo({
+      top: document.documentElement.scrollHeight,
+      behavior: 'smooth',
+    })
+  }, 100)
+}
+
 const UserControl = memo(function UserControl({ sessionId }: UserControlProps) {
   const { isSignedIn } = useUser()
   const [isMobile, setIsMobile] = useState(false)
@@ -101,16 +111,6 @@ const UserControl = memo(function UserControl({ sessionId }: UserControlProps) {
     },
     [setSelectedModelId, setIsReasoningEnabled]
   )
-
-  const scroolToBottom = () => {
-    // Ensure we scroll to the very bottom by using a small delay
-    setTimeout(() => {
-      window.scrollTo({
-        top: document.documentElement.scrollHeight,
-        behavior: 'smooth',
-      })
-    }, 100)
-  }
 
   return (
     <div

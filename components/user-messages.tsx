@@ -44,7 +44,7 @@ export default function UserMessages({
   // Use a consistent chat ID across components
   const chatId = sessionId || 'primary'
 
-  const { status, data, reload, setMessages } = useChat({
+  const { status, data, append } = useChat({
     id: chatId,
     body: {
       selectedModelId: selectedModelId,
@@ -75,8 +75,7 @@ export default function UserMessages({
           messages={messages}
           status={status}
           fetchStatus={fetchStatus}
-          reload={reload}
-          setMessages={setMessages}
+          append={append}
         />
       ) : (
         <div className="flex w-full flex-col gap-0.5 text-xl sm:text-2xl">
