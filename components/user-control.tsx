@@ -2,6 +2,7 @@
 
 import {
   DefaultModelID,
+  ModelGroups,
   ModelList,
   ReasoningModelList,
   type modelID,
@@ -182,10 +183,14 @@ const UserControl = memo(function UserControl({ sessionId }: UserControlProps) {
               value={selectedModelId}
               onChange={handleModelChange}
             >
-              {Object.entries(models).map(([id, name]) => (
-                <option key={id} value={id}>
-                  {name}
-                </option>
+              {ModelGroups.map((group) => (
+                <optgroup key={group.name} label={group.name}>
+                  {group.models.map((modelId) => (
+                    <option key={modelId} value={modelId}>
+                      {models[modelId]}
+                    </option>
+                  ))}
+                </optgroup>
               ))}
             </select>
           </div>

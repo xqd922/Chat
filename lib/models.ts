@@ -109,6 +109,37 @@ export const ReasoningModelList = [
 
 export const DefaultModelID = MODEL_GEMINI_2_5
 
+// 定义模型分组类型
+export type ModelGroup = {
+  name: string
+  description?: string
+  models: modelID[]
+}
+
+// 按提供商分组
+export const ModelGroups: ModelGroup[] = [
+  {
+    name: 'DeepSeek',
+    description: 'DeepSeek系列模型',
+    models: [MODEL_DEEPSEEK_R1, MODEL_DEEPSEEK_V3],
+  },
+  {
+    name: 'Copilot',
+    description: 'GPT系列模型',
+    models: [MODEL_GPT4O, MODEL_GPT4_1, MODEL_GPT_O4],
+  },
+  {
+    name: 'Groq',
+    description: 'Groq优化的模型',
+    models: [MODEL_QWEN],
+  },
+  {
+    name: 'Google',
+    description: 'Google Gemini系列',
+    models: [MODEL_GEMINI_2_5],
+  },
+]
+
 export const models: Record<modelID, string> = {
   [MODEL_DEEPSEEK_R1]: 'DeepSeek R1',
   [MODEL_DEEPSEEK_V3]: 'DeepSeek V3',
