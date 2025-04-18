@@ -17,7 +17,7 @@ const MODEL_GPT_O4 = 'o4-mini'
 const MODEL_QWEN = 'qwen-qwq-32b'
 const MODEL_DEEPSEEK_R1 = 'DeepSeek-R1'
 const MODEL_DEEPSEEK_V3 = 'DeepSeek-V3-0324'
-const MODEL_GEMINI_2 = 'gemini-2.0-flash'
+const MODEL_GEMINI_2_5 = 'gemini-2.5-flash-preview-04-17'
 const MODEL_GEMINI_PRO = 'gemini-2.5-pro-preview-03-25'
 
 const copilot = createOpenAI({
@@ -87,11 +87,11 @@ export const myProvider = customProvider({
       }),
       model: githubDeepseek(MODEL_DEEPSEEK_V3),
     }),
-    [MODEL_GEMINI_2]: wrapLanguageModel({
+    [MODEL_GEMINI_2_5]: wrapLanguageModel({
       middleware: defaultSettingsMiddleware({
         settings: {},
       }),
-      model: google(MODEL_GEMINI_2),
+      model: google(MODEL_GEMINI_2_5),
     }),
   },
 })
@@ -103,7 +103,7 @@ export const ModelList = [
   MODEL_QWEN,
   MODEL_DEEPSEEK_R1,
   MODEL_DEEPSEEK_V3,
-  MODEL_GEMINI_2,
+  MODEL_GEMINI_2_5,
   MODEL_GEMINI_PRO,
   MODEL_GPT_O4,
 ] as const
@@ -113,9 +113,10 @@ export const ReasoningModelList = [
   MODEL_DEEPSEEK_R1,
   MODEL_GEMINI_PRO,
   MODEL_GPT_O4,
+  MODEL_GEMINI_2_5,
 ]
 
-export const DefaultModelID = MODEL_GEMINI_2
+export const DefaultModelID = MODEL_GEMINI_2_5
 
 export const models: Record<modelID, string> = {
   [MODEL_DEEPSEEK_R1]: 'DeepSeek R1',
@@ -124,6 +125,6 @@ export const models: Record<modelID, string> = {
   [MODEL_GPT4O]: 'GPT-4o',
   [MODEL_GPT4_1]: 'GPT-4.1',
   [MODEL_GPT_O4]: 'o4-mini',
-  [MODEL_GEMINI_2]: 'Gemini 2.0 Flash',
+  [MODEL_GEMINI_2_5]: 'Gemini 2.0 Flash',
   [MODEL_GEMINI_PRO]: 'Gemini 2.5 Pro Preview',
 }
