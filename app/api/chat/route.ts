@@ -3,6 +3,7 @@ import { type modelID, myProvider } from '@/lib/models'
 import { auth } from '@clerk/nextjs/server'
 import {
   type Message,
+  appendClientMessage,
   appendResponseMessages,
   createDataStreamResponse,
   smoothStream,
@@ -53,23 +54,26 @@ export async function POST(request: NextRequest) {
   }
 
   const {
-    messages,
+    message,
     selectedModelId,
     isSearchEnabled,
     sessionId,
   }: {
-    messages: Array<Message>
+    message: Message
     selectedModelId: modelID
     sessionId: string
     isReasoningEnabled: boolean
     isSearchEnabled: boolean
   } = await request.json()
 
-  // 获取当前用户对话，将其存储在会话中
   const session = await getChatSession(userId, sessionId)
   if (!session) {
     return new Response('Session not found', { status: 404 })
   }
+  const messages = appendClientMessage({
+    messages: session.messages,
+    message,
+  })
 
   return createDataStreamResponse({
     execute: async (dataStream) => {
@@ -172,7 +176,7 @@ Please respond in the same language as the user's question.`
           dataStream.writeMessageAnnotation(infoAnnotation)
 
           // 添加到session消息中
-          session.messages.push(userMessage)
+          session.messages = messages
           session.messages.push(assistantMessage)
           // Save the updated session
           await saveMessages(userId, sessionId, session.messages)

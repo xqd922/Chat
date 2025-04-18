@@ -79,11 +79,14 @@ const UserControl = memo(function UserControl({ sessionId }: UserControlProps) {
 
   const { input, handleSubmit, handleInputChange, status } = useChat({
     id: chatId,
-    body: {
-      selectedModelId: selectedModelId,
-      isReasoningEnabled: isReasoningEnabled,
-      isSearchEnabled: isSearchEnabled,
-      sessionId: sessionId,
+    experimental_prepareRequestBody({ messages }) {
+      return {
+        message: messages[messages.length - 1],
+        selectedModelId: selectedModelId,
+        isReasoningEnabled: isReasoningEnabled,
+        isSearchEnabled: isSearchEnabled,
+        sessionId: chatId,
+      }
     },
     onError: () => {
       toast.error('An error occurred, please try again!')
