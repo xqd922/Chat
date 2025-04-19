@@ -18,6 +18,7 @@ const MODEL_QWEN = 'qwen-qwq-32b'
 const MODEL_DEEPSEEK_R1 = 'DeepSeek-R1'
 const MODEL_DEEPSEEK_V3 = 'DeepSeek-V3-0324'
 const MODEL_GEMINI_2_5 = 'gemini-2.5-flash-preview-04-17'
+const MODEL_CLAUDE_3 = 'claude-3.7-sonnet'
 
 const copilot = createOpenAI({
   apiKey: process.env.COPILOT_API_KEY,
@@ -60,6 +61,12 @@ export const myProvider = customProvider({
         settings: {},
       }),
       model: copilot(MODEL_GPT_O4),
+    }),
+    [MODEL_CLAUDE_3]: wrapLanguageModel({
+      middleware: defaultSettingsMiddleware({
+        settings: {},
+      }),
+      model: copilot(MODEL_CLAUDE_3),
     }),
     [MODEL_QWEN]: wrapLanguageModel({
       middleware: extractReasoningMiddleware({
@@ -129,6 +136,11 @@ export const ModelGroups: ModelGroup[] = [
     models: [MODEL_GPT4O, MODEL_GPT4_1, MODEL_GPT_O4],
   },
   {
+    name: 'Anthropic',
+    description: 'Anthropic系列模型',
+    models: [MODEL_CLAUDE_3],
+  },
+  {
     name: 'Groq',
     description: 'Groq优化的模型',
     models: [MODEL_QWEN],
@@ -144,6 +156,7 @@ export const models: Record<modelID, string> = {
   [MODEL_DEEPSEEK_R1]: 'DeepSeek R1',
   [MODEL_DEEPSEEK_V3]: 'DeepSeek V3',
   [MODEL_QWEN]: 'Qwen-QWQ-32B',
+  [MODEL_CLAUDE_3]: 'Claude 3.7 Sonnet',
   [MODEL_GPT4O]: 'GPT-4o',
   [MODEL_GPT4_1]: 'GPT-4.1',
   [MODEL_GPT_O4]: 'o4-mini',
