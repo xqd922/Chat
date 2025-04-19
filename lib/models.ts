@@ -105,6 +105,7 @@ export const ModelList = [
   MODEL_DEEPSEEK_V3,
   MODEL_GEMINI_2_5,
   MODEL_GPT_O4,
+  MODEL_CLAUDE_3
 ] as const
 
 export const ReasoningModelList = [
