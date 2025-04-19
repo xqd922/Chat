@@ -1,3 +1,4 @@
+import { cn } from '@/lib/utils'
 import type React from 'react'
 
 interface ShinyTextProps {
@@ -17,7 +18,13 @@ const ShinyText: React.FC<ShinyTextProps> = ({
 
   return (
     <div
-      className={`inline-block bg-clip-text text-[#54545494] dark:text-[#b5b5b5a4] ${disabled ? '' : 'animate-shine'} ${className}`}
+      className={cn(
+        'inline-block bg-clip-text text-[#54545494] dark:text-[#b5b5b5a4]',
+        className,
+        {
+          'animate-shine': !disabled,
+        }
+      )}
       style={
         {
           backgroundImage:

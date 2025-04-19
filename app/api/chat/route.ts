@@ -1,5 +1,7 @@
+import type { InfoAnnotation } from '@/components/message-part/message'
 import { getChatSession, saveMessages } from '@/lib/message-storage'
-import { type modelID, myProvider } from '@/lib/models'
+import { MODEL_GEMINI_2_5, type modelID, myProvider } from '@/lib/models'
+import type { GoogleGenerativeAIProviderOptions } from '@ai-sdk/google'
 import { auth } from '@clerk/nextjs/server'
 import {
   type Message,
@@ -57,6 +59,7 @@ export async function POST(request: NextRequest) {
     message,
     selectedModelId,
     isSearchEnabled,
+    isReasoningEnabled,
     sessionId,
   }: {
     message: Message
@@ -142,6 +145,16 @@ Please respond in the same language as the user's question.`
       const result = streamText({
         system: systemPrompt,
         model: myProvider.languageModel(selectedModelId),
+        providerOptions:
+          selectedModelId === MODEL_GEMINI_2_5
+            ? {
+                google: {
+                  thinkingConfig: {
+                    thinkingBudget: isReasoningEnabled ? 1024 : 0,
+                  },
+                } satisfies GoogleGenerativeAIProviderOptions,
+              }
+            : {},
         messages,
         experimental_transform: smoothStream({
           delayInMs: 20, // optional: defaults to 10ms
@@ -167,7 +180,8 @@ Please respond in the same language as the user's question.`
             type: 'info',
             model: selectedModelId,
             waiting_time: elapsedTime,
-          }
+            is_thinking: isReasoningEnabled,
+          } satisfies InfoAnnotation
 
           assistantMessage.annotations = [
             ...(assistantMessage.annotations || []),

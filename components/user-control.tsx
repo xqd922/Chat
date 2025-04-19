@@ -4,6 +4,7 @@ import {
   DefaultModelID,
   ModelGroups,
   ModelList,
+  ReasoningConfigurableModelList,
   ReasoningModelList,
   type modelID,
   models,
@@ -147,7 +148,7 @@ const UserControl = memo(function UserControl({ sessionId }: UserControlProps) {
         />
         <div className="absolute bottom-2.5 left-3 flex flex-col gap-1 sm:flex-row sm:items-center">
           <button
-            disabled={true}
+            disabled={!ReasoningConfigurableModelList.includes(selectedModelId)}
             type="button"
             className={cn(
               'flex cursor-pointer items-center gap-1 rounded-full bg-neutral-400 px-2 py-1 font-medium text-white text-xs shadow-[inset_0_1px_0_rgba(255,255,255,0.2)] transition-colors hover:shadow-[inset_0_1px_0_rgba(0,0,0,0.2)] disabled:cursor-not-allowed dark:bg-neutral-600',

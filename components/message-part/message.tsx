@@ -1,3 +1,4 @@
+import { type modelID, models } from '@/lib/models'
 import { cn } from '@/lib/utils'
 import type { UseChatHelpers } from '@ai-sdk/react'
 import { ArrowPathIcon, ClipboardIcon } from '@heroicons/react/24/outline'
@@ -22,8 +23,9 @@ interface MessageProps {
 
 export type InfoAnnotation = {
   type: string
-  model: string
+  model: modelID
   waiting_time: number
+  is_thinking: boolean
 }
 
 export const Message = memo(
@@ -166,9 +168,19 @@ export const Message = memo(
                 {infoAnnotation && (
                   <div className="mt-[1px] text-[11px] text-neutral-500 dark:text-neutral-400">
                     <span className="font-medium">Model: </span>
-                    {infoAnnotation.model} {' | '}
+                    {models[infoAnnotation.model]} {' | '}
                     <span className="font-medium">Latency: </span>
                     {infoAnnotation.waiting_time}ms
+                    {infoAnnotation.is_thinking && (
+                      <>
+                        {' | '}
+                        <ShinyText
+                          text={'Thinking'}
+                          speed={4}
+                          className="font-medium text-[11px] text-green-800/60 dark:text-green-400/60"
+                        />
+                      </>
+                    )}
                   </div>
                 )}
               </>
