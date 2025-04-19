@@ -1,7 +1,7 @@
 import { type modelID, models } from '@/lib/models'
 import { cn } from '@/lib/utils'
 import type { UseChatHelpers } from '@ai-sdk/react'
-import { ArrowPathIcon, ClipboardIcon } from '@heroicons/react/24/outline'
+import { ClipboardIcon } from '@heroicons/react/24/outline'
 import type { UIMessage } from 'ai'
 import { memo } from 'react'
 import ShinyText from '../shiny-text'
@@ -18,7 +18,6 @@ interface MessageProps {
   status: UseChatHelpers['status']
   fetchStatus?: string
   isLastAssistantMessage: boolean
-  onRegenerate: () => void
 }
 
 export type InfoAnnotation = {
@@ -29,13 +28,7 @@ export type InfoAnnotation = {
 }
 
 export const Message = memo(
-  ({
-    message,
-    status,
-    fetchStatus,
-    isLastAssistantMessage,
-    onRegenerate,
-  }: MessageProps) => {
+  ({ message, status, fetchStatus, isLastAssistantMessage }: MessageProps) => {
     // 展平所有 annotation.results 以便根据引用索引查找
     const allResults =
       message.annotations?.flatMap((annotation) => {
@@ -155,15 +148,6 @@ export const Message = memo(
                   title="Copy to clipboard"
                 >
                   <ClipboardIcon className="size-4 text-neutral-500 hover:text-neutral-700 dark:hover:text-neutral-300" />
-                </button>
-                <button
-                  disabled={status === 'streaming'}
-                  className={'disabled:cursor-not-allowed'}
-                  type="button"
-                  onClick={onRegenerate}
-                  title="Regenerate response"
-                >
-                  <ArrowPathIcon className="size-4 text-neutral-500 hover:text-neutral-700 dark:hover:text-neutral-300" />
                 </button>
                 {infoAnnotation && (
                   <div className="mt-[1px] text-[11px] text-neutral-500 dark:text-neutral-400">

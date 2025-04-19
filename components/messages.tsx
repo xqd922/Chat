@@ -11,21 +11,14 @@ import { useEffect, useMemo, useRef, useState } from 'react'
 
 import { Message } from './message-part/message'
 import ShinyText from './shiny-text'
-import { scroolToBottom } from './user-control'
 
 interface MessagesProps {
   messages: Array<UIMessage>
   status: UseChatHelpers['status']
   fetchStatus?: string
-  append: UseChatHelpers['append']
 }
 
-export function Messages({
-  messages,
-  status,
-  fetchStatus,
-  append,
-}: MessagesProps) {
+export function Messages({ messages, status, fetchStatus }: MessagesProps) {
   const messagesRef = useRef<HTMLDivElement>(null)
   const [sessionId] = useQueryState<string>(UserSession, parseAsString)
   const [showScrollButton, setShowScrollButton] = useState(false)
@@ -143,27 +136,10 @@ export function Messages({
     }
   }
 
-  const addMessageAndReload = (message: UIMessage) => {
-    if (append) {
-      append(message)
-    }
-  }
-
   const lastAssistantIndex = useMemo(
     () => messages.findLastIndex((msg) => msg.role === 'assistant'),
     [messages]
   )
-
-  const lastUserIndex = useMemo(
-    () => messages.findLastIndex((msg) => msg.role === 'user'),
-    [messages]
-  )
-
-  const onRegenerate = () => {
-    const lastUserMessage = messages[lastUserIndex]
-    addMessageAndReload(lastUserMessage)
-    scroolToBottom()
-  }
 
   return (
     <div
@@ -180,7 +156,6 @@ export function Messages({
               status={status}
               fetchStatus={fetchStatus}
               isLastAssistantMessage={false}
-              onRegenerate={onRegenerate}
             />
           ))}
           <motion.div className="my-10 flex items-center justify-center">
@@ -212,7 +187,6 @@ export function Messages({
               messageIndex === latestMessages.length - 1 &&
               message.id === messages[lastAssistantIndex]?.id
             }
-            onRegenerate={onRegenerate}
           />
         ))}
 

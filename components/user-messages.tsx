@@ -1,18 +1,7 @@
-import { DefaultModelID, ModelList, type modelID } from '@/lib/models'
-import {
-  IsReasoningEnabled,
-  IsSearchEnabled,
-  SelectedModelId,
-  UserSession,
-} from '@/lib/nusq'
+import { UserSession } from '@/lib/nusq'
 import { useChat } from '@ai-sdk/react'
 import type { UIMessage } from 'ai'
-import {
-  parseAsBoolean,
-  parseAsString,
-  parseAsStringLiteral,
-  useQueryState,
-} from 'nuqs'
+import { parseAsString, useQueryState } from 'nuqs'
 import { toast } from 'sonner'
 import { Loader } from './loader'
 import { Messages } from './messages'
@@ -28,33 +17,11 @@ export default function UserMessages({
 }: UserMessagesProps) {
   const [sessionId] = useQueryState<string>(UserSession, parseAsString)
 
-  const [selectedModelId] = useQueryState<modelID>(
-    SelectedModelId,
-    parseAsStringLiteral(ModelList).withDefault(DefaultModelID)
-  )
-  const [isReasoningEnabled] = useQueryState<boolean>(
-    IsReasoningEnabled,
-    parseAsBoolean.withDefault(true)
-  )
-  const [isSearchEnabled] = useQueryState<boolean>(
-    IsSearchEnabled,
-    parseAsBoolean.withDefault(false)
-  )
-
   // Use a consistent chat ID across components
   const chatId = sessionId || 'primary'
 
-  const { status, data, append } = useChat({
+  const { status, data } = useChat({
     id: chatId,
-    experimental_prepareRequestBody({ messages }) {
-      return {
-        message: messages[messages.length - 1],
-        selectedModelId: selectedModelId,
-        isReasoningEnabled: isReasoningEnabled,
-        isSearchEnabled: isSearchEnabled,
-        sessionId: chatId,
-      }
-    },
     onError: () => {
       toast.error('An error occurred, please try again!')
     },
@@ -81,7 +48,6 @@ export default function UserMessages({
           messages={messages}
           status={status}
           fetchStatus={fetchStatus}
-          append={append}
         />
       ) : (
         <div className="flex w-full flex-col gap-0.5 text-xl sm:text-2xl">
