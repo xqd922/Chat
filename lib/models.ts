@@ -114,7 +114,7 @@ export const ReasoningModelList = [
   MODEL_GEMINI_2_5,
 ]
 
-export const DefaultModelID = MODEL_QWEN
+export const DefaultModelID = MODEL_GEMINI_2_5
 
 // 定义模型分组类型
 export type ModelGroup = {
