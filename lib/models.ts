@@ -11,8 +11,6 @@ import { createOpenAI } from '@ai-sdk/openai'
 export const MODEL_GPT4O = 'gpt-4o'
 export const MODEL_GPT4_1 = 'gpt-4.1'
 export const MODEL_GPT_O4 = 'o4-mini'
-export const MODEL_DEEPSEEK_R1 = 'deepseek-ai/DeepSeek-R1'
-export const MODEL_DEEPSEEK_V3 = 'deepseek-ai/DeepSeek-V3'
 export const MODEL_GEMINI_2_5 = 'gemini-2.5-flash-preview-04-17'
 export const MODEL_CLAUDE_3 = 'claude-3.7-sonnet'
 
@@ -68,15 +66,12 @@ export type modelID = Parameters<(typeof myProvider)['languageModel']>['0']
 export const ModelList = [
   MODEL_GPT4O,
   MODEL_GPT4_1,
-  MODEL_DEEPSEEK_R1,
-  MODEL_DEEPSEEK_V3,
   MODEL_GEMINI_2_5,
   MODEL_GPT_O4,
   MODEL_CLAUDE_3,
 ] as const
 
 export const ReasoningModelList = [
-  MODEL_DEEPSEEK_R1,
   MODEL_GPT_O4,
   MODEL_GEMINI_2_5,
 ]
