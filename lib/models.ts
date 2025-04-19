@@ -1,11 +1,9 @@
 import {
   customProvider,
   defaultSettingsMiddleware,
-  extractReasoningMiddleware,
   wrapLanguageModel,
 } from 'ai'
 
-import { createDeepSeek } from '@ai-sdk/deepseek'
 import { createGoogleGenerativeAI } from '@ai-sdk/google'
 import { createOpenAI } from '@ai-sdk/openai'
 
@@ -13,8 +11,8 @@ import { createOpenAI } from '@ai-sdk/openai'
 export const MODEL_GPT4O = 'gpt-4o'
 export const MODEL_GPT4_1 = 'gpt-4.1'
 export const MODEL_GPT_O4 = 'o4-mini'
-export const MODEL_DEEPSEEK_R1 = 'DeepSeek-R1'
-export const MODEL_DEEPSEEK_V3 = 'DeepSeek-V3-0324'
+export const MODEL_DEEPSEEK_R1 = 'deepseek-ai/DeepSeek-R1'
+export const MODEL_DEEPSEEK_V3 = 'deepseek-ai/DeepSeek-V3'
 export const MODEL_GEMINI_2_5 = 'gemini-2.5-flash-preview-04-17'
 export const MODEL_CLAUDE_3 = 'claude-3.7-sonnet'
 
@@ -26,11 +24,6 @@ const copilot = createOpenAI({
 
 const google = createGoogleGenerativeAI({
   apiKey: process.env.GOOGLE_API_KEY,
-})
-
-const githubDeepseek = createDeepSeek({
-  apiKey: process.env.GITHUB_API_KEY,
-  baseURL: process.env.GITHUB_API_URL,
 })
 
 // custom provider with different model settings:
@@ -61,18 +54,6 @@ export const myProvider = customProvider({
         settings: {},
       }),
       model: copilot(MODEL_CLAUDE_3),
-    }),
-    [MODEL_DEEPSEEK_R1]: wrapLanguageModel({
-      middleware: extractReasoningMiddleware({
-        tagName: 'think',
-      }),
-      model: githubDeepseek(MODEL_DEEPSEEK_R1),
-    }),
-    [MODEL_DEEPSEEK_V3]: wrapLanguageModel({
-      middleware: defaultSettingsMiddleware({
-        settings: {},
-      }),
-      model: githubDeepseek(MODEL_DEEPSEEK_V3),
     }),
     [MODEL_GEMINI_2_5]: wrapLanguageModel({
       middleware: defaultSettingsMiddleware({
@@ -114,11 +95,6 @@ export type ModelGroup = {
 // 按提供商分组
 export const ModelGroups: ModelGroup[] = [
   {
-    name: 'DeepSeek',
-    description: 'DeepSeek系列模型',
-    models: [MODEL_DEEPSEEK_R1, MODEL_DEEPSEEK_V3],
-  },
-  {
     name: 'Copilot',
     description: 'GPT系列模型',
     models: [MODEL_GPT4O, MODEL_GPT4_1, MODEL_GPT_O4],
@@ -136,8 +112,6 @@ export const ModelGroups: ModelGroup[] = [
 ]
 
 export const models: Record<modelID, string> = {
-  [MODEL_DEEPSEEK_R1]: 'DeepSeek R1',
-  [MODEL_DEEPSEEK_V3]: 'DeepSeek V3',
   [MODEL_CLAUDE_3]: 'Claude 3.7 Sonnet',
   [MODEL_GPT4O]: 'GPT-4o',
   [MODEL_GPT4_1]: 'GPT-4.1',
