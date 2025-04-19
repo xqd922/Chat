@@ -157,7 +157,7 @@ Please respond in the same language as the user's question.`
             : {},
         messages,
         experimental_transform: smoothStream({
-          delayInMs: 20, // optional: defaults to 10ms
+          delayInMs: 10, // optional: defaults to 10ms
           chunking: 'line', // optional: defaults to 'word'
         }),
         onChunk: () => {
