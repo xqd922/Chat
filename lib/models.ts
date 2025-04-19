@@ -7,14 +7,12 @@ import {
 
 import { createDeepSeek } from '@ai-sdk/deepseek'
 import { createGoogleGenerativeAI } from '@ai-sdk/google'
-import { createGroq } from '@ai-sdk/groq'
 import { createOpenAI } from '@ai-sdk/openai'
 
 // Model ID constants
 export const MODEL_GPT4O = 'gpt-4o'
 export const MODEL_GPT4_1 = 'gpt-4.1'
 export const MODEL_GPT_O4 = 'o4-mini'
-export const MODEL_QWEN = 'qwen-qwq-32b'
 export const MODEL_DEEPSEEK_R1 = 'DeepSeek-R1'
 export const MODEL_DEEPSEEK_V3 = 'DeepSeek-V3-0324'
 export const MODEL_GEMINI_2_5 = 'gemini-2.5-flash-preview-04-17'
@@ -24,10 +22,6 @@ const copilot = createOpenAI({
   apiKey: process.env.COPILOT_API_KEY,
   baseURL: process.env.COPILOT_API_URL,
   compatibility: 'compatible',
-})
-
-const groq = createGroq({
-  apiKey: process.env.GROQ_API_KEY,
 })
 
 const google = createGoogleGenerativeAI({
@@ -68,13 +62,6 @@ export const myProvider = customProvider({
       }),
       model: copilot(MODEL_CLAUDE_3),
     }),
-    [MODEL_QWEN]: wrapLanguageModel({
-      middleware: extractReasoningMiddleware({
-        tagName: 'think',
-        startWithReasoning: true,
-      }),
-      model: groq(MODEL_QWEN),
-    }),
     [MODEL_DEEPSEEK_R1]: wrapLanguageModel({
       middleware: extractReasoningMiddleware({
         tagName: 'think',
@@ -100,7 +87,6 @@ export type modelID = Parameters<(typeof myProvider)['languageModel']>['0']
 export const ModelList = [
   MODEL_GPT4O,
   MODEL_GPT4_1,
-  MODEL_QWEN,
   MODEL_DEEPSEEK_R1,
   MODEL_DEEPSEEK_V3,
   MODEL_GEMINI_2_5,
@@ -109,7 +95,6 @@ export const ModelList = [
 ] as const
 
 export const ReasoningModelList = [
-  MODEL_QWEN,
   MODEL_DEEPSEEK_R1,
   MODEL_GPT_O4,
   MODEL_GEMINI_2_5,
@@ -144,11 +129,6 @@ export const ModelGroups: ModelGroup[] = [
     models: [MODEL_CLAUDE_3],
   },
   {
-    name: 'Groq',
-    description: 'Groq优化的模型',
-    models: [MODEL_QWEN],
-  },
-  {
     name: 'Google',
     description: 'Google Gemini系列',
     models: [MODEL_GEMINI_2_5],
@@ -158,7 +138,6 @@ export const ModelGroups: ModelGroup[] = [
 export const models: Record<modelID, string> = {
   [MODEL_DEEPSEEK_R1]: 'DeepSeek R1',
   [MODEL_DEEPSEEK_V3]: 'DeepSeek V3',
-  [MODEL_QWEN]: 'Qwen-QWQ-32B',
   [MODEL_CLAUDE_3]: 'Claude 3.7 Sonnet',
   [MODEL_GPT4O]: 'GPT-4o',
   [MODEL_GPT4_1]: 'GPT-4.1',
