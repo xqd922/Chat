@@ -1,10 +1,12 @@
 import {
   customProvider,
   defaultSettingsMiddleware,
+  extractReasoningMiddleware,
   wrapLanguageModel,
 } from 'ai'
 
 import { createGoogleGenerativeAI } from '@ai-sdk/google'
+import { createGroq } from '@ai-sdk/groq'
 import { createOpenAI } from '@ai-sdk/openai'
 
 // Model ID constants
@@ -13,6 +15,7 @@ export const MODEL_GPT4_1 = 'gpt-4.1'
 export const MODEL_GPT_O4 = 'o4-mini'
 export const MODEL_GEMINI_2_5 = 'gemini-2.5-flash-preview-04-17'
 export const MODEL_CLAUDE_3 = 'claude-3.7-sonnet'
+export const MODEL_QWQ = 'qwen-qwq-32b'
 
 const copilot = createOpenAI({
   apiKey: process.env.COPILOT_API_KEY,
@@ -22,6 +25,10 @@ const copilot = createOpenAI({
 
 const google = createGoogleGenerativeAI({
   apiKey: process.env.GOOGLE_API_KEY,
+})
+
+const groq = createGroq({
+  apiKey: process.env.GROQ_API_KEY,
 })
 
 // custom provider with different model settings:
@@ -59,6 +66,13 @@ export const myProvider = customProvider({
       }),
       model: google(MODEL_GEMINI_2_5),
     }),
+    [MODEL_QWQ]: wrapLanguageModel({
+      middleware: extractReasoningMiddleware({
+        tagName: 'think',
+        startWithReasoning: true,
+      }),
+      model: groq(MODEL_QWQ),
+    }),
   },
 })
 
@@ -69,12 +83,10 @@ export const ModelList = [
   MODEL_GEMINI_2_5,
   MODEL_GPT_O4,
   MODEL_CLAUDE_3,
+  MODEL_QWQ,
 ] as const
 
-export const ReasoningModelList = [
-  MODEL_GPT_O4,
-  MODEL_GEMINI_2_5,
-]
+export const ReasoningModelList = [MODEL_GPT_O4, MODEL_GEMINI_2_5, MODEL_QWQ]
 
 export const ReasoningConfigurableModelList = [MODEL_GEMINI_2_5]
 
@@ -100,6 +112,11 @@ export const ModelGroups: ModelGroup[] = [
     models: [MODEL_CLAUDE_3],
   },
   {
+    name: 'Qwen',
+    description: 'Qwen系列模型',
+    models: [MODEL_QWQ],
+  },
+  {
     name: 'Google',
     description: 'Google Gemini系列',
     models: [MODEL_GEMINI_2_5],
@@ -108,6 +125,7 @@ export const ModelGroups: ModelGroup[] = [
 
 export const models: Record<modelID, string> = {
   [MODEL_CLAUDE_3]: 'Claude 3.7 Sonnet',
+  [MODEL_QWQ]: 'Qwen QWQ 32B',
   [MODEL_GPT4O]: 'GPT-4o',
   [MODEL_GPT4_1]: 'GPT-4.1',
   [MODEL_GPT_O4]: 'o4-mini',
