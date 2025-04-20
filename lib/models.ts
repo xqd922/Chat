@@ -18,11 +18,17 @@ export const MODEL_GEMINI_2_5 = 'gemini-2.5-flash-preview-04-17'
 export const MODEL_CLAUDE_3 = 'claude-3.7-sonnet'
 export const MODEL_QWQ = 'qwen-qwq-32b'
 export const MODEL_DEEPSEEK = 'deepseek-r1-250120'
+export const MODEL_GROK = 'grok-3-mini'
 
 const copilot = createOpenAI({
   apiKey: process.env.COPILOT_API_KEY,
   baseURL: process.env.COPILOT_API_URL,
   compatibility: 'compatible',
+})
+
+const dear = createDeepSeek({
+  apiKey: process.env.DEAR_API_KEY,
+  baseURL: process.env.DEAR_API_URL,
 })
 
 const google = createGoogleGenerativeAI({
@@ -86,6 +92,12 @@ export const myProvider = customProvider({
       }),
       model: ark(MODEL_DEEPSEEK),
     }),
+    [MODEL_GROK]: wrapLanguageModel({
+      middleware: defaultSettingsMiddleware({
+        settings: {},
+      }),
+      model: dear(MODEL_GROK),
+    }),
   },
 })
 
@@ -105,6 +117,7 @@ export const ReasoningModelList = [
   MODEL_GEMINI_2_5,
   MODEL_QWQ,
   MODEL_DEEPSEEK,
+  MODEL_GROK,
 ]
 
 export const ReasoningConfigurableModelList = [MODEL_GEMINI_2_5]
@@ -141,6 +154,11 @@ export const ModelGroups: ModelGroup[] = [
     models: [MODEL_QWQ],
   },
   {
+    name: 'Grok',
+    description: 'Grok系列模型',
+    models: [MODEL_GROK],
+  },
+  {
     name: 'Google',
     description: 'Google Gemini系列',
     models: [MODEL_GEMINI_2_5],
@@ -155,4 +173,5 @@ export const models: Record<modelID, string> = {
   [MODEL_GPT4_1]: 'GPT-4.1',
   [MODEL_GPT_O4]: 'o4-mini',
   [MODEL_GEMINI_2_5]: 'Gemini 2.5 Flash',
+  [MODEL_GROK]: 'Grok 3 Mini',
 }
