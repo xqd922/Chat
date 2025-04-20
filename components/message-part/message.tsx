@@ -158,11 +158,9 @@ export const Message = memo(
                     {infoAnnotation.is_thinking && (
                       <>
                         {' | '}
-                        <ShinyText
-                          text={'Thinking'}
-                          speed={4}
-                          className="font-medium text-[11px] text-green-800/60 dark:text-green-400/60"
-                        />
+                        <span className="bg-gradient-to-r from-green-700 to-green-500 bg-clip-text font-medium text-[11px] text-transparent dark:from-green-500 dark:to-emerald-400">
+                          Thinking
+                        </span>
                       </>
                     )}
                   </div>
