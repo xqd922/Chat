@@ -1,6 +1,6 @@
 import type { InfoAnnotation } from '@/components/message-part/message'
 import { getChatSession, saveMessages } from '@/lib/message-storage'
-import { MODEL_GEMINI_2_5, type modelID, myProvider } from '@/lib/models'
+import { MODEL_GEMINI_2_5, MODEL_QWQ, type modelID, myProvider } from '@/lib/models'
 import type { GoogleGenerativeAIProviderOptions } from '@ai-sdk/google'
 import { auth } from '@clerk/nextjs/server'
 import {
@@ -156,10 +156,10 @@ Please respond in the same language as the user's question.`
               }
             : {},
         messages,
-        experimental_transform: smoothStream({
+        experimental_transform: selectedModelId === MODEL_QWQ ? smoothStream({
           delayInMs: 10, // optional: defaults to 10ms
           chunking: 'line', // optional: defaults to 'word'
-        }),
+        }) : undefined,
         onChunk: () => {
           if (elapsedTime === 0) {
             elapsedTime = Date.now() - startTime
