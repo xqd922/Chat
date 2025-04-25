@@ -110,7 +110,7 @@ export const ModelList = [
   MODEL_CLAUDE_3,
   MODEL_QWQ,
   MODEL_DEEPSEEK,
-  MODEL_GROK
+  MODEL_GROK,
 ] as const
 
 export const ReasoningModelList = [

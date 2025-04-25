@@ -2,6 +2,7 @@
 
 import { cn } from '@/lib/utils'
 import { memo, useEffect, useRef, useState } from 'react'
+import { codeToHtml } from 'shiki'
 
 export const CodeBlock = ({
   children,
@@ -45,8 +46,6 @@ interface CodeBlockCodeProps {
 // Non-memoized version that will be wrapped
 const CodeBlockCodeBase = ({ code, language }: CodeBlockCodeProps) => {
   const [highlightedHtml, setHighlightedHtml] = useState<string | null>(null)
-  const [isProcessing, setIsProcessing] = useState(false)
-  const [isShikiLoading, setIsShikiLoading] = useState(false)
   const abortControllerRef = useRef<AbortController | null>(null)
   const debounceTimerRef = useRef<NodeJS.Timeout | null>(null)
 
@@ -72,10 +71,6 @@ const CodeBlockCodeBase = ({ code, language }: CodeBlockCodeProps) => {
 
     // 只在实际开始处理时设置状态
     const processId = setTimeout(() => {
-      if (!isProcessing) {
-        setIsProcessing(true)
-      }
-
       const executeHighlight = async () => {
         try {
           abortControllerRef.current = new AbortController()
@@ -84,11 +79,6 @@ const CodeBlockCodeBase = ({ code, language }: CodeBlockCodeProps) => {
           // Simple wrapper to make the shiki call abortable
           const abortableHighlight = async () => {
             if (signal.aborted) return null
-
-            // 懒加载 shiki 的 codeToHtml 函数
-            setIsShikiLoading(true)
-            const { codeToHtml } = await import('shiki')
-            setIsShikiLoading(false)
 
             return await codeToHtml(code, {
               lang: language || 'plaintext', // 确保始终有语言值
@@ -107,9 +97,6 @@ const CodeBlockCodeBase = ({ code, language }: CodeBlockCodeProps) => {
         } catch (error) {
           // 检查错误对象是否有 name 属性
           console.error('Error highlighting code:', error)
-        } finally {
-          setIsProcessing(false)
-          setIsShikiLoading(false)
         }
       }
 
@@ -158,7 +145,7 @@ const CodeBlockCodeBase = ({ code, language }: CodeBlockCodeProps) => {
           className="block overflow-x-auto"
           style={{ wordBreak: 'break-word' }}
         >
-          {isShikiLoading ? '正在加载语法高亮...' : code}
+          {code}
         </code>
       </pre>
     </div>
