@@ -234,3 +234,67 @@ export const ArrowLeftIcon = ({ size = 16 }: { size?: number }) => (
     <polyline points="12 19 5 12 12 5" />
   </svg>
 )
+
+export const BrainIcon = ({ size = 16 }: { size?: number }) => (
+  <svg
+    height={size}
+    width={size}
+    viewBox="0 0 24 24"
+    fill="none"
+    stroke="currentColor"
+    strokeWidth="1.5"
+    strokeLinecap="round"
+    strokeLinejoin="round"
+  >
+    <path d="M9.5 2A2.5 2.5 0 0 1 12 4.5V6a2 2 0 0 0 4 0 2 2 0 0 1 4 0 2 2 0 0 1-2 2h-1a2 2 0 0 0 0 4h1a2 2 0 0 1 2 2 2 2 0 0 1-4 0 2 2 0 0 0-4 0 2 2 0 0 0-2 2v.5A2.5 2.5 0 0 1 7.5 19H5a2 2 0 0 1-2-2 2 2 0 0 1 2-2 2 2 0 0 0 0-4 2 2 0 0 1-2-2 2 2 0 0 1 2-2h2.5a2.5 2.5 0 0 0 0-5Z" />
+  </svg>
+)
+
+export const StarIcon = ({
+  size = 16,
+  className = '',
+}: { size?: number; className?: string }) => (
+  <svg
+    height={size}
+    width={size}
+    viewBox="0 0 24 24"
+    fill="currentColor"
+    className={className}
+  >
+    <path d="M12 17.27 18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z" />
+  </svg>
+)
+
+export const InactiveStarIcon = ({
+  size = 16,
+  className = '',
+}: { size?: number; className?: string }) => (
+  <svg
+    height={size}
+    width={size}
+    viewBox="0 0 24 24"
+    fill="none"
+    stroke="currentColor"
+    strokeWidth="1.5"
+    className={className}
+  >
+    <path d="M12 17.27 18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z" />
+  </svg>
+)
+
+export const PlusCircleIcon = ({ size = 16 }: { size?: number }) => (
+  <svg
+    height={size}
+    width={size}
+    viewBox="0 0 24 24"
+    fill="none"
+    stroke="currentColor"
+    strokeWidth="1.5"
+    strokeLinecap="round"
+    strokeLinejoin="round"
+  >
+    <circle cx="12" cy="12" r="10" />
+    <line x1="12" y1="8" x2="12" y2="16" />
+    <line x1="8" y1="12" x2="16" y2="12" />
+  </svg>
+)
