@@ -105,7 +105,7 @@ export function ReasoningMessagePart({
         {isExpanded ? <ChevronDownIcon /> : <ChevronUpIcon />}
       </button>
       {!isExpanded && (
-        <div className="pointer-events-none absolute bottom-0 left-0 h-16 w-full bg-gradient-to-t from-neutral-100 to-transparent dark:from-[#111010]" />
+        <div className="pointer-events-none absolute bottom-0 left-0 h-16 w-full bg-gradient-to-t from-neutral-100 to-transparent dark:from-neutral-900" />
       )}
       <div
         key="reasoning"
