@@ -87,8 +87,8 @@ export const myProvider = customProvider({
       model: groq(MODEL_QWQ),
     }),
     [MODEL_DEEPSEEK]: wrapLanguageModel({
-      middleware: extractReasoningMiddleware({
-        tagName: 'think',
+      middleware: defaultSettingsMiddleware({
+        settings: {},
       }),
       model: ark(MODEL_DEEPSEEK),
     }),

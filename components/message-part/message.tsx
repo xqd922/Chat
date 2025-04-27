@@ -89,6 +89,7 @@ export const Message = memo(
           })}
           {message.role === 'assistant' &&
             message.content.length === 0 &&
+            message.reasoning?.length === 0 &&
             (fetchStatus === 'Success' || !fetchStatus) && (
               <ShinyText
                 text="Generating..."
@@ -184,6 +185,10 @@ export const Message = memo(
 
     // Check if content has changed
     if (prevProps.message.content !== nextProps.message.content) {
+      return false
+    }
+
+    if (prevProps.message.reasoning !== nextProps.message.reasoning) {
       return false
     }
 
