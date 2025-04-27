@@ -67,7 +67,7 @@ export const Message = memo(
       <div className={cn('flex w-full flex-col gap-4')}>
         <div
           className={cn('flex flex-col gap-2', {
-            'mb-3 ml-auto w-fit rounded-lg rounded-br-none border-[1px] border-neutral-200 bg-white px-2 py-1 shadow-md shadow-neutral-200/80 dark:border-neutral-700 dark:bg-neutral-800 dark:shadow-none':
+            'mb-3 ml-auto w-fit rounded-lg rounded-br-none border-[1px] border-neutral-200 bg-white px-2 py-1 shadow-neutral-200/80 shadow-sm dark:border-neutral-700 dark:bg-neutral-800 dark:shadow-none':
               message.role === 'user',
             '': message.role === 'assistant',
           })}
