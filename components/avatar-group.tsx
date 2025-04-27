@@ -23,7 +23,6 @@ export function AvatarGroup({
   className,
 }: AvatarGroupProps) {
   const visibleAvatars = avatars.slice(0, max)
-  const remainingCount = avatars.length - max
 
   // Size classes
   const sizeClasses = {
@@ -59,19 +58,6 @@ export function AvatarGroup({
             </AvatarFallback>
           </Avatar>
         ))}
-        {remainingCount > 0 && (
-          <div
-            className={cn(
-              'flex items-center justify-center rounded-full border-2 border-neutral-100 bg-muted text-muted-foreground dark:border-neutral-800',
-              sizeClasses[size],
-              overlapClasses[overlap],
-              'relative'
-            )}
-            style={{ zIndex: 0 }}
-          >
-            <span className="font-medium text-xs">+{remainingCount}</span>
-          </div>
-        )}
       </div>
     </div>
   )
