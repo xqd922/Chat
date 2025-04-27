@@ -1,4 +1,4 @@
-import { AnimatePresence, m as motion } from 'framer-motion'
+import { cn } from '@/lib/utils'
 import { useEffect, useRef, useState } from 'react'
 import { ChevronDownIcon, ChevronUpIcon } from '../icons'
 import { MemoizedReactMarkdown } from '../markdown'
@@ -24,21 +24,6 @@ export function ReasoningMessagePart({
   const [reasoningSeconds, setReasoningSeconds] = useState<number | null>(null)
   const startTimeRef = useRef<number | null>(null)
   const timerRef = useRef<ReturnType<typeof setInterval> | null>(null)
-
-  const variants = {
-    collapsed: {
-      height: 0,
-      opacity: 0,
-      marginTop: 0,
-      marginBottom: 0,
-    },
-    expanded: {
-      height: 'auto',
-      opacity: 1,
-      marginTop: '1rem',
-      marginBottom: 0,
-    },
-  }
 
   useEffect(() => {
     // Start timing when reasoning begins
@@ -96,7 +81,7 @@ export function ReasoningMessagePart({
   }
 
   return (
-    <div className="flex flex-col">
+    <div className="relative flex flex-col">
       <button
         type="button"
         onClick={() => {
@@ -119,33 +104,32 @@ export function ReasoningMessagePart({
 
         {isExpanded ? <ChevronDownIcon /> : <ChevronUpIcon />}
       </button>
-
-      <AnimatePresence initial={false}>
-        {isExpanded && (
-          <motion.div
-            key="reasoning"
-            className="flex flex-col gap-4 border-l pl-3 text-[#54545494] text-sm dark:border-neutral-800 dark:text-[#b5b5b5a4]"
-            initial="collapsed"
-            animate="expanded"
-            exit="collapsed"
-            variants={variants}
-            transition={{ duration: 0.2, ease: 'easeInOut' }}
-          >
-            {part.details.map((detail, detailIndex) =>
-              detail.type === 'text' ? (
-                <MemoizedReactMarkdown
-                  key={`${detailIndex}-${detail.text}`}
-                  components={markdownComponents}
-                >
-                  {detail.text}
-                </MemoizedReactMarkdown>
-              ) : (
-                '<redacted>'
-              )
-            )}
-          </motion.div>
+      {!isExpanded && (
+        <div className="pointer-events-none absolute bottom-0 left-0 h-16 w-full bg-gradient-to-t from-neutral-100 to-transparent dark:from-[#111010]" />
+      )}
+      <div
+        key="reasoning"
+        className={cn(
+          'mt-2 flex flex-col gap-4 overflow-hidden border-l pl-3 text-[#54545494] text-sm dark:border-neutral-800 dark:text-[#b5b5b5a4]',
+          {
+            'max-h-[100px]': !isExpanded,
+            'max-h-full': isExpanded,
+          }
         )}
-      </AnimatePresence>
+      >
+        {part.details.map((detail, detailIndex) =>
+          detail.type === 'text' ? (
+            <MemoizedReactMarkdown
+              key={`${detailIndex}-${detail.text}`}
+              components={markdownComponents}
+            >
+              {detail.text}
+            </MemoizedReactMarkdown>
+          ) : (
+            '<redacted>'
+          )
+        )}
+      </div>
     </div>
   )
 }
