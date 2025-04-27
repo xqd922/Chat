@@ -145,7 +145,7 @@ const UserControl = memo(function UserControl({ sessionId }: UserControlProps) {
     setIsSearchEnabled((prev) => !prev)
   }, [setIsSearchEnabled])
 
-  const [isDropdownOpen, setIsDropdownOpen] = useState(true)
+  const [isDropdownOpen, setIsDropdownOpen] = useState(false)
   const dropdownRef = useRef<HTMLDivElement>(null)
 
   // 阻止下拉菜单滚动事件传播到页面
