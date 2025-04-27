@@ -32,7 +32,7 @@ async function fetchTavilySearch(query: string) {
       },
       body: JSON.stringify({
         query: `today is ${formattedDate} \r\n ${query}`,
-        max_results: 5,
+        max_results: 10,
         exclude_domains: [],
         api_key: process.env.TAVILY_API_KEY,
       }),

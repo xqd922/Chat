@@ -110,7 +110,7 @@ export function ReasoningMessagePart({
       <div
         key="reasoning"
         className={cn(
-          'mt-2 flex flex-col gap-4 overflow-hidden border-l pl-3 text-[#54545494] text-sm dark:border-neutral-800 dark:text-[#b5b5b5a4]',
+          'mt-2 flex flex-col gap-4 overflow-hidden border-l pl-3 text-[#54545494] dark:border-neutral-800 dark:text-[#b5b5b5a4]',
           {
             'max-h-[100px]': !isExpanded,
             'max-h-full': isExpanded,
