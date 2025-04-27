@@ -16,7 +16,7 @@ import {
   LightBulbIcon,
 } from '@heroicons/react/24/solid'
 import { parseAsBoolean, parseAsStringLiteral, useQueryState } from 'nuqs'
-import { memo, useCallback, useEffect, useState } from 'react'
+import { memo, useCallback } from 'react'
 import { toast } from 'sonner'
 
 import {
@@ -44,7 +44,10 @@ export const scroolToBottom = () => {
 
 const UserControl = memo(function UserControl({ sessionId }: UserControlProps) {
   const { isSignedIn } = useUser()
-  const [isMobile, setIsMobile] = useState(false)
+  const [sidebarOpen] = useQueryState<boolean>(
+    'sidebarOpen',
+    parseAsBoolean.withDefault(false)
+  )
 
   // Use a consistent chat ID across components
   const chatId = sessionId || 'primary'
@@ -61,22 +64,6 @@ const UserControl = memo(function UserControl({ sessionId }: UserControlProps) {
     IsSearchEnabled,
     parseAsBoolean.withDefault(false)
   )
-
-  // Check if the device is mobile
-  useEffect(() => {
-    const checkIsMobile = () => {
-      setIsMobile(window.innerWidth < 1024) // 1024px breakpoint for lg
-    }
-
-    // Initial check
-    checkIsMobile()
-
-    // Add resize listener
-    window.addEventListener('resize', checkIsMobile)
-
-    // Cleanup
-    return () => window.removeEventListener('resize', checkIsMobile)
-  }, [])
 
   const { input, handleSubmit, handleInputChange, status } = useChat({
     id: chatId,
@@ -121,12 +108,12 @@ const UserControl = memo(function UserControl({ sessionId }: UserControlProps) {
     <div
       className={cn(
         'fixed right-0 bottom-2 z-10 flex w-full flex-col items-center justify-center gap-4 px-4 py-2 transition-all duration-300',
-        isSignedIn && !isMobile ? 'lg:left-32' : 'left-0'
+        isSignedIn && sidebarOpen ? 'lg:left-32' : 'left-0'
       )}
     >
       <form
         onSubmit={handleSubmit}
-        className="relative mx-auto flex w-full max-w-3xl flex-col gap-1 rounded-2xl border-[1px] border-neutral-200/60 bg-neutral-100 px-2 py-3 shadow-lg shadow-neutral-100 dark:border-neutral-700 dark:bg-neutral-800 dark:shadow-none"
+        className="relative mx-auto flex w-full max-w-3xl flex-col gap-1 rounded-2xl border-[1px] border-neutral-200 bg-white px-2 py-3 shadow-lg shadow-neutral-200 dark:border-neutral-700 dark:bg-neutral-800 dark:shadow-none"
       >
         <textarea
           className="mx-2 my-1 mb-12 min-h-12 w-full resize-none bg-transparent text-sm outline-none placeholder:font-light placeholder:text-neutral-300 placeholder:text-sm dark:placeholder:text-neutral-500"

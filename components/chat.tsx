@@ -16,7 +16,7 @@ import {
   UserButton,
   useUser,
 } from '@clerk/nextjs'
-import { parseAsString, useQueryState } from 'nuqs'
+import { parseAsBoolean, parseAsString, useQueryState } from 'nuqs'
 import { useEffect, useRef, useState } from 'react'
 import { ChatHistory } from './chat-history'
 import UserControl from './user-control'
@@ -28,7 +28,11 @@ export function Chat() {
     UserSession,
     parseAsString
   )
-  const [sidebarOpen, setSidebarOpen] = useState(false)
+  const [sidebarOpen, setSidebarOpen] = useQueryState<boolean>(
+    'sidebarOpen',
+    parseAsBoolean.withDefault(false)
+  )
+
   const [initialRedirectDone, setInitialRedirectDone] = useState(false)
   const [isMobile, setIsMobile] = useState(false)
   // Add a cache to store loaded sessions
@@ -219,7 +223,7 @@ export function Chat() {
       <div
         className={cn(
           'fixed inset-0 z-30 bg-black/20 backdrop-blur-sm transition-opacity duration-300 ease-in-out lg:hidden',
-          isSignedIn && sidebarOpen && isMobile
+          isSignedIn && sidebarOpen
             ? 'opacity-100'
             : 'pointer-events-none opacity-0'
         )}
@@ -232,19 +236,15 @@ export function Chat() {
           className={cn(
             'fixed top-0 bottom-0 left-0 z-40 flex w-64 flex-col bg-transparent p-2 transition-transform duration-300 ease-in-out',
             // Mobile behavior - slide in and out
-            isMobile
-              ? sidebarOpen
-                ? 'translate-x-0'
-                : '-translate-x-full'
-              : '',
+            sidebarOpen ? 'translate-x-0' : '-translate-x-full'
             // Desktop behavior - always visible with content pushed over
-            !isMobile ? 'translate-x-0' : ''
+            // !isMobile ? 'translate-x-0' : ''
           )}
         >
           <ChatHistory
             userId={user?.id || ''}
             currentSessionId={sessionId || ''}
-            onCloseSidebar={() => isMobile && setSidebarOpen(false)}
+            onCloseSidebar={() => setSidebarOpen(false)}
             onSessionSwitch={handleSessionSwitch}
             isMobile={isMobile}
             onHoverPrefetch={handlePrefetch}
@@ -255,11 +255,11 @@ export function Chat() {
       <div
         className={cn(
           'flex flex-1 flex-col items-center transition-all duration-300',
-          isSignedIn && !isMobile ? 'ml-64' : 'ml-0'
+          isSignedIn && sidebarOpen && !isMobile ? 'ml-64' : 'ml-0'
         )}
       >
         <header className="fixed top-0 right-0 z-10 flex w-full items-center justify-between p-4">
-          {isSignedIn && isMobile && (
+          {isSignedIn && (
             <button
               type="button"
               className="rounded-md bg-neutral-50 p-2 text-neutral-500 backdrop-blur-sm transition-colors hover:bg-neutral-100 dark:bg-neutral-800/80 dark:hover:bg-neutral-700"

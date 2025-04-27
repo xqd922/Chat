@@ -39,7 +39,7 @@ export default function RootLayout({
       <html
         suppressHydrationWarning
         lang="en"
-        className={`${GeistSans.variable} ${GeistMono.variable} bg-white/80 dark:bg-black/80`}
+        className={`${GeistSans.variable} ${GeistMono.variable}`}
       >
         <body>
           <ThemeProvider>

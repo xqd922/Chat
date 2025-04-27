@@ -6,7 +6,7 @@ import type { UseChatHelpers } from '@ai-sdk/react'
 import { ArrowDownIcon } from '@heroicons/react/24/solid'
 import type { UIMessage } from 'ai'
 import { AnimatePresence, m as motion } from 'framer-motion'
-import { parseAsString, useQueryState } from 'nuqs'
+import { parseAsBoolean, parseAsString, useQueryState } from 'nuqs'
 import { useEffect, useMemo, useRef, useState } from 'react'
 
 import { Message } from './message-part/message'
@@ -22,10 +22,10 @@ export function Messages({ messages, status, fetchStatus }: MessagesProps) {
   const messagesRef = useRef<HTMLDivElement>(null)
   const [sessionId] = useQueryState<string>(UserSession, parseAsString)
   const [showScrollButton, setShowScrollButton] = useState(false)
-  const [scrollButtonPosition, setScrollButtonPosition] = useState({
-    left: 0,
-    width: 0,
-  })
+  const [sidebarOpen] = useQueryState<boolean>(
+    'sidebarOpen',
+    parseAsBoolean.withDefault(false)
+  )
   const bottomAnchorRef = useRef<HTMLDivElement>(null)
 
   // Determine latest user-AI message pair
@@ -65,29 +65,6 @@ export function Messages({ messages, status, fetchStatus }: MessagesProps) {
     // Only run once on mount
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [sessionId])
-
-  // Calculate position for the scroll button based on window size
-  useEffect(() => {
-    const updateScrollButtonPosition = () => {
-      if (messagesRef.current) {
-        const rect = messagesRef.current.getBoundingClientRect()
-        setScrollButtonPosition({
-          left: rect.left + rect.width / 2,
-          width: rect.width,
-        })
-      }
-    }
-
-    // Initialize position
-    updateScrollButtonPosition()
-
-    // Add window resize event listener
-    window.addEventListener('resize', updateScrollButtonPosition)
-
-    return () => {
-      window.removeEventListener('resize', updateScrollButtonPosition)
-    }
-  }, [])
 
   // Add window scroll event handler to show/hide scroll button
   useEffect(() => {
@@ -159,7 +136,7 @@ export function Messages({ messages, status, fetchStatus }: MessagesProps) {
             />
           ))}
           <motion.div className="my-10 flex items-center justify-center">
-            <span className="rounded-full bg-neutral-100 px-4 py-1 font-medium text-neutral-500 text-xs dark:bg-neutral-800 dark:text-neutral-400">
+            <span className="rounded-full border-[1px] border-neutral-200 bg-white px-4 py-1 font-medium text-neutral-500 text-xs dark:border-neutral-700 dark:bg-neutral-800 dark:text-neutral-400">
               Previous <span className="font-normal">conversation</span>
             </span>
           </motion.div>
@@ -222,20 +199,22 @@ export function Messages({ messages, status, fetchStatus }: MessagesProps) {
       <AnimatePresence initial={false}>
         {/* Scroll to bottom button */}
         {showScrollButton && (
-          <motion.button
-            initial={{ opacity: 0, scale: 0.8, filter: 'blur(5px)' }}
-            animate={{ opacity: 1, scale: 1, filter: 'blur(0px)' }}
-            exit={{ opacity: 0, scale: 0.8, filter: 'blur(5px)' }}
-            className="-ml-[12px] fixed bottom-[150px] z-10 flex size-6 items-center justify-center rounded-full bg-black shadow-md transition-colors hover:bg-neutral-700 dark:bg-neutral-700 dark:hover:bg-neutral-600"
-            style={{
-              left: `${scrollButtonPosition.left}px`,
-              transform: 'translateX(-50%)',
-            }}
-            onClick={scrollToBottom}
-            title="Scroll to bottom"
+          <div
+            className={cn('fixed bottom-[150px] left-0 w-full transition-all', {
+              'lg:left-32': sidebarOpen,
+            })}
           >
-            <ArrowDownIcon className="size-3 text-neutral-100 dark:text-neutral-200" />
-          </motion.button>
+            <motion.button
+              initial={{ opacity: 0, scale: 0.8, filter: 'blur(5px)' }}
+              animate={{ opacity: 1, scale: 1, filter: 'blur(0px)' }}
+              exit={{ opacity: 0, scale: 0.8, filter: 'blur(5px)' }}
+              className="z-10 mx-auto flex size-6 items-center justify-center rounded-full bg-black shadow-md transition-colors hover:bg-neutral-700 dark:bg-neutral-700 dark:hover:bg-neutral-600"
+              onClick={scrollToBottom}
+              title="Scroll to bottom"
+            >
+              <ArrowDownIcon className="size-3 text-neutral-100 dark:text-neutral-200" />
+            </motion.button>
+          </div>
         )}
       </AnimatePresence>
     </div>
