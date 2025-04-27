@@ -1,7 +1,6 @@
 import { type modelID, models } from '@/lib/models'
 import { cn } from '@/lib/utils'
 import type { UseChatHelpers } from '@ai-sdk/react'
-import { ClipboardIcon } from '@heroicons/react/24/outline'
 import type { UIMessage } from 'ai'
 import { memo } from 'react'
 import ShinyText from '../shiny-text'
@@ -140,16 +139,7 @@ export const Message = memo(
         <div className="-mt-3 -ml-0.5 flex h-6 items-center justify-start gap-2 transition-opacity">
           {message.role === 'assistant' &&
             (!isLastAssistantMessage || status !== 'streaming') && (
-              <>
-                <button
-                  type="button"
-                  onClick={() => {
-                    navigator.clipboard.writeText(message.content)
-                  }}
-                  title="Copy to clipboard"
-                >
-                  <ClipboardIcon className="size-4 text-neutral-500 hover:text-neutral-700 dark:hover:text-neutral-300" />
-                </button>
+              <div>
                 {infoAnnotation && (
                   <div className="mt-[1px] text-[11px] text-neutral-500 dark:text-neutral-400">
                     <span className="font-medium">Model: </span>
@@ -166,7 +156,7 @@ export const Message = memo(
                     )}
                   </div>
                 )}
-              </>
+              </div>
             )}
         </div>
       </div>
