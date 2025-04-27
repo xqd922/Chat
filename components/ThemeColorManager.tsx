@@ -19,7 +19,7 @@ export function ThemeColorManager() {
 
       const themeColor =
         currentTheme === 'dark'
-          ? '#262626' // 深色模式背景色
+          ? '#171717' // 深色模式背景色
           : '#f5f5f5' // 浅色模式背景色
 
       document
