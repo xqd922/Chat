@@ -12,7 +12,7 @@ export const auth = betterAuth({
   session: {
     cookieCache: {
       enabled: true,
-      maxAge: 1 * 60 * 60, // Cache duration in seconds
+      maxAge: 24 * 60 * 60, // Cache duration in seconds
     },
   },
   plugins: [nextCookies()],
