@@ -135,7 +135,7 @@ export const markdownComponents: Partial<Components> = {
   code: CodeComponent,
   li: ({ children, ...props }) => {
     return (
-      <li className="py-2 font-light text-[15px]" {...props}>
+      <li className="py-2 font-light text-base" {...props}>
         {children}
       </li>
     )

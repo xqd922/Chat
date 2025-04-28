@@ -208,7 +208,7 @@ export function ChatHistory({
 
   return (
     <div className="flex h-full flex-col overflow-hidden rounded-lg border-[1px] border-transparent bg-gradient-to-b from-neutral-50 to-neutral-100 md:border-neutral-200 dark:border-neutral-800 dark:from-neutral-900 dark:to-neutral-950">
-      <div className="flex items-center justify-between border-neutral-200 border-b bg-white px-4 py-3 backdrop-blur-sm dark:border-neutral-800 dark:bg-neutral-900/80">
+      <div className="flex items-center justify-between border-neutral-200 border-b bg-white px-4 py-3 backdrop-blur-sm dark:border-neutral-800 dark:bg-neutral-800/30">
         <h2 className="font-medium text-lg text-neutral-800 dark:text-neutral-200">
           Chat History
         </h2>

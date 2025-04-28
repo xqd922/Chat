@@ -68,7 +68,7 @@ export const Message = memo(
           className={cn('flex flex-col gap-2', {
             'mb-3 ml-auto w-fit rounded-[10px] rounded-br-none border-[1px] border-neutral-200 bg-white px-2 py-1 shadow-neutral-200/80 shadow-sm dark:border-neutral-700 dark:bg-neutral-800 dark:shadow-none':
               message.role === 'user',
-            '': message.role === 'assistant',
+            'dark:opacity-90': message.role === 'assistant',
           })}
         >
           {message.annotations?.map((annotation, index) => {

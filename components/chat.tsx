@@ -274,7 +274,7 @@ export function Chat() {
           {isSignedIn && (
             <button
               type="button"
-              className="rounded-md bg-neutral-50 p-2 text-neutral-500 backdrop-blur-sm transition-colors hover:bg-neutral-100 dark:bg-neutral-800/80 dark:hover:bg-neutral-700"
+              className="rounded-md bg-neutral-50 p-2 text-neutral-500 backdrop-blur-sm transition-colors hover:bg-neutral-100 dark:bg-neutral-800 dark:hover:bg-neutral-800/50"
               onClick={() => setSidebarOpen(!sidebarOpen)}
               aria-label="Toggle sidebar"
             >
