@@ -1,16 +1,15 @@
+'use client'
+
 import { GalleryVerticalEnd } from 'lucide-react'
-import { headers } from 'next/headers'
 
 import { LoginForm } from '@/components/login-form'
-import { auth } from '@/lib/auth'
+import { authClient } from '@/lib/auth-client'
 import { redirect } from 'next/navigation'
 
-export default async function LoginPage() {
-  const session = await auth.api.getSession({
-    headers: await headers(), // you need to pass the headers object.
-  })
+export default function LoginPage() {
+  const { data: userSession } = authClient.useSession()
 
-  if (session) {
+  if (userSession) {
     redirect('/')
   }
 

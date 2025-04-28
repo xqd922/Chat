@@ -1,16 +1,15 @@
+'use client'
+
 import { GalleryVerticalEnd } from 'lucide-react'
-import { headers } from 'next/headers'
 
 import { SignUpForm } from '@/components/sign-up-form'
-import { auth } from '@/lib/auth'
+import { authClient } from '@/lib/auth-client'
 import { redirect } from 'next/navigation'
 
-export default async function SignUpPage() {
-  const session = await auth.api.getSession({
-    headers: await headers(), // you need to pass the headers object.
-  })
+export default function SignUpPage() {
+  const { data: userSession } = authClient.useSession()
 
-  if (session) {
+  if (userSession) {
     redirect('/')
   }
 
