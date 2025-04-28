@@ -16,6 +16,7 @@ import { ChatHistory } from './chat-history'
 import { Button } from './ui/button'
 import { Spinner } from './ui/spinner'
 import UserControl from './user-control'
+import { UserDropDown } from './user-dropdown'
 import UserMessages from './user-messages'
 
 export function Chat() {
@@ -304,7 +305,7 @@ export function Chat() {
             </a>
           ) : (
             <div className="font-serif text-neutral-700 text-sm dark:text-neutral-400">
-              Hi, {userSession?.user.name}
+              Hi, <UserDropDown userName={userSession?.user.name} />
             </div>
           )}
         </header>
