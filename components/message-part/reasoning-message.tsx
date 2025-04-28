@@ -2,7 +2,7 @@ import { cn } from '@/lib/utils'
 import { useEffect, useRef, useState } from 'react'
 import { ChevronDownIcon, ChevronUpIcon } from '../icons'
 import { MemoizedReactMarkdown } from '../markdown'
-import { markdownComponents } from '../markdown-components'
+import { thinkingMarkdownComponents } from '../markdown-components'
 import ShinyText from '../shiny-text'
 
 interface ReasoningPart {
@@ -121,7 +121,7 @@ export function ReasoningMessagePart({
           detail.type === 'text' ? (
             <MemoizedReactMarkdown
               key={`${detailIndex}-${detail.text}`}
-              components={markdownComponents}
+              components={thinkingMarkdownComponents}
             >
               {detail.text}
             </MemoizedReactMarkdown>

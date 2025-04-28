@@ -84,7 +84,7 @@ export const markdownComponents: Partial<Components> = {
     if (isPreTag) {
       return <>{children}</>
     }
-    return <p className="font-light text-sm leading-6">{children}</p>
+    return <p className="font-[300] text-base leading-7">{children}</p>
   },
   pre: ({ children }) => (
     <pre
@@ -135,7 +135,7 @@ export const markdownComponents: Partial<Components> = {
   code: CodeComponent,
   li: ({ children, ...props }) => {
     return (
-      <li className="py-1 font-light text-sm" {...props}>
+      <li className="py-2 font-light text-[15px]" {...props}>
         {children}
       </li>
     )
@@ -149,7 +149,7 @@ export const markdownComponents: Partial<Components> = {
   },
   strong: ({ children, ...props }) => {
     return (
-      <span className="font-semibold" {...props}>
+      <span className="font-medium" {...props}>
         {children}
       </span>
     )
@@ -169,42 +169,42 @@ export const markdownComponents: Partial<Components> = {
   },
   h1: ({ children, ...props }) => {
     return (
-      <h1 className="mt-4 mb-2 font-semibold text-3xl" {...props}>
+      <h1 className="mt-4 mb-2 font-medium text-3xl" {...props}>
         {children}
       </h1>
     )
   },
   h2: ({ children, ...props }) => {
     return (
-      <h2 className="mt-4 mb-2 font-semibold text-2xl" {...props}>
+      <h2 className="mt-4 mb-2 font-medium text-2xl" {...props}>
         {children}
       </h2>
     )
   },
   h3: ({ children, ...props }) => {
     return (
-      <h3 className="mt-4 mb-2 font-semibold text-xl" {...props}>
+      <h3 className="mt-4 mb-2 font-medium text-xl" {...props}>
         {children}
       </h3>
     )
   },
   h4: ({ children, ...props }) => {
     return (
-      <h4 className="mt-4 mb-2 font-semibold text-lg" {...props}>
+      <h4 className="mt-4 mb-2 font-medium text-lg" {...props}>
         {children}
       </h4>
     )
   },
   h5: ({ children, ...props }) => {
     return (
-      <h5 className="mt-4 mb-2 font-semibold text-base" {...props}>
+      <h5 className="mt-4 mb-2 font-medium text-base" {...props}>
         {children}
       </h5>
     )
   },
   h6: ({ children, ...props }) => {
     return (
-      <h6 className="mt-4 mb-2 font-semibold text-sm" {...props}>
+      <h6 className="mt-4 mb-2 font-medium text-sm" {...props}>
         {children}
       </h6>
     )
@@ -265,5 +265,14 @@ export const markdownComponents: Partial<Components> = {
         {children}
       </td>
     )
+  },
+}
+
+export const thinkingMarkdownComponents: Partial<Components> = {
+  hr: () => {
+    return <hr className=" hidden" />
+  },
+  p: ({ children }) => {
+    return <p className="font-light text-sm leading-6">{children}</p>
   },
 }
