@@ -9,7 +9,6 @@ export const auth = betterAuth({
       rejectUnauthorized: false,
     },
   }),
-  trustedOrigins: ["http://localhost:4001", "https://ai.buycoffee.top"],
   plugins: [nextCookies()],
   emailAndPassword: {
     enabled: true,

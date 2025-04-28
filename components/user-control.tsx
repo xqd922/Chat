@@ -120,7 +120,6 @@ const UserControl = memo(function UserControl({ sessionId }: UserControlProps) {
 
   const { input, handleSubmit, handleInputChange, status } = useChat({
     id: chatId,
-    api: 'https://ai.buycoffee.top/api/chat',
     experimental_prepareRequestBody({ messages }) {
       return {
         message: messages[messages.length - 1],
