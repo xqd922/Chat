@@ -142,7 +142,7 @@ export const markdownComponents: Partial<Components> = {
   },
   ul: ({ children, ...props }) => {
     return (
-      <ul className="ml-6 list-outside list-decimal" {...props}>
+      <ul className="ml-6 list-outside list-disc" {...props}>
         {children}
       </ul>
     )
