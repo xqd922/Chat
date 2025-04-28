@@ -19,9 +19,9 @@ import UserControl from './user-control'
 import UserMessages from './user-messages'
 
 export function Chat() {
-  const { data: userSession, isPending: isLoaded } = authClient.useSession()
+  const { data: userSession, isPending } = authClient.useSession()
 
-  const isSignedIn = !isLoaded && userSession !== null
+  const isSignedIn = !isPending && userSession !== null
 
   const [sessionId, setSessionId] = useQueryState<string>(
     UserSession,
@@ -99,11 +99,16 @@ export function Chat() {
 
   // Only handle session redirection once
   useEffect(() => {
-    if (initialRedirectDone) return
+    if (initialRedirectDone) {
+      console.log('Initial session redirection already done.')
+      return
+    }
+
+    console.log('Handling initial session redirection...')
 
     const handleInitialSession = async () => {
       // Only proceed if all conditions are met
-      if (!isLoaded || !isSignedIn || !userSession) return
+      if (isPending || !isSignedIn || !userSession) return
       // Only redirect if we don't have a session ID in the URL
       if (!sessionId) {
         console.log('Checking for existing sessions...')
@@ -130,11 +135,11 @@ export function Chat() {
       }
     }
 
-    if (isLoaded) {
+    if (!isPending) {
       handleInitialSession()
     }
   }, [
-    isLoaded,
+    isPending,
     isSignedIn,
     userSession,
     sessionId,
@@ -293,7 +298,7 @@ export function Chat() {
           {!isSignedIn ? (
             <a href="/login">
               <Button className="rounded-lg" variant={'outline'}>
-                {isLoaded && <Spinner />}
+                {isPending && <Spinner />}
                 Login
               </Button>
             </a>
