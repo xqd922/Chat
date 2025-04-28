@@ -26,7 +26,7 @@ function SubmitButton() {
       disabled={pending}
       aria-disabled={pending}
     >
-      {pending && <Spinner className="text-white" />}
+      {pending && <Spinner className="text-white dark:text-black" />}
       Login
     </Button>
   )

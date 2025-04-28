@@ -14,6 +14,7 @@ import { parseAsBoolean, parseAsString, useQueryState } from 'nuqs'
 import { useEffect, useRef, useState } from 'react'
 import { ChatHistory } from './chat-history'
 import { Button } from './ui/button'
+import { Spinner } from './ui/spinner'
 import UserControl from './user-control'
 import UserMessages from './user-messages'
 
@@ -292,6 +293,7 @@ export function Chat() {
           {!isSignedIn ? (
             <a href="/login">
               <Button className="rounded-lg" variant={'outline'}>
+                {isLoaded && <Spinner />}
                 Login
               </Button>
             </a>
