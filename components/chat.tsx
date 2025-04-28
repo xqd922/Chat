@@ -298,7 +298,10 @@ export function Chat() {
           <div className="flex-1" />
           {!isSignedIn ? (
             <a href="/login">
-              <Button className="rounded-lg" variant={'outline'}>
+              <Button
+                className="h-fit w-fit rounded-lg px-2 py-0.5 font-serif"
+                variant={'outline'}
+              >
                 {isPending && <Spinner />}
                 Login
               </Button>

@@ -8,6 +8,7 @@ import {
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu'
 import { signOut } from '@/lib/auth-client'
+import { redirect } from 'next/navigation'
 import { useState } from 'react'
 import { Spinner } from './ui/spinner'
 
@@ -22,6 +23,7 @@ export function UserDropDown({ userName }: UserDropDownProps) {
     setIsLoading(true)
     await signOut()
     setIsLoading(false)
+    redirect('/')
   }
 
   return (
