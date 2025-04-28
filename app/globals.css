@@ -10,6 +10,81 @@
   --shine-color: rgba(255, 255, 255, 0.8);
 }
 
+/* 添加引用悬浮样式 */
+.citation-tooltip {
+  position: relative;
+  display: inline-flex;
+}
+
+.citation-tooltip .tooltip-content {
+  visibility: hidden;
+  position: absolute;
+  bottom: 125%;
+  left: 50%;
+  transform: translateX(-50%);
+  width: max-content;
+  max-width: 300px;
+  background-color: white;
+  color: #333;
+  border-radius: 8px;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.15);
+  padding: 10px 12px;
+  z-index: 100;
+  opacity: 0;
+  transition: opacity 0.2s, transform 0.2s;
+  transform: translateX(-50%) translateY(5px);
+  font-size: 14px;
+  line-height: 1.4;
+  text-align: left;
+  pointer-events: none;
+  border: 1px solid rgba(0, 0, 0, 0.05);
+}
+
+.citation-tooltip:hover .tooltip-content {
+  visibility: visible;
+  opacity: 1;
+  transform: translateX(-50%) translateY(0);
+}
+
+/* 添加小箭头 */
+.citation-tooltip .tooltip-content::after {
+  content: "";
+  position: absolute;
+  top: 100%;
+  left: 50%;
+  margin-left: -6px;
+  border-width: 6px;
+  border-style: solid;
+  border-color: white transparent transparent transparent;
+}
+
+.citation-tooltip .tooltip-title {
+  font-weight: 500;
+  margin-bottom: 4px;
+  font-size: 14px;
+  word-break: break-word;
+}
+
+.citation-tooltip .tooltip-domain {
+  color: #666;
+  font-size: 12px;
+}
+
+/* 暗色模式 */
+.dark .citation-tooltip .tooltip-content {
+  background-color: #2a2a2a;
+  color: #eee;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.dark .citation-tooltip .tooltip-content::after {
+  border-color: #2a2a2a transparent transparent transparent;
+}
+
+.dark .citation-tooltip .tooltip-domain {
+  color: #aaa;
+}
+
 @media (prefers-color-scheme: dark) {
   :root {
     --shine-color: rgba(255, 255, 255, 0.8);

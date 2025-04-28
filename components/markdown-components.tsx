@@ -102,8 +102,20 @@ export const markdownComponents: Partial<Components> = {
     const isCitation = alt?.includes('citation')
 
     if (isCitation) {
+      // 从title属性中提取网站标题和域名信息（用管道符分隔）
+      const titleInfo = props.title || ''
+      let title = titleInfo
+      let domain = ''
+
+      // 拆分标题和域名
+      if (titleInfo.includes('|')) {
+        const parts = titleInfo.split('|')
+        title = parts[0]
+        domain = parts[1]
+      }
+
       return (
-        <span className="inline-flex items-center align-middle">
+        <span className="citation-tooltip inline-flex items-center align-middle">
           <img
             aria-label="citation"
             className="mx-0 my-0 inline-block size-4 rounded-full border-[1px] border-neutral-200 bg-white align-middle dark:border-neutral-800 dark:bg-black"
@@ -111,6 +123,10 @@ export const markdownComponents: Partial<Components> = {
             alt={alt}
             {...props}
           />
+          <div className="tooltip-content">
+            <div className="tooltip-title">{title}</div>
+            {domain && <div className="tooltip-domain">{domain}</div>}
+          </div>
         </span>
       )
     }

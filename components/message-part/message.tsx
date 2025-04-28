@@ -35,7 +35,7 @@ export const Message = memo(
         return typedAnnotation?.results || []
       }) || []
 
-    // 替换引用标识为 Markdown 图标链接
+    // 替换引用标识为 Markdown 图标链接，添加悬浮信息
     const replaceCitations = (text: string) => {
       if (allResults.length === 0) {
         return text
@@ -45,7 +45,14 @@ export const Message = memo(
         // 检查索引是否在有效范围内
         if (num >= 1 && num <= allResults.length) {
           const result = allResults[num - 1] // 索引从 0 开始，因此减 1
-          return `[ ![citation ${num}](${result.icon_url}) ](${result.url})`
+          // 提取网站域名和标题信息
+          const url = new URL(result.url)
+          const domain = url.hostname
+          const title = result.title || domain
+
+          // 在title属性中同时包含标题和域名，以管道符分隔
+          // 这样在组件中就可以解析出两部分信息
+          return `[ ![citation ${num}](${result.icon_url} "${title}|${domain}") ](${result.url})`
         }
         return match // 如果索引无效，保留原始文本
       })
