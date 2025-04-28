@@ -10,7 +10,6 @@ import { UserSession } from '@/lib/nusq'
 import { supabase } from '@/lib/supabase-client'
 import { cn } from '@/lib/utils'
 import { type Message, useChat } from '@ai-sdk/react'
-import Link from 'next/link'
 import { parseAsBoolean, parseAsString, useQueryState } from 'nuqs'
 import { useEffect, useRef, useState } from 'react'
 import { ChatHistory } from './chat-history'
@@ -291,11 +290,11 @@ export function Chat() {
           )}
           <div className="flex-1" />
           {!isSignedIn ? (
-            <Link href="/login">
+            <a href="/login">
               <Button className="rounded-lg" variant={'outline'}>
                 Login
               </Button>
-            </Link>
+            </a>
           ) : (
             <div className="font-serif text-neutral-700 text-sm dark:text-neutral-400">
               Hi, {userSession?.user.name}
