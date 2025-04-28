@@ -1,9 +1,7 @@
-'use server'
-
-import { auth } from '@/lib/auth'
+import { signIn, signUp } from '@/lib/auth-client'
 import { redirect } from 'next/navigation'
 
-export async function signIn(
+export async function signInAction(
   _prevState: {
     message: string
   },
@@ -11,21 +9,18 @@ export async function signIn(
 ) {
   const email = formData.get('email') as string
   const password = formData.get('password') as string
-  try {
-    await auth.api.signInEmail({
-      body: {
-        email,
-        password,
-      },
-    })
-  } catch (error) {
-    console.error('Error signing in:', error)
-    return { message: 'Error signing in' }
+  const result = await signIn.email({
+    email,
+    password,
+  })
+  console.log('Sign in result:', result)
+  if (result.error?.message) {
+    return { message: result.error.message }
   }
   redirect('/')
 }
 
-export async function signUp(
+export async function signUpAction(
   _prevState: {
     message: string
   },
@@ -41,17 +36,15 @@ export async function signUp(
   if (!email || !password || !name) {
     return { message: 'Please fill in all fields' }
   }
-  try {
-    await auth.api.signUpEmail({
-      body: {
-        email,
-        password,
-        name,
-      },
-    })
-  } catch (error) {
-    console.error('Error signing up:', error)
-    return { message: 'Error signing up' }
+
+  const result = await signUp.email({
+    email,
+    password,
+    name,
+  })
+  console.log('Sign up result:', result)
+  if (result.error?.message) {
+    return { message: result.error.message }
   }
   redirect('/')
 }

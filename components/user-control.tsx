@@ -37,7 +37,7 @@ import { parseAsBoolean, parseAsStringLiteral, useQueryState } from 'nuqs'
 import { memo, useCallback, useEffect, useRef, useState } from 'react'
 import { toast } from 'sonner'
 
-import { authClient } from '@/lib/auth-client'
+import { useSession } from '@/lib/auth-client'
 import {
   IsReasoningEnabled,
   IsSearchEnabled,
@@ -97,7 +97,7 @@ const RatingIndicator = ({
 }
 
 const UserControl = memo(function UserControl({ sessionId }: UserControlProps) {
-  const { data: userSession } = authClient.useSession()
+  const { data: userSession } = useSession()
 
   const isSignedIn = userSession !== null
   const [sidebarOpen] = useQueryState<boolean>('sidebarOpen', parseAsBoolean)

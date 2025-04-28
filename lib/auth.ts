@@ -9,6 +9,12 @@ export const auth = betterAuth({
       rejectUnauthorized: false,
     },
   }),
+  session: {
+    cookieCache: {
+      enabled: true,
+      maxAge: 5 * 60, // Cache duration in seconds
+    },
+  },
   plugins: [nextCookies()],
   emailAndPassword: {
     enabled: true,

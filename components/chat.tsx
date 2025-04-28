@@ -1,6 +1,6 @@
 'use client'
 
-import { authClient } from '@/lib/auth-client'
+import { useSession } from '@/lib/auth-client'
 import {
   createChatSession,
   getChatSession,
@@ -20,7 +20,7 @@ import { UserDropDown } from './user-dropdown'
 import UserMessages from './user-messages'
 
 export function Chat() {
-  const { data: userSession, isPending } = authClient.useSession()
+  const { data: userSession, isPending } = useSession()
 
   const isSignedIn = !isPending && userSession !== null
 

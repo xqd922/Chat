@@ -1,6 +1,6 @@
 'use client'
 
-import { signIn } from '@/app/server/users'
+import { signInAction } from '@/app/server/users'
 import { Button } from '@/components/ui/button'
 import {
   Card,
@@ -40,7 +40,7 @@ export function LoginForm({
   className,
   ...props
 }: React.ComponentPropsWithoutRef<'div'>) {
-  const [state, formAction] = useActionState(signIn, initialState)
+  const [state, formAction] = useActionState(signInAction, initialState)
 
   return (
     <div className={cn('flex flex-col gap-6', className)} {...props}>

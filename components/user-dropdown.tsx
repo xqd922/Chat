@@ -7,7 +7,7 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu'
-import { authClient } from '@/lib/auth-client'
+import { signOut } from '@/lib/auth-client'
 import { useState } from 'react'
 import { Spinner } from './ui/spinner'
 
@@ -20,7 +20,7 @@ export function UserDropDown({ userName }: UserDropDownProps) {
   const handleSelect = async (e: Event) => {
     e.preventDefault() // 阻止默认的关闭行为
     setIsLoading(true)
-    await authClient.signOut()
+    await signOut()
     setIsLoading(false)
   }
 
@@ -37,7 +37,10 @@ export function UserDropDown({ userName }: UserDropDownProps) {
       >
         <DropdownMenuLabel>My Account</DropdownMenuLabel>
         <DropdownMenuSeparator />
-        <DropdownMenuItem onSelect={(e) => handleSelect(e)}>
+        <DropdownMenuItem
+          onSelect={(e) => handleSelect(e)}
+          className="rounded-[8px]"
+        >
           {isLoading && <Spinner className="size-4" />}
           Log out
         </DropdownMenuItem>

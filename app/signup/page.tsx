@@ -3,11 +3,11 @@
 import { GalleryVerticalEnd } from 'lucide-react'
 
 import { SignUpForm } from '@/components/sign-up-form'
-import { authClient } from '@/lib/auth-client'
+import { useSession } from '@/lib/auth-client'
 import { redirect } from 'next/navigation'
 
 export default function SignUpPage() {
-  const { data: userSession } = authClient.useSession()
+  const { data: userSession } = useSession()
 
   if (userSession) {
     redirect('/')

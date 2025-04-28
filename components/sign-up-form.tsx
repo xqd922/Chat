@@ -1,6 +1,6 @@
 'use client'
 
-import { signUp } from '@/app/server/users'
+import { signUpAction } from '@/app/server/users'
 import { Button } from '@/components/ui/button'
 import {
   Card,
@@ -40,7 +40,7 @@ export function SignUpForm({
   className,
   ...props
 }: React.ComponentPropsWithoutRef<'div'>) {
-  const [state, formAction] = useActionState(signUp, initialState)
+  const [state, formAction] = useActionState(signUpAction, initialState)
 
   return (
     <div className={cn('flex flex-col gap-6', className)} {...props}>
@@ -98,8 +98,12 @@ export function SignUpForm({
                   />
                 </div>
                 <SubmitButton />
-                {/* biome-ignore lint/a11y/useSemanticElements: <explanation> */}
-                <p aria-live="polite" role="status">
+                <p
+                  className="mx-auto font-light text-red-500 text-sm"
+                  aria-live="polite"
+                  /* biome-ignore lint/a11y/useSemanticElements: <explanation> */
+                  role="status"
+                >
                   {state?.message}
                 </p>
               </div>
