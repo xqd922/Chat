@@ -9,6 +9,7 @@ export const auth = betterAuth({
       rejectUnauthorized: false,
     },
   }),
+  trustedOrigins: ['*'],
   plugins: [nextCookies()],
   emailAndPassword: {
     enabled: true,
