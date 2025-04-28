@@ -1,4 +1,5 @@
 import type { InfoAnnotation } from '@/components/message-part/message'
+import { auth } from '@/lib/auth'
 import { getChatSession, saveMessages } from '@/lib/message-storage'
 import {
   MODEL_GEMINI_2_5,
@@ -7,7 +8,6 @@ import {
   myProvider,
 } from '@/lib/models'
 import type { GoogleGenerativeAIProviderOptions } from '@ai-sdk/google'
-import { auth } from '@clerk/nextjs/server'
 import {
   type Message,
   appendClientMessage,
@@ -16,6 +16,7 @@ import {
   smoothStream,
   streamText,
 } from 'ai'
+import { headers } from 'next/headers'
 import type { NextRequest } from 'next/server'
 
 // New function to call Tavily API
@@ -54,11 +55,15 @@ function getIconUrl(urlPath: string) {
 }
 
 export async function POST(request: NextRequest) {
-  const { userId } = await auth()
+  const userSession = await auth.api.getSession({
+    headers: await headers(), // you need to pass the headers object.
+  })
 
-  if (!userId) {
+  if (!userSession) {
     return new Response('Unauthorized', { status: 401 })
   }
+
+  const userId = userSession.user.id
 
   const {
     message,

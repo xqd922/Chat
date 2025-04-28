@@ -22,10 +22,7 @@ export function Messages({ messages, status, fetchStatus }: MessagesProps) {
   const messagesRef = useRef<HTMLDivElement>(null)
   const [sessionId] = useQueryState<string>(UserSession, parseAsString)
   const [showScrollButton, setShowScrollButton] = useState(false)
-  const [sidebarOpen] = useQueryState<boolean>(
-    'sidebarOpen',
-    parseAsBoolean.withDefault(false)
-  )
+  const [sidebarOpen] = useQueryState<boolean>('sidebarOpen', parseAsBoolean)
   const bottomAnchorRef = useRef<HTMLDivElement>(null)
 
   // Determine latest user-AI message pair

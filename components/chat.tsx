@@ -1,5 +1,6 @@
 'use client'
 
+import { authClient } from '@/lib/auth-client'
 import {
   createChatSession,
   getChatSession,
@@ -9,28 +10,26 @@ import { UserSession } from '@/lib/nusq'
 import { supabase } from '@/lib/supabase-client'
 import { cn } from '@/lib/utils'
 import { type Message, useChat } from '@ai-sdk/react'
-import {
-  SignInButton,
-  SignedIn,
-  SignedOut,
-  UserButton,
-  useUser,
-} from '@clerk/nextjs'
+import Link from 'next/link'
 import { parseAsBoolean, parseAsString, useQueryState } from 'nuqs'
 import { useEffect, useRef, useState } from 'react'
 import { ChatHistory } from './chat-history'
+import { Button } from './ui/button'
 import UserControl from './user-control'
 import UserMessages from './user-messages'
 
 export function Chat() {
-  const { user, isSignedIn, isLoaded } = useUser()
+  const { data: userSession, isPending: isLoaded } = authClient.useSession()
+
+  const isSignedIn = !isLoaded && userSession !== null
+
   const [sessionId, setSessionId] = useQueryState<string>(
     UserSession,
     parseAsString
   )
   const [sidebarOpen, setSidebarOpen] = useQueryState<boolean>(
     'sidebarOpen',
-    parseAsBoolean.withDefault(false)
+    parseAsBoolean
   )
 
   const [initialRedirectDone, setInitialRedirectDone] = useState(false)
@@ -94,7 +93,7 @@ export function Chat() {
 
   // 处理会话切换
   const handleSessionSwitch = async (newSessionId: string) => {
-    if (!user || newSessionId === sessionId) return
+    if (!userSession || newSessionId === sessionId) return
     setSessionId(newSessionId)
   }
 
@@ -104,11 +103,11 @@ export function Chat() {
 
     const handleInitialSession = async () => {
       // Only proceed if all conditions are met
-      if (!isLoaded || !isSignedIn || !user) return
+      if (!isLoaded || !isSignedIn || !userSession) return
       // Only redirect if we don't have a session ID in the URL
       if (!sessionId) {
         console.log('Checking for existing sessions...')
-        const userSessions = await getUserSessions(user.id)
+        const userSessions = await getUserSessions(userSession.user.id)
         if (userSessions.length > 0) {
           // Sort sessions by createdAt in descending order (newest first)
           const sortedSessions = [...userSessions].sort(
@@ -122,7 +121,7 @@ export function Chat() {
           setSessionId(sortedSessions[0].id)
         } else {
           console.log('No existing sessions found, creating new session')
-          const newSession = await createChatSession(user.id)
+          const newSession = await createChatSession(userSession.user.id)
           setInitialRedirectDone(true)
           setSessionId(newSession.id)
         }
@@ -134,12 +133,19 @@ export function Chat() {
     if (isLoaded) {
       handleInitialSession()
     }
-  }, [isLoaded, isSignedIn, user, sessionId, initialRedirectDone, setSessionId])
+  }, [
+    isLoaded,
+    isSignedIn,
+    userSession,
+    sessionId,
+    initialRedirectDone,
+    setSessionId,
+  ])
 
   // Load session messages when user or sessionId changes
   useEffect(() => {
     const loadSession = async () => {
-      if (isSignedIn && user && sessionId) {
+      if (isSignedIn && userSession && sessionId) {
         // Check if session is already in cache
         if (sessionsCache[sessionId]) {
           console.log(`Loading messages for session ${sessionId} from cache`)
@@ -147,7 +153,7 @@ export function Chat() {
         } else {
           setIsLoading(true)
           // 获取会话数据
-          const session = await getChatSession(user.id, sessionId)
+          const session = await getChatSession(userSession.user.id, sessionId)
           if (session) {
             console.log(`Loading messages for session ${sessionId}`)
             setMessages(session.messages)
@@ -163,11 +169,11 @@ export function Chat() {
     }
 
     loadSession()
-  }, [isSignedIn, user, sessionId])
+  }, [isSignedIn, userSession, sessionId])
 
   // Set up real-time subscription to Supabase changes
   useEffect(() => {
-    if (!isSignedIn || !user || !sessionId) return
+    if (!isSignedIn || !userSession || !sessionId) return
 
     // Create subscription for the current session
     const supaSubscription = supabase
@@ -202,12 +208,12 @@ export function Chat() {
       console.log('Cleaning up Supabase subscription')
       supaSubscription.unsubscribe()
     }
-  }, [isSignedIn, user, sessionId, setMessages])
+  }, [isSignedIn, userSession, sessionId, setMessages])
 
   const handlePrefetch = async (sessionId: string) => {
-    if (!user) return
+    if (!userSession) return
     if (sessionsCache[sessionId]) return
-    const session = await getChatSession(user.id, sessionId)
+    const session = await getChatSession(userSession.user.id, sessionId)
     if (session) {
       // Update cache
       setSessionsCache((prevCache) => ({
@@ -242,7 +248,7 @@ export function Chat() {
           )}
         >
           <ChatHistory
-            userId={user?.id || ''}
+            userId={userSession?.user.id || ''}
             currentSessionId={sessionId || ''}
             onCloseSidebar={() => setSidebarOpen(false)}
             onSessionSwitch={handleSessionSwitch}
@@ -284,16 +290,17 @@ export function Chat() {
             </button>
           )}
           <div className="flex-1" />
-          <SignedIn>
-            <UserButton userProfileMode="modal" />
-          </SignedIn>
-          <SignedOut>
-            <SignInButton mode="modal">
-              <div className="cursor-pointer rounded-lg border px-4 py-2 font-medium text-sm shadow-sm transition-colors dark:border-neutral-700">
-                Sign in
-              </div>
-            </SignInButton>
-          </SignedOut>
+          {!isSignedIn ? (
+            <Link href="/login">
+              <Button className="rounded-lg" variant={'outline'}>
+                Login
+              </Button>
+            </Link>
+          ) : (
+            <div className="font-serif text-neutral-700 text-sm dark:text-neutral-400">
+              Hi, {userSession?.user.name}
+            </div>
+          )}
         </header>
 
         <div

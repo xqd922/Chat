@@ -37,13 +37,13 @@ import { parseAsBoolean, parseAsStringLiteral, useQueryState } from 'nuqs'
 import { memo, useCallback, useEffect, useRef, useState } from 'react'
 import { toast } from 'sonner'
 
+import { authClient } from '@/lib/auth-client'
 import {
   IsReasoningEnabled,
   IsSearchEnabled,
   SelectedModelId,
 } from '@/lib/nusq'
 import { cn } from '@/lib/utils'
-import { useUser } from '@clerk/nextjs'
 import React from 'react'
 import { ChevronDownIcon } from './icons'
 
@@ -97,11 +97,10 @@ const RatingIndicator = ({
 }
 
 const UserControl = memo(function UserControl({ sessionId }: UserControlProps) {
-  const { isSignedIn } = useUser()
-  const [sidebarOpen] = useQueryState<boolean>(
-    'sidebarOpen',
-    parseAsBoolean.withDefault(false)
-  )
+  const { data: userSession } = authClient.useSession()
+
+  const isSignedIn = userSession !== null
+  const [sidebarOpen] = useQueryState<boolean>('sidebarOpen', parseAsBoolean)
 
   // Use a consistent chat ID across components
   const chatId = sessionId || 'primary'
