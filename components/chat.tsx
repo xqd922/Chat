@@ -230,7 +230,7 @@ export function Chat() {
   }
 
   return (
-    <div className="flex min-h-dvh w-full">
+    <div className="flex min-h-dvh w-full max-w-full overflow-hidden">
       {/* Overlay for mobile when sidebar is open */}
       <div
         className={cn(
