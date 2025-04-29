@@ -20,7 +20,7 @@ export function ThemeColorManager() {
       const themeColor =
         currentTheme === 'dark'
           ? '#1e1e1e' // 深色模式背景色
-          : '#f5f5f5' // 浅色模式背景色
+          : '#fafafa' // 浅色模式背景色
 
       document
         .querySelector('meta[name="theme-color"]')
